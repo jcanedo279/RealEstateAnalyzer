@@ -154,3 +154,5 @@ cython_debug/
 # Custom ignores for project
 HomeData/
 PropertyDetails/
+GC_121_0_6167_85.app/
+.DS_Store
