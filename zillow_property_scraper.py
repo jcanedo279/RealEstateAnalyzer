@@ -73,6 +73,6 @@ def extract_property_details_from_search_results(batch_size=5):
 # base_directory = "PropertyDetails"
 # delete_null_content_files(base_directory)
 
-# extract_property_details_from_search_results()
+extract_property_details_from_search_results()
 # with get_selenium_driver("https://bot.sannysoft.com/") as driver:
 #     time.sleep(1000)

@@ -75,6 +75,9 @@ def calculate_alpha_beta_statistics(index_ticker):
                     alpha_beta_value = calculate_alpha_beta_for_property(json_file, index_ticker)
                     if not alpha_beta_value:
                         continue
+                    # We filter out excessively large values, we can debug why these exist later...
+                    if abs(alpha_beta_value['Alpha']) > 1 or abs(alpha_beta_value['Beta']) > 1:
+                        continue
                     alpha_beta_values.append(alpha_beta_value)
                 except:
                     continue
@@ -85,7 +88,7 @@ def calculate_alpha_beta_statistics(index_ticker):
     print(aggregate_statistics)
 
 if __name__ == "__main__":
-    index_ticker = "SPY" # SnP 500
+    # index_ticker = "SPY" # SnP 500
     # index_ticker = "SPG"  # Simon Property Group
-    # index_ticker = "O" # Realty income corporations
+    index_ticker = "O" # Realty income corporations
     calculate_alpha_beta_statistics(index_ticker)
