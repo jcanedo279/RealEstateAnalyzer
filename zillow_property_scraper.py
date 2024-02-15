@@ -16,6 +16,9 @@ def delete_null_content_files(directory):
                     content = f.read().strip()
                     if content == 'null' or not content:
                         delete_file(file_path)
+                    json_content = json.loads(content)
+                    if not json_content['zestimateHistory']:
+                        delete_file(file_path)
             except Exception as e:
                 print(f"Error reading file {file_path}: {e}")
 
@@ -48,7 +51,7 @@ def extract_property_details_from_search_results(batch_size=5):
                 zip_code, zpid = search_result['zip_code'], search_result['zpid']
                 property_url = search_result['url']
 
-                num_search_results_digits = len(str(len(search_results)))
+                num_search_results_digits = len(str(batch_size))
                 num_batches_digits = len(str(num_batches))
                 formatted_search_result_ind = f"{search_result_ind+1:0{num_search_results_digits}d}"
                 formatted_batch_ind = f"{batch_ind+1:0{num_batches_digits}d}"

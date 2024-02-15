@@ -285,7 +285,29 @@ def extract_zestimate_history_from_driver(driver, delay):
         return []
 
     scroll_to_element(driver, "ds-home-values")
-    table_view_button = container.find_element(By.XPATH, ".//button[contains(text(), 'Table view')]")
+    # time.sleep(10000)
+
+    table_view_button = None
+    # We check if the zestimate history button is either directly in our text or in a child's text.
+    try:
+        table_view_button = container.find_element(By.XPATH, "//button[.//text()[contains(., 'Table view')] or contains(., 'Table view')]")
+    except:
+        pass
+    # If the button to expand the table is not visible, we need to expand the Zestiamte section first.
+    if not table_view_button or not table_view_button.is_displayed():
+        try:
+            show_more_button = container.find_element(By.XPATH, ".//button[contains(., 'Show more')]")
+            move_to_and_click(show_more_button, driver)
+            table_view_button = container.find_element(By.XPATH, ".//button[contains(text(), 'Table view')]")
+        except NoSuchElementException:
+            pass
+    # If no data is available in the Zestimate, early return to avoid suspicious behavior.
+    try:
+        empty_zestimate_history_element = driver.find_element(By.XPATH, "//strong[contains(text(), 'No data available at this time.')]")
+        if empty_zestimate_history_element.is_displayed():
+            return []
+    except NoSuchElementException:
+        pass
     move_to_and_click(table_view_button, driver)
     
     # Wait for the element to be loaded.
