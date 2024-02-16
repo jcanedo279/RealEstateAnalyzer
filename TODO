@@ -1,0 +1,2 @@
+create a useragent manager which will auto rotate out agents that have been re-used too many times, I think this leads to detection at around 5-10k requests in 24 hrs
+

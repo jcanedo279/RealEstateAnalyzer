@@ -1,0 +1,2391 @@
+{
+    "props": {
+        "encodedZuid": "",
+        "guid": "aa2153d6-2b00-4738-9c47-698a98e23dbd",
+        "isBot": false,
+        "deviceType": "desktop",
+        "zuid": "",
+        "pageProps": {
+            "componentProps": {
+                "isMobile": false,
+                "gdpClientCache": {
+                    "ForSaleShopperPlatformFullRenderQuery{\"zpid\":46633537,\"platform\":\"DESKTOP_WEB\",\"formType\":\"OPAQUE\",\"contactFormRenderParameter\":{\"zpid\":46633537,\"platform\":\"desktop\",\"isDoubleScroll\":true},\"skipCFRD\":false}": {
+                        "property": {
+                            "listingDataSource": "Phoenix",
+                            "zpid": 46633537,
+                            "city": "Boca Raton",
+                            "state": "FL",
+                            "homeStatus": "FOR_SALE",
+                            "address": {
+                                "streetAddress": "9070 Fairbanks Ln APT 1",
+                                "city": "Boca Raton",
+                                "state": "FL",
+                                "zipcode": "33496",
+                                "neighborhood": null,
+                                "community": null,
+                                "subdivision": null
+                            },
+                            "isListingClaimedByCurrentSignedInUser": false,
+                            "isCurrentSignedInAgentResponsible": false,
+                            "bedrooms": 2,
+                            "bathrooms": 2,
+                            "price": 307500,
+                            "yearBuilt": 1987,
+                            "streetAddress": "9070 Fairbanks Ln APT 1",
+                            "zipcode": "33496",
+                            "isCurrentSignedInUserVerifiedOwner": false,
+                            "regionString": "Boca Raton FL 33496",
+                            "propertyUpdatePageLink": null,
+                            "moveHomeMapLocationLink": null,
+                            "propertyEventLogLink": null,
+                            "editPropertyHistorylink": null,
+                            "collections": {
+                                "modules": [
+                                    {
+                                        "name": "Similar homes",
+                                        "placement": "NEIGHBORHOOD",
+                                        "propertyDetails": [
+                                            {
+                                                "miniCardPhotos": [
+                                                    {
+                                                        "url": "https://photos.zillowstatic.com/fp/5cb059ccc84dc3b8fb7cc50f99d95a9c-p_c.jpg"
+                                                    }
+                                                ],
+                                                "price": 274900,
+                                                "currency": "USD",
+                                                "bedrooms": 2,
+                                                "bathrooms": 2,
+                                                "livingArea": 1044,
+                                                "livingAreaValue": 1044,
+                                                "livingAreaUnits": "Square Feet",
+                                                "livingAreaUnitsShort": "sqft",
+                                                "listingMetadata": {
+                                                    "comminglingCategoryIsRulesApplicable": true
+                                                },
+                                                "lotSize": 0,
+                                                "lotAreaValue": 0,
+                                                "lotAreaUnits": "Square Feet",
+                                                "address": {
+                                                    "streetAddress": "18762 Candlewick Dr",
+                                                    "city": "Boca Raton",
+                                                    "state": "FL",
+                                                    "zipcode": "33496"
+                                                },
+                                                "parentRegion": {
+                                                    "name": "33496"
+                                                },
+                                                "formattedChip": {
+                                                    "location": [
+                                                        {
+                                                            "fullValue": "Wwhisper Walk /greenleaf"
+                                                        },
+                                                        {
+                                                            "fullValue": "18762 Candlewick Dr"
+                                                        },
+                                                        {
+                                                            "fullValue": "Boca Raton, FL 33496"
+                                                        }
+                                                    ]
+                                                },
+                                                "latitude": 26.395956,
+                                                "longitude": -80.183754,
+                                                "zpid": 46630613,
+                                                "homeStatus": "FOR_SALE",
+                                                "homeType": "SINGLE_FAMILY",
+                                                "hdpUrl": "/homedetails/18762-Candlewick-Dr-Boca-Raton-FL-33496/46630613_zpid/",
+                                                "hdpTypeDimension": "ForSale",
+                                                "propertyTypeDimension": "Single Family",
+                                                "listingTypeDimension": "For Sale by Agent",
+                                                "listing_sub_type": {
+                                                    "is_newHome": false,
+                                                    "is_forAuction": false,
+                                                    "is_bankOwned": false,
+                                                    "is_foreclosure": false,
+                                                    "is_FSBO": false,
+                                                    "is_comingSoon": false,
+                                                    "is_FSBA": true
+                                                },
+                                                "providerListingID": null,
+                                                "attributionInfo": {
+                                                    "mlsId": "RX-10952595",
+                                                    "mlsName": "BeachesMLS",
+                                                    "providerLogo": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_48_23.jpg",
+                                                    "agentName": "Lisa Jasky",
+                                                    "agentPhoneNumber": null,
+                                                    "brokerName": "Signature Best Florida Realty",
+                                                    "brokerPhoneNumber": null,
+                                                    "trueStatus": null
+                                                },
+                                                "isShowcaseListing": null,
+                                                "isPremierBuilder": false,
+                                                "state": "FL",
+                                                "newConstructionType": null
+                                            },
+                                            {
+                                                "miniCardPhotos": [
+                                                    {
+                                                        "url": "https://photos.zillowstatic.com/fp/c94dd7b87d1e846aac81066e4c66eb54-p_c.jpg"
+                                                    }
+                                                ],
+                                                "price": 310000,
+                                                "currency": "USD",
+                                                "bedrooms": 2,
+                                                "bathrooms": 2,
+                                                "livingArea": 1227,
+                                                "livingAreaValue": 1227,
+                                                "livingAreaUnits": "Square Feet",
+                                                "livingAreaUnitsShort": "sqft",
+                                                "listingMetadata": {
+                                                    "comminglingCategoryIsRulesApplicable": true
+                                                },
+                                                "lotSize": 0,
+                                                "lotAreaValue": 0,
+                                                "lotAreaUnits": "Square Feet",
+                                                "address": {
+                                                    "streetAddress": "9035 Flynn Cir APT 7",
+                                                    "city": "Boca Raton",
+                                                    "state": "FL",
+                                                    "zipcode": "33496"
+                                                },
+                                                "parentRegion": {
+                                                    "name": "33496"
+                                                },
+                                                "formattedChip": {
+                                                    "location": [
+                                                        {
+                                                            "fullValue": "Town Villas"
+                                                        },
+                                                        {
+                                                            "fullValue": "9035 Flynn Cir APT 7"
+                                                        },
+                                                        {
+                                                            "fullValue": "Boca Raton, FL 33496"
+                                                        }
+                                                    ]
+                                                },
+                                                "latitude": 26.395613,
+                                                "longitude": -80.18708,
+                                                "zpid": 46633559,
+                                                "homeStatus": "FOR_SALE",
+                                                "homeType": "SINGLE_FAMILY",
+                                                "hdpUrl": "/homedetails/9035-Flynn-Cir-APT-7-Boca-Raton-FL-33496/46633559_zpid/",
+                                                "hdpTypeDimension": "ForSale",
+                                                "propertyTypeDimension": "Single Family",
+                                                "listingTypeDimension": "For Sale by Agent",
+                                                "listing_sub_type": {
+                                                    "is_newHome": false,
+                                                    "is_forAuction": false,
+                                                    "is_bankOwned": false,
+                                                    "is_foreclosure": false,
+                                                    "is_FSBO": false,
+                                                    "is_comingSoon": false,
+                                                    "is_FSBA": true
+                                                },
+                                                "providerListingID": null,
+                                                "attributionInfo": {
+                                                    "mlsId": "RX-10920411",
+                                                    "mlsName": "BeachesMLS",
+                                                    "providerLogo": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_48_23.jpg",
+                                                    "agentName": "Debbie Wilson",
+                                                    "agentPhoneNumber": null,
+                                                    "brokerName": "Preferred Properties Int'l Realty Inc",
+                                                    "brokerPhoneNumber": null,
+                                                    "trueStatus": null
+                                                },
+                                                "isShowcaseListing": null,
+                                                "isPremierBuilder": false,
+                                                "state": "FL",
+                                                "newConstructionType": null
+                                            },
+                                            {
+                                                "miniCardPhotos": [
+                                                    {
+                                                        "url": "https://photos.zillowstatic.com/fp/ac0d05c3e7b3f06d070a7b306b1d9406-p_c.jpg"
+                                                    }
+                                                ],
+                                                "price": 275000,
+                                                "currency": "USD",
+                                                "bedrooms": 2,
+                                                "bathrooms": 2,
+                                                "livingArea": 1227,
+                                                "livingAreaValue": 1227,
+                                                "livingAreaUnits": "Square Feet",
+                                                "livingAreaUnitsShort": "sqft",
+                                                "listingMetadata": {
+                                                    "comminglingCategoryIsRulesApplicable": true
+                                                },
+                                                "lotSize": 0,
+                                                "lotAreaValue": 0,
+                                                "lotAreaUnits": "Square Feet",
+                                                "address": {
+                                                    "streetAddress": "9005 Flynn Cir APT 4",
+                                                    "city": "Boca Raton",
+                                                    "state": "FL",
+                                                    "zipcode": "33496"
+                                                },
+                                                "parentRegion": {
+                                                    "name": "33496"
+                                                },
+                                                "formattedChip": {
+                                                    "location": [
+                                                        {
+                                                            "fullValue": "Town Villas"
+                                                        },
+                                                        {
+                                                            "fullValue": "9005 Flynn Cir APT 4"
+                                                        },
+                                                        {
+                                                            "fullValue": "Boca Raton, FL 33496"
+                                                        }
+                                                    ]
+                                                },
+                                                "latitude": 26.394764,
+                                                "longitude": -80.18709,
+                                                "zpid": 46633548,
+                                                "homeStatus": "FOR_SALE",
+                                                "homeType": "SINGLE_FAMILY",
+                                                "hdpUrl": "/homedetails/9005-Flynn-Cir-APT-4-Boca-Raton-FL-33496/46633548_zpid/",
+                                                "hdpTypeDimension": "ForSale",
+                                                "propertyTypeDimension": "Single Family",
+                                                "listingTypeDimension": "For Sale by Agent",
+                                                "listing_sub_type": {
+                                                    "is_newHome": false,
+                                                    "is_forAuction": false,
+                                                    "is_bankOwned": false,
+                                                    "is_foreclosure": false,
+                                                    "is_FSBO": false,
+                                                    "is_comingSoon": false,
+                                                    "is_FSBA": true
+                                                },
+                                                "providerListingID": null,
+                                                "attributionInfo": {
+                                                    "mlsId": "RX-10933198",
+                                                    "mlsName": "BeachesMLS",
+                                                    "providerLogo": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_48_23.jpg",
+                                                    "agentName": "Steven Alan Rosen",
+                                                    "agentPhoneNumber": null,
+                                                    "brokerName": "Lang Realty - Boynton Beach",
+                                                    "brokerPhoneNumber": null,
+                                                    "trueStatus": null
+                                                },
+                                                "isShowcaseListing": null,
+                                                "isPremierBuilder": false,
+                                                "state": "FL",
+                                                "newConstructionType": null
+                                            },
+                                            {
+                                                "miniCardPhotos": [
+                                                    {
+                                                        "url": "https://photos.zillowstatic.com/fp/f4b6b2bd2415ba412c42e2913c44e05c-p_c.jpg"
+                                                    }
+                                                ],
+                                                "price": 324999,
+                                                "currency": "USD",
+                                                "bedrooms": 2,
+                                                "bathrooms": 2,
+                                                "livingArea": 1227,
+                                                "livingAreaValue": 1227,
+                                                "livingAreaUnits": "Square Feet",
+                                                "livingAreaUnitsShort": "sqft",
+                                                "listingMetadata": {
+                                                    "comminglingCategoryIsRulesApplicable": true
+                                                },
+                                                "lotSize": 1612,
+                                                "lotAreaValue": 1612,
+                                                "lotAreaUnits": "Square Feet",
+                                                "address": {
+                                                    "streetAddress": "9110 Fairbanks Ln APT 4",
+                                                    "city": "Boca Raton",
+                                                    "state": "FL",
+                                                    "zipcode": "33496"
+                                                },
+                                                "parentRegion": {
+                                                    "name": "33496"
+                                                },
+                                                "formattedChip": {
+                                                    "location": [
+                                                        {
+                                                            "fullValue": "Town Villas"
+                                                        },
+                                                        {
+                                                            "fullValue": "9110 Fairbanks Ln APT 4"
+                                                        },
+                                                        {
+                                                            "fullValue": "Boca Raton, FL 33496"
+                                                        }
+                                                    ]
+                                                },
+                                                "latitude": 26.394566,
+                                                "longitude": -80.18844,
+                                                "zpid": 46633532,
+                                                "homeStatus": "FOR_SALE",
+                                                "homeType": "TOWNHOUSE",
+                                                "hdpUrl": "/homedetails/9110-Fairbanks-Ln-APT-4-Boca-Raton-FL-33496/46633532_zpid/",
+                                                "hdpTypeDimension": "ForSale",
+                                                "propertyTypeDimension": "Townhouse",
+                                                "listingTypeDimension": "For Sale by Agent",
+                                                "listing_sub_type": {
+                                                    "is_newHome": false,
+                                                    "is_forAuction": false,
+                                                    "is_bankOwned": false,
+                                                    "is_foreclosure": false,
+                                                    "is_FSBO": false,
+                                                    "is_comingSoon": false,
+                                                    "is_FSBA": true
+                                                },
+                                                "providerListingID": null,
+                                                "attributionInfo": {
+                                                    "mlsId": "RX-10946568",
+                                                    "mlsName": "BeachesMLS",
+                                                    "providerLogo": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_48_23.jpg",
+                                                    "agentName": "Cameron Sydenham",
+                                                    "agentPhoneNumber": null,
+                                                    "brokerName": "The Corcoran Group",
+                                                    "brokerPhoneNumber": null,
+                                                    "trueStatus": null
+                                                },
+                                                "isShowcaseListing": null,
+                                                "isPremierBuilder": false,
+                                                "state": "FL",
+                                                "newConstructionType": null
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "trackingTags": [
+                                    {
+                                        "value": "5c595789614be868f914e4252464703c"
+                                    }
+                                ]
+                            },
+                            "listing_sub_type": {
+                                "is_forAuction": false,
+                                "is_newHome": false,
+                                "is_FSBO": false,
+                                "is_FSBA": true,
+                                "is_foreclosure": false,
+                                "is_bankOwned": false,
+                                "is_comingSoon": false,
+                                "is_pending": false,
+                                "is_openHouse": false
+                            },
+                            "providerListingID": null,
+                            "isRentalListingOffMarket": false,
+                            "hdpUrl": "/homedetails/9070-Fairbanks-Ln-APT-1-Boca-Raton-FL-33496/46633537_zpid/",
+                            "nearbyCities": [
+                                {
+                                    "regionUrl": {
+                                        "path": "/boynton-beach-fl/"
+                                    },
+                                    "name": "Boynton Beach",
+                                    "body": null
+                                },
+                                {
+                                    "regionUrl": {
+                                        "path": "/deerfield-beach-fl/"
+                                    },
+                                    "name": "Deerfield Beach",
+                                    "body": null
+                                }
+                            ],
+                            "nearbyNeighborhoods": [
+                                {
+                                    "regionUrl": {
+                                        "path": "/boca-chase-boca-raton-fl/"
+                                    },
+                                    "name": "Boca Chase",
+                                    "body": null
+                                },
+                                {
+                                    "regionUrl": {
+                                        "path": "/boca-raton-hills-boca-raton-fl/"
+                                    },
+                                    "name": "Boca Raton Hills",
+                                    "body": null
+                                }
+                            ],
+                            "country": "USA",
+                            "nearbyZipcodes": [
+                                {
+                                    "regionUrl": {
+                                        "path": "/boca-raton-fl-33076/"
+                                    },
+                                    "name": "33076",
+                                    "body": null
+                                },
+                                {
+                                    "regionUrl": {
+                                        "path": "/boca-raton-fl-33428/"
+                                    },
+                                    "name": "33428",
+                                    "body": null
+                                }
+                            ],
+                            "cityId": 10477,
+                            "citySearchUrl": {
+                                "text": "Homes in Boca Raton",
+                                "path": "/boca-raton-fl/"
+                            },
+                            "zipcodeSearchUrl": {
+                                "path": "/boca-raton-fl-33496/"
+                            },
+                            "apartmentsForRentInZipcodeSearchUrl": {
+                                "path": "/boca-raton-fl-33496/apartments/"
+                            },
+                            "housesForRentInZipcodeSearchUrl": {
+                                "path": "/boca-raton-fl-33496/rent-houses/"
+                            },
+                            "abbreviatedAddress": "9070 Fairbanks Ln APT 1",
+                            "county": "Palm Beach County",
+                            "neighborhoodRegion": null,
+                            "building": null,
+                            "isUndisclosedAddress": false,
+                            "boroughId": null,
+                            "neighborhoodSearchUrl": null,
+                            "stateSearchUrl": {
+                                "path": "/fl/"
+                            },
+                            "countySearchUrl": {
+                                "text": "Homes in Palm Beach County",
+                                "path": "/palm-beach-county-fl/"
+                            },
+                            "boroughSearchUrl": null,
+                            "communityUrl": null,
+                            "isShowcaseListing": false,
+                            "isPremierBuilder": false,
+                            "homeType": "SINGLE_FAMILY",
+                            "adTargets": {
+                                "aamgnrc2": "Apt 1",
+                                "aamgnrc1": "9070 Fairbanks Ln APT 1",
+                                "bd": "2",
+                                "fsbid": "60",
+                                "city": "Boca_Raton",
+                                "proptp": "sfh",
+                                "pid": "46633537",
+                                "lot": "1",
+                                "zestibuck": "250-299k",
+                                "listtp": "buy_agent",
+                                "sqftrange": "1000-1499",
+                                "price": "307500",
+                                "sqft": "1227",
+                                "state": "FL",
+                                "mlong": "-80.18797",
+                                "cnty": "Palm_Beach",
+                                "prange": "300-349k",
+                                "zip": "33496",
+                                "mlat": "26.394562",
+                                "zusr": "true",
+                                "price_band": "z200",
+                                "yrblt": "1980-1989",
+                                "zestimate": "288700",
+                                "premieragent": "no",
+                                "dma": "55",
+                                "guid": "506cb3e1-d367-4f47-bc2d-a056fed849e1",
+                                "ssid": "60"
+                            },
+                            "currency": "USD",
+                            "resoFacts": {
+                                "accessibilityFeatures": null,
+                                "additionalFeeInfo": null,
+                                "associations": [
+                                    {
+                                        "feeFrequency": "$358 monthly",
+                                        "name": null,
+                                        "phone": null
+                                    }
+                                ],
+                                "associationFee": "$358 monthly",
+                                "associationAmenities": null,
+                                "associationFee2": null,
+                                "associationFeeIncludes": [
+                                    "Cable TV",
+                                    "Common Areas",
+                                    "Maintenance Grounds",
+                                    "Maintenance Structure",
+                                    "Roof Maintenance"
+                                ],
+                                "associationName": null,
+                                "associationName2": null,
+                                "associationPhone": null,
+                                "associationPhone2": null,
+                                "basementYN": false,
+                                "buildingName": "Town Villas",
+                                "buyerAgencyCompensation": "2.5",
+                                "buyerAgencyCompensationType": "%",
+                                "appliances": [
+                                    "Dishwasher",
+                                    "Dryer",
+                                    "Microwave",
+                                    "Electric Range",
+                                    "Refrigerator",
+                                    "Washer"
+                                ],
+                                "atAGlanceFacts": [
+                                    {
+                                        "factLabel": "Type",
+                                        "factValue": "Villa"
+                                    },
+                                    {
+                                        "factLabel": "Year Built",
+                                        "factValue": "1987"
+                                    },
+                                    {
+                                        "factLabel": "Heating",
+                                        "factValue": "Central"
+                                    },
+                                    {
+                                        "factLabel": "Cooling",
+                                        "factValue": "Central Air"
+                                    },
+                                    {
+                                        "factLabel": "Parking",
+                                        "factValue": "1 Attached Garage space"
+                                    },
+                                    {
+                                        "factLabel": "HOA",
+                                        "factValue": "$358 monthly"
+                                    },
+                                    {
+                                        "factLabel": "Lot",
+                                        "factValue": null
+                                    },
+                                    {
+                                        "factLabel": "Days on Zillow",
+                                        "factValue": "87 Days"
+                                    },
+                                    {
+                                        "factLabel": "Price/sqft",
+                                        "factValue": "$251"
+                                    },
+                                    {
+                                        "factLabel": "Buyers Agency Fee",
+                                        "factValue": "2.5"
+                                    },
+                                    {
+                                        "factLabel": "Offer Review Date",
+                                        "factValue": null
+                                    }
+                                ],
+                                "attic": null,
+                                "availabilityDate": null,
+                                "basement": null,
+                                "bathrooms": 2,
+                                "bathroomsFull": 2,
+                                "bathroomsHalf": 0,
+                                "bathroomsOneQuarter": null,
+                                "bathroomsPartial": null,
+                                "bathroomsFloat": 2,
+                                "bathroomsThreeQuarter": null,
+                                "bedrooms": 2,
+                                "bodyType": null,
+                                "canRaiseHorses": false,
+                                "carportParkingCapacity": null,
+                                "cityRegion": "Boca Raton",
+                                "commonWalls": "Corner",
+                                "communityFeatures": [
+                                    "Billiards",
+                                    "Clubhouse",
+                                    "Fitness Center",
+                                    "Library",
+                                    "Manager on Site",
+                                    "Pickleball",
+                                    "Sauna",
+                                    "Shuffleboard",
+                                    "Tennis Court(s)"
+                                ],
+                                "contingency": null,
+                                "cooling": [
+                                    "Central Air"
+                                ],
+                                "coveredParkingCapacity": 1,
+                                "cropsIncludedYN": null,
+                                "cumulativeDaysOnMarket": null,
+                                "developmentStatus": null,
+                                "doorFeatures": null,
+                                "electric": null,
+                                "elevation": null,
+                                "elevationUnits": null,
+                                "entryLevel": null,
+                                "entryLocation": null,
+                                "exclusions": null,
+                                "feesAndDues": [
+                                    {
+                                        "type": "HOA",
+                                        "fee": "$358 monthly",
+                                        "name": null,
+                                        "phone": null
+                                    }
+                                ],
+                                "fencing": null,
+                                "fireplaceFeatures": null,
+                                "fireplaces": null,
+                                "flooring": [
+                                    "Ceramic Tile",
+                                    "Other"
+                                ],
+                                "foundationArea": null,
+                                "furnished": false,
+                                "garageParkingCapacity": 1,
+                                "gas": null,
+                                "greenBuildingVerificationType": null,
+                                "greenEnergyEfficient": null,
+                                "greenIndoorAirQuality": null,
+                                "greenSustainability": null,
+                                "greenWaterConservation": null,
+                                "hasAssociation": true,
+                                "hasAttachedGarage": true,
+                                "hasAttachedProperty": false,
+                                "hasCooling": true,
+                                "hasCarport": false,
+                                "hasElectricOnProperty": false,
+                                "hasFireplace": null,
+                                "hasGarage": true,
+                                "hasHeating": true,
+                                "hasLandLease": false,
+                                "hasOpenParking": true,
+                                "hasSpa": false,
+                                "hasPrivatePool": null,
+                                "hasView": true,
+                                "hasWaterfrontView": null,
+                                "heating": [
+                                    "Central"
+                                ],
+                                "highSchool": null,
+                                "highSchoolDistrict": null,
+                                "hoaFee": "$358 monthly",
+                                "hoaFeeTotal": "$358 monthly",
+                                "homeType": "SingleFamily",
+                                "horseAmenities": null,
+                                "horseYN": null,
+                                "interiorFeatures": [
+                                    "Split Bedroom",
+                                    "Walk-In Closet(s)"
+                                ],
+                                "irrigationWaterRightsAcres": null,
+                                "irrigationWaterRightsYN": null,
+                                "isSeniorCommunity": null,
+                                "landLeaseAmount": null,
+                                "landLeaseExpirationDate": null,
+                                "laundryFeatures": [
+                                    "Inside"
+                                ],
+                                "levels": "1.00",
+                                "listingId": null,
+                                "lotFeatures": null,
+                                "lotSize": null,
+                                "livingQuarters": [],
+                                "mainLevelBathrooms": null,
+                                "mainLevelBedrooms": null,
+                                "marketingType": null,
+                                "middleOrJuniorSchool": null,
+                                "middleOrJuniorSchoolDistrict": null,
+                                "municipality": null,
+                                "numberOfUnitsInCommunity": null,
+                                "offerReviewDate": null,
+                                "onMarketDate": 1699100284000,
+                                "openParkingCapacity": null,
+                                "otherEquipment": null,
+                                "otherFacts": [],
+                                "otherParking": null,
+                                "ownershipType": null,
+                                "parkingCapacity": 1,
+                                "parkingFeatures": [
+                                    "Driveway",
+                                    "Garage - Attached"
+                                ],
+                                "patioAndPorchFeatures": [
+                                    "Screen Porch"
+                                ],
+                                "poolFeatures": [
+                                    "Community"
+                                ],
+                                "pricePerSquareFoot": 251,
+                                "roadSurfaceType": null,
+                                "roofType": null,
+                                "rooms": [
+                                    {
+                                        "area": null,
+                                        "description": null,
+                                        "dimensions": null,
+                                        "level": null,
+                                        "features": null,
+                                        "roomArea": "308",
+                                        "roomAreaSource": null,
+                                        "roomAreaUnits": null,
+                                        "roomDescription": "Extended living room",
+                                        "roomDimensions": "22 x 14",
+                                        "roomFeatures": null,
+                                        "roomLength": "22",
+                                        "roomLengthWidthSource": null,
+                                        "roomLengthWidthUnits": null,
+                                        "roomLevel": "1",
+                                        "roomType": "LivingRoom",
+                                        "roomWidth": "14"
+                                    },
+                                    {
+                                        "area": null,
+                                        "description": null,
+                                        "dimensions": null,
+                                        "level": null,
+                                        "features": null,
+                                        "roomArea": "100",
+                                        "roomAreaSource": null,
+                                        "roomAreaUnits": null,
+                                        "roomDescription": null,
+                                        "roomDimensions": "10 x 10",
+                                        "roomFeatures": null,
+                                        "roomLength": "10",
+                                        "roomLengthWidthSource": null,
+                                        "roomLengthWidthUnits": null,
+                                        "roomLevel": "1",
+                                        "roomType": "Kitchen",
+                                        "roomWidth": "10"
+                                    }
+                                ],
+                                "securityFeatures": null,
+                                "sewer": null,
+                                "spaFeatures": [
+                                    "Community"
+                                ],
+                                "specialListingConditions": "Buyer Approval,Interview Required",
+                                "stories": 1,
+                                "storiesTotal": 1,
+                                "subdivisionName": "Town Villas",
+                                "totalActualRent": null,
+                                "utilities": [
+                                    "Cable Connected"
+                                ],
+                                "view": [
+                                    "Garden"
+                                ],
+                                "waterSource": null,
+                                "waterBodyName": null,
+                                "waterfrontFeatures": [
+                                    "None"
+                                ],
+                                "waterView": null,
+                                "waterViewYN": false,
+                                "windowFeatures": null,
+                                "yearBuilt": 1987,
+                                "zoning": "RS",
+                                "zoningDescription": null,
+                                "aboveGradeFinishedArea": null,
+                                "additionalParcelsDescription": null,
+                                "architecturalStyle": "Villa",
+                                "belowGradeFinishedArea": null,
+                                "builderModel": null,
+                                "builderName": null,
+                                "buildingArea": "1,476",
+                                "buildingAreaSource": null,
+                                "buildingFeatures": null,
+                                "constructionMaterials": [
+                                    "Concrete"
+                                ],
+                                "exteriorFeatures": [],
+                                "foundationDetails": [],
+                                "frontageLength": null,
+                                "frontageType": null,
+                                "hasAdditionalParcels": false,
+                                "hasPetsAllowed": true,
+                                "hasRentControl": null,
+                                "hasHomeWarranty": false,
+                                "inclusions": null,
+                                "incomeIncludes": null,
+                                "isNewConstruction": false,
+                                "listingTerms": "Cash",
+                                "livingAreaRange": null,
+                                "livingAreaRangeUnits": null,
+                                "livingArea": "1,227 sqft",
+                                "lotSizeDimensions": null,
+                                "numberOfUnitsVacant": null,
+                                "otherStructures": null,
+                                "ownership": null,
+                                "parcelNumber": "00424706060310010",
+                                "propertyCondition": "Resale",
+                                "propertySubType": [
+                                    "Villa"
+                                ],
+                                "structureType": null,
+                                "topography": null,
+                                "vegetation": null,
+                                "woodedArea": null,
+                                "yearBuiltEffective": null,
+                                "virtualTour": "https://www.propertypanorama.com/9070-Fairbanks-Lane-1-Boca-Raton-FL-33496/unbranded",
+                                "elementarySchool": null,
+                                "elementarySchoolDistrict": null,
+                                "listAOR": "Beaches MLS"
+                            },
+                            "monthlyHoaFee": 358,
+                            "attributionInfo": {
+                                "listingAgreement": null,
+                                "mlsName": "BeachesMLS",
+                                "agentEmail": null,
+                                "agentLicenseNumber": null,
+                                "agentName": "Debbie Wilson",
+                                "agentPhoneNumber": "561-305-5955",
+                                "attributionTitle": null,
+                                "brokerName": "Preferred Properties Int'l Realty Inc",
+                                "brokerPhoneNumber": "561-477-1193",
+                                "buyerAgentMemberStateLicense": null,
+                                "buyerAgentName": null,
+                                "buyerBrokerageName": null,
+                                "coAgentLicenseNumber": null,
+                                "coAgentName": null,
+                                "coAgentNumber": null,
+                                "lastChecked": "2024-01-30 15:26:48",
+                                "lastUpdated": "2024-01-08 02:27:39",
+                                "listingOffices": [
+                                    {
+                                        "associatedOfficeType": "listOffice",
+                                        "officeName": "Preferred Properties Int'l Realty Inc"
+                                    }
+                                ],
+                                "listingAgents": [
+                                    {
+                                        "associatedAgentType": "listAgent",
+                                        "memberFullName": "Debbie Wilson",
+                                        "memberStateLicense": null
+                                    }
+                                ],
+                                "mlsDisclaimer": "All listings featuring the BMLS logo are provided by Beaches MLS, Inc. This information is not verified for authenticity or accuracy and is not guaranteed. Copyright 2024 Beaches Multiple Listing Service, Inc. Information is provided exclusively for consumers' personal, non-commercial use and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing.\n\nThe listing broker's offer of compensation is made to participants of BeachesMLS, where the listing is filed, as well as participants of MLSs participating in MLSAdvantage or a data share with BeachesMLS. ",
+                                "mlsId": "RX-10933369",
+                                "providerLogo": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_95_35.jpg",
+                                "infoString3": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_95_35.jpg",
+                                "infoString5": "561-305-5955",
+                                "infoString10": "All listings featuring the BMLS logo are provided by Beaches MLS, Inc. This information is not verified for authenticity or accuracy and is not guaranteed. Copyright 2024 Beaches Multiple Listing Service, Inc. Information is provided exclusively for consumers' personal, non-commercial use and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing.\n\nThe listing broker's offer of compensation is made to participants of BeachesMLS, where the listing is filed, as well as participants of MLSs participating in MLSAdvantage or a data share with BeachesMLS. ",
+                                "infoString16": null,
+                                "trueStatus": null
+                            },
+                            "listPriceLow": null,
+                            "livingArea": 1227,
+                            "livingAreaValue": 1227,
+                            "zestimate": 288700,
+                            "newConstructionType": null,
+                            "zestimateLowPercent": "5",
+                            "zestimateHighPercent": "5",
+                            "rentZestimate": 2650,
+                            "restimateLowPercent": "8",
+                            "restimateHighPercent": "23",
+                            "schools": [
+                                {
+                                    "distance": 0.4,
+                                    "name": "Whispering Pines Elementary School",
+                                    "rating": 7,
+                                    "level": "Primary",
+                                    "studentsPerTeacher": null,
+                                    "assigned": null,
+                                    "grades": "PK-5",
+                                    "link": "https://www.greatschools.org/florida/boca-raton/2292-Whispering-Pines-Elementary-School/",
+                                    "type": "Public",
+                                    "size": null,
+                                    "totalCount": null,
+                                    "isAssigned": null
+                                },
+                                {
+                                    "distance": 2.6,
+                                    "name": "Omni Middle School",
+                                    "rating": 7,
+                                    "level": "Middle",
+                                    "studentsPerTeacher": null,
+                                    "assigned": null,
+                                    "grades": "6-8",
+                                    "link": "https://www.greatschools.org/florida/boca-raton/2317-Omni-Middle-School/",
+                                    "type": "Public",
+                                    "size": null,
+                                    "totalCount": null,
+                                    "isAssigned": null
+                                },
+                                {
+                                    "distance": 1.2,
+                                    "name": "Olympic Heights Community High School",
+                                    "rating": 7,
+                                    "level": "Primary",
+                                    "studentsPerTeacher": null,
+                                    "assigned": null,
+                                    "grades": "PK,9-12",
+                                    "link": "https://www.greatschools.org/florida/boca-raton/2325-Olympic-Heights-Community-High-School/",
+                                    "type": "Public",
+                                    "size": null,
+                                    "totalCount": null,
+                                    "isAssigned": null
+                                }
+                            ],
+                            "homeValues": null,
+                            "parentRegion": {
+                                "name": "33496"
+                            },
+                            "nearbyHomes": [
+                                {
+                                    "zpid": 46633538,
+                                    "miniCardPhotos": [
+                                        {
+                                            "url": "https://photos.zillowstatic.com/fp/5dec9dd556320fb4b996e49d25de1e38-p_c.jpg"
+                                        }
+                                    ],
+                                    "price": 304000,
+                                    "currency": "USD",
+                                    "bedrooms": 2,
+                                    "bathrooms": 2,
+                                    "livingArea": 1227,
+                                    "livingAreaValue": 1227,
+                                    "livingAreaUnits": "Square Feet",
+                                    "livingAreaUnitsShort": "sqft",
+                                    "listingMetadata": {
+                                        "comminglingCategoryIsRulesApplicable": false
+                                    },
+                                    "lotSize": 0,
+                                    "lotAreaValue": 0,
+                                    "lotAreaUnits": "Square Feet",
+                                    "address": {
+                                        "streetAddress": "9070 Fairbanks Ln APT 2",
+                                        "city": "Boca Raton",
+                                        "state": "FL",
+                                        "zipcode": "33496"
+                                    },
+                                    "parentRegion": null,
+                                    "formattedChip": {
+                                        "location": [
+                                            {
+                                                "fullValue": "9070 Fairbanks Ln APT 2"
+                                            },
+                                            {
+                                                "fullValue": null
+                                            }
+                                        ]
+                                    },
+                                    "latitude": 26.39457,
+                                    "longitude": -80.187805,
+                                    "homeStatus": "RECENTLY_SOLD",
+                                    "homeType": "CONDO",
+                                    "hdpUrl": "/homedetails/9070-Fairbanks-Ln-APT-2-Boca-Raton-FL-33496/46633538_zpid/",
+                                    "hdpTypeDimension": "RecentlySold",
+                                    "propertyTypeDimension": "Condo",
+                                    "listingTypeDimension": "Unknown Listed By",
+                                    "listing_sub_type": {
+                                        "is_newHome": false,
+                                        "is_forAuction": false,
+                                        "is_bankOwned": false,
+                                        "is_foreclosure": false,
+                                        "is_FSBO": false,
+                                        "is_comingSoon": false,
+                                        "is_FSBA": false
+                                    },
+                                    "providerListingID": null,
+                                    "attributionInfo": {
+                                        "mlsId": "A11351215",
+                                        "mlsName": null,
+                                        "providerLogo": null,
+                                        "agentName": null,
+                                        "agentPhoneNumber": null,
+                                        "brokerName": null,
+                                        "brokerPhoneNumber": null,
+                                        "trueStatus": null
+                                    },
+                                    "isShowcaseListing": false,
+                                    "isPremierBuilder": false,
+                                    "state": "FL",
+                                    "newConstructionType": null
+                                },
+                                {
+                                    "zpid": 46633539,
+                                    "miniCardPhotos": [
+                                        {
+                                            "url": "https://photos.zillowstatic.com/fp/d839939851835b08276207879cdc6bd0-p_c.jpg"
+                                        }
+                                    ],
+                                    "price": 291900,
+                                    "currency": "USD",
+                                    "bedrooms": 2,
+                                    "bathrooms": 2,
+                                    "livingArea": 1227,
+                                    "livingAreaValue": 1227,
+                                    "livingAreaUnits": "Square Feet",
+                                    "livingAreaUnitsShort": "sqft",
+                                    "listingMetadata": {
+                                        "comminglingCategoryIsRulesApplicable": false
+                                    },
+                                    "lotSize": 1610,
+                                    "lotAreaValue": 1610,
+                                    "lotAreaUnits": "Square Feet",
+                                    "address": {
+                                        "streetAddress": "9070 Fairbanks Ln APT 3",
+                                        "city": "Boca Raton",
+                                        "state": "FL",
+                                        "zipcode": "33496"
+                                    },
+                                    "parentRegion": null,
+                                    "formattedChip": {
+                                        "location": [
+                                            {
+                                                "fullValue": "9070 Fairbanks Ln APT 3"
+                                            },
+                                            {
+                                                "fullValue": null
+                                            }
+                                        ]
+                                    },
+                                    "latitude": 26.39457,
+                                    "longitude": -80.187805,
+                                    "homeStatus": "OTHER",
+                                    "homeType": "APARTMENT",
+                                    "hdpUrl": "/homedetails/9070-Fairbanks-Ln-APT-3-Boca-Raton-FL-33496/46633539_zpid/",
+                                    "hdpTypeDimension": "Zestimate",
+                                    "propertyTypeDimension": "Apartment",
+                                    "listingTypeDimension": "Unknown Listed By",
+                                    "listing_sub_type": {
+                                        "is_newHome": false,
+                                        "is_forAuction": false,
+                                        "is_bankOwned": false,
+                                        "is_foreclosure": false,
+                                        "is_FSBO": false,
+                                        "is_comingSoon": false,
+                                        "is_FSBA": false
+                                    },
+                                    "providerListingID": null,
+                                    "attributionInfo": {
+                                        "mlsId": null,
+                                        "mlsName": null,
+                                        "providerLogo": null,
+                                        "agentName": null,
+                                        "agentPhoneNumber": null,
+                                        "brokerName": null,
+                                        "brokerPhoneNumber": null,
+                                        "trueStatus": null
+                                    },
+                                    "isShowcaseListing": false,
+                                    "isPremierBuilder": false,
+                                    "state": "FL",
+                                    "newConstructionType": null
+                                }
+                            ],
+                            "countyFIPS": "12099",
+                            "parcelId": "00424706060310010",
+                            "taxHistory": [
+                                {
+                                    "time": 1643586186164,
+                                    "taxPaid": 866,
+                                    "taxIncreaseRate": 0.021226415,
+                                    "value": 66879,
+                                    "valueIncreaseRate": 0.030001078
+                                },
+                                {
+                                    "time": 1612050186164,
+                                    "taxPaid": 848,
+                                    "taxIncreaseRate": 0.006420647,
+                                    "value": 64931,
+                                    "valueIncreaseRate": 0.013992348
+                                },
+                                {
+                                    "time": 1580427786164,
+                                    "taxPaid": 842.59,
+                                    "taxIncreaseRate": 0.0010693063,
+                                    "value": 64035,
+                                    "valueIncreaseRate": 0.023005033
+                                }
+                            ],
+                            "priceHistory": [
+                                {
+                                    "date": "2024-01-08",
+                                    "time": 1704672000000,
+                                    "price": 307500,
+                                    "pricePerSquareFoot": 251,
+                                    "priceChangeRate": -0.0390625,
+                                    "event": "Price change",
+                                    "source": "BeachesMLS",
+                                    "buyerAgent": null,
+                                    "sellerAgent": null,
+                                    "showCountyLink": false,
+                                    "postingIsRental": false,
+                                    "attributeSource": {
+                                        "infoString1": "RX-10933369",
+                                        "infoString2": "BeachesMLS",
+                                        "infoString3": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_logo_inf_11.jpg"
+                                    }
+                                },
+                                {
+                                    "date": "2023-11-04",
+                                    "time": 1699056000000,
+                                    "price": 320000,
+                                    "pricePerSquareFoot": 261,
+                                    "priceChangeRate": 3.2666666666666666,
+                                    "event": "Listed for sale",
+                                    "source": "BeachesMLS",
+                                    "buyerAgent": null,
+                                    "sellerAgent": null,
+                                    "showCountyLink": false,
+                                    "postingIsRental": false,
+                                    "attributeSource": {
+                                        "infoString1": "RX-10933369",
+                                        "infoString2": "BeachesMLS",
+                                        "infoString3": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_logo_inf_11.jpg"
+                                    }
+                                },
+                                {
+                                    "date": "1996-03-05",
+                                    "time": 825984000000,
+                                    "price": 75000,
+                                    "pricePerSquareFoot": 61,
+                                    "priceChangeRate": 0,
+                                    "event": "Sold",
+                                    "source": "Public Record",
+                                    "buyerAgent": null,
+                                    "sellerAgent": null,
+                                    "showCountyLink": false,
+                                    "postingIsRental": false,
+                                    "attributeSource": {
+                                        "infoString1": null,
+                                        "infoString2": "Public Record",
+                                        "infoString3": null
+                                    }
+                                }
+                            ],
+                            "description": "2/2 CORNER Villa with 1 car garage, front patio, updated kitchen with stainless appliances, tile in living area, Florida room off of living room, no one is behind you so it's like your own backyard, newer vanity in main bathroom, wood look floor in both bedrooms. Short walk to active clubhouse with heated pool, tennis and bocce courts, game and exercise rooms,etc.. Close to shopping,restaurants,and entertainment. This magnificent home is a must see !!!",
+                            "whatILove": null,
+                            "contingentListingType": null,
+                            "timeOnZillow": "87 days",
+                            "pageViewCount": 829,
+                            "favoriteCount": 17,
+                            "daysOnZillow": 87,
+                            "latitude": 26.394562,
+                            "longitude": -80.18797,
+                            "openHouseSchedule": [],
+                            "desktopWebHdpImageLink": "https://photos.zillowstatic.com/fp/0063b74eff92eddeb634f51ec082f863-p_h.jpg",
+                            "brokerageName": "Preferred Properties Int'l Realty Inc",
+                            "timeZone": "America/New_York",
+                            "listingMetadata": {
+                                "mustAttributeOfficeNameBeforeAgentName": false,
+                                "mustDisplayAttributionListAgentEmail": false,
+                                "mustDisplayAttributionListAgentPhone": true,
+                                "mustDisplayAttributionListingOfficePhone": false,
+                                "mustDisplayDisclaimerBelowAttribution": false,
+                                "mustHighlightAgentName": null,
+                                "mustHighlightListOfficeName": false,
+                                "mustMakeListingAgentContactable": false,
+                                "FlexibleLayoutAB": true,
+                                "isAdsRestricted": false,
+                                "mustPreferMlsPhotos": false,
+                                "canShowPrequalifiedLinkInChip": true,
+                                "FlexibleLayoutB": true,
+                                "FlexibleLayoutC": true,
+                                "FlexibleLayoutD": true,
+                                "FlexibleLayoutE": true,
+                                "FlexibleLayoutF": false,
+                                "FlexibleLayoutG": false,
+                                "FlexibleLayoutH": true,
+                                "FlexibleLayoutI": true,
+                                "FlexibleLayoutJ": false,
+                                "FlexibleLayoutK": false,
+                                "FlexibleLayoutL": false,
+                                "FlexibleLayoutM": true,
+                                "FlexibleLayoutN": true,
+                                "FlexibleLayoutO": true,
+                                "FlexibleLayoutP": true,
+                                "FlexibleLayoutQ": false,
+                                "FlexibleLayoutR": true,
+                                "FlexibleLayoutS": false,
+                                "FlexibleLayoutT": false,
+                                "FlexibleLayoutU": false,
+                                "FlexibleLayoutV": false,
+                                "FlexibleLayoutW": false,
+                                "FlexibleLayoutX": false,
+                                "FlexibleLayoutY": false,
+                                "FlexibleLayoutZ": false,
+                                "FlexibleLayoutAA": true,
+                                "passwordRequiredForZestimateMarketAnalysis": false,
+                                "canShowAutomatedValuationDisplay": true,
+                                "canShowTaxHistory": true,
+                                "canShowPriceHistory": true,
+                                "canShowUserGeneratedContent": true,
+                                "hidePriceAdjustmentFlexField": false,
+                                "canCommingleComparables": true,
+                                "canShowComparables": true,
+                                "isSuperTrafficOptimized": false,
+                                "mustDisplayFeedLogoInContactBox": false,
+                                "canShowCroppedPhotos": true,
+                                "canShowNonIDXMedia": true,
+                                "canShowOnMap": true,
+                                "comminglingCategory": true,
+                                "mustDisplayAttributionAboveLocalFacts": false,
+                                "mustDisplayAuctionStatusAsSold": false,
+                                "mustHighlightMlsId": null,
+                                "mustHighlightMlsStatus": false,
+                                "mustHighlightMarketingType": false,
+                                "canShowZillowLogoInHeader": true,
+                                "comminglingCategoryIsRulesApplicable": true
+                            },
+                            "pals": [],
+                            "listedBy": [
+                                {
+                                    "id": "LISTING_AGENT",
+                                    "elements": [
+                                        {
+                                            "id": "NAME",
+                                            "text": "Debbie Wilson",
+                                            "action": null
+                                        },
+                                        {
+                                            "id": "PHONE",
+                                            "text": "561-305-5955",
+                                            "action": null
+                                        }
+                                    ],
+                                    "textStyle": null
+                                },
+                                {
+                                    "id": "BROKER",
+                                    "elements": [
+                                        {
+                                            "id": "NAME",
+                                            "text": "Preferred Properties Int'l Realty Inc",
+                                            "action": null
+                                        }
+                                    ],
+                                    "textStyle": null
+                                }
+                            ],
+                            "homeInsights": [
+                                {
+                                    "insights": [
+                                        {
+                                            "modelId": "v2-2",
+                                            "treatmentId": "model_0",
+                                            "phrases": [
+                                                "Heated pool",
+                                                "Front patio",
+                                                "Florida room",
+                                                "Newer vanity",
+                                                "Bocce courts",
+                                                "Updated kitchen"
+                                            ]
+                                        },
+                                        {
+                                            "modelId": "v2-4a",
+                                            "treatmentId": "model_1",
+                                            "phrases": [
+                                                "Heated pool",
+                                                "Front patio",
+                                                "Updated kitchen",
+                                                "Wood look floor",
+                                                "Bocce courts",
+                                                "Florida room",
+                                                "Newer vanity"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "sellingSoon": [
+                                {
+                                    "treatmentId": "model_0",
+                                    "percentile": 0.43
+                                }
+                            ],
+                            "listingProvider": null,
+                            "isIncomeRestricted": null,
+                            "brokerId": null,
+                            "ssid": 60,
+                            "mortgageZHLRates": {
+                                "fifteenYearFixedBucket": {
+                                    "rate": 5.669,
+                                    "rateSource": "ZGMI",
+                                    "lastUpdated": 1706657063176
+                                },
+                                "thirtyYearFixedBucket": {
+                                    "rate": 6.35,
+                                    "rateSource": "ZGMI",
+                                    "lastUpdated": 1706657063176
+                                },
+                                "arm5Bucket": {
+                                    "rate": 6.879,
+                                    "rateSource": "ZGMI",
+                                    "lastUpdated": 1706657063176
+                                }
+                            },
+                            "propertyTaxRate": 0.92,
+                            "hiResImageLink": "https://photos.zillowstatic.com/fp/0063b74eff92eddeb634f51ec082f863-p_f.jpg",
+                            "hdpTypeDimension": "ForSale",
+                            "mlsid": "RX-10933369",
+                            "ouid": "M00000170",
+                            "propertyTypeDimension": "Single Family",
+                            "mediumImageLink": "https://photos.zillowstatic.com/fp/0063b74eff92eddeb634f51ec082f863-p_d.jpg",
+                            "isZillowOwned": false,
+                            "enhancedBrokerImageUrl": "https://photos.zillowstatic.com/fp/11470fbfca6bd246a8708da0ff0e5603-zillow_web_95_35.jpg",
+                            "listingAccountUserId": "X1-ZUuw4lhg5825mx_a1052",[]
+                            "contactFormRenderData": {
+                                "data": {
+                                    "agent_module": {
+                                        "agent_reason": 3,
+                                        "badge_type": "Listing Agent",
+                                        "business_name": "Preferred Properties Int'l Realty Inc",
+                                        "display_name": "debbiewilsonrealtor",
+                                        "encoded_zuid": "X1-ZUuw4lhg5825mx_a1052",
+                                        "first_name": null,
+                                        "image_data": {
+                                            "height": 60,
+                                            "url": "https://www.zillowstatic.com/static/images/nophoto_h_n.png",
+                                            "width": 60
+                                        },
+                                        "phone": null,
+                                        "profile_url": "/profile/debbiewilsonrealtor/",
+                                        "rating_average": 0,
+                                        "recent_sales": 0,
+                                        "review_count": 0,
+                                        "reviews_url": "/profile/debbiewilsonrealtor/#reviews",
+                                        "services_offered": [],
+                                        "write_review_url": "/reviews/write/?s=X1-ZUuw4lhg5825mx_a1052",
+                                        "zpro": false
+                                    },
+                                    "authentication": {
+                                        "hmac": "967f5bc825b1ada8865830ecc41ce85ee844b533103768440f236e8bff32ec47",
+                                        "request_id": "50f3068cbfc911eebeca0a0da4a420fd"
+                                    },
+                                    "brokerage_info_must_be_shown": false,
+                                    "contact_button_text": "Contact Agent",
+                                    "contact_recipients": [
+                                        {
+                                            "agent_reason": 1,
+                                            "badge_type": "Premier Agent",
+                                            "business_name": "Compass",
+                                            "display_name": "Jason Haber",
+                                            "encoded_zuid": "X1-ZUrobvpfcb1q15_9skq8",
+                                            "first_name": "Jason",
+                                            "has_caliber_pal": false,
+                                            "has_pal": false,
+                                            "has_wells_fargo_pal": false,
+                                            "image_data": {
+                                                "height": 60,
+                                                "url": "https://photos.zillowstatic.com/h_n/ISbh7y7b3i9kin1000000000.jpg",
+                                                "width": 60
+                                            },
+                                            "is_remnant": false,
+                                            "phone": {
+                                                "areacode": "507",
+                                                "number": "5552",
+                                                "prefix": "709"
+                                            },
+                                            "profile_url": "/profile/jasonhaber/",
+                                            "rating_average": 0,
+                                            "recent_sales": 0,
+                                            "review_count": 0,
+                                            "reviews_url": "/profile/jasonhaber/#reviews",
+                                            "services_offered": [
+                                                1,
+                                                2,
+                                                6
+                                            ],
+                                            "write_review_url": "/reviews/write/?s=X1-ZUrobvpfcb1q15_9skq8"
+                                        }
+                                    ],
+                                    "cv_27": {
+                                        "bal_checkboxes": "0100",
+                                        "brokerage_product": "00",
+                                        "field_flags": "1",
+                                        "form_identifier": "opaque_la",
+                                        "mortgage_flags": "1100"
+                                    },
+                                    "desktop_phone_number": null,
+                                    "display_options": {
+                                        "is_opaque_eligible": true
+                                    },
+                                    "displayed_agents": [
+                                        {
+                                            "agent_reason": 1,
+                                            "badge_type": "Premier Agent",
+                                            "business_name": "Your Home Sold Guaranteed Realty Services",
+                                            "display_name": "Joe Hillner, Your Home Sold Guaranteed",
+                                            "encoded_zuid": "X1-ZUyt8fzdev9tl5_4hje0",
+                                            "first_name": "Joe Hillner, Your",
+                                            "has_caliber_pal": false,
+                                            "has_pal": true,
+                                            "has_wells_fargo_pal": false,
+                                            "image_data": {
+                                                "height": 60,
+                                                "url": "https://photos.zillowstatic.com/p_m/IS20bksjj2296eb.jpg",
+                                                "width": 60
+                                            },
+                                            "is_remnant": false,
+                                            "profile_url": "/profile/Joe-Hillner/",
+                                            "rating_average": 5,
+                                            "recent_sales": 0,
+                                            "review_count": 19,
+                                            "reviews_url": "/profile/Joe-Hillner/#reviews",
+                                            "services_offered": [
+                                                1,
+                                                2,
+                                                4,
+                                                9
+                                            ],
+                                            "write_review_url": "/reviews/write/?s=X1-ZUyt8fzdev9tl5_4hje0"
+                                        },
+                                        {
+                                            "agent_reason": 1,
+                                            "badge_type": "Premier Agent",
+                                            "business_name": "ReMax Direct",
+                                            "display_name": "The Bridges Connection Team",
+                                            "encoded_zuid": "X1-ZUuk3hbvhyqrrd_14qhe",
+                                            "first_name": "The Bridges",
+                                            "has_caliber_pal": false,
+                                            "has_pal": true,
+                                            "has_wells_fargo_pal": false,
+                                            "image_data": {
+                                                "height": 60,
+                                                "url": "https://photos.zillowstatic.com/h_n/ISrtvdr41ycgxy0000000000.jpg",
+                                                "width": 60
+                                            },
+                                            "is_remnant": false,
+                                            "profile_url": "/profile/BridgesConnection/",
+                                            "rating_average": 5,
+                                            "recent_sales": 0,
+                                            "review_count": 1,
+                                            "reviews_url": "/profile/BridgesConnection/#reviews",
+                                            "services_offered": [
+                                                1,
+                                                2,
+                                                3,
+                                                6
+                                            ],
+                                            "write_review_url": "/reviews/write/?s=X1-ZUuk3hbvhyqrrd_14qhe"
+                                        },
+                                        {
+                                            "agent_reason": 1,
+                                            "badge_type": "Premier Agent",
+                                            "business_name": "Optima Properties",
+                                            "display_name": "Kim Bregman",
+                                            "encoded_zuid": "X1-ZUyy86avcpsc21_a1052",
+                                            "first_name": "Kim",
+                                            "has_caliber_pal": false,
+                                            "has_pal": false,
+                                            "has_wells_fargo_pal": false,
+                                            "image_data": {
+                                                "height": 60,
+                                                "url": "https://photos.zillowstatic.com/p_m/IS-948iqo4ltt25.jpg",
+                                                "width": 60
+                                            },
+                                            "is_remnant": false,
+                                            "profile_url": "/profile/optimaproperties/",
+                                            "rating_average": 4.9,
+                                            "recent_sales": 1,
+                                            "review_count": 104,
+                                            "reviews_url": "/profile/optimaproperties/#reviews",
+                                            "services_offered": [
+                                                1,
+                                                3,
+                                                5,
+                                                6
+                                            ],
+                                            "write_review_url": "/reviews/write/?s=X1-ZUyy86avcpsc21_a1052"
+                                        }
+                                    ],
+                                    "displayed_lenders": [
+                                        {
+                                            "agent_encoded_zuid": "X1-ZUyt8fzdev9tl5_4hje0",
+                                            "display_name": "Ira Goldberg",
+                                            "image_data": {
+                                                "height": 36,
+                                                "url": "https://mortgageapi.zillow.com/getLenderProfileImage?lenderId=ZUzcvaatzajnrd_4wzn7&imageId=4bc051f0a3e840cbdfc1b75bf7f6418e&treatment=36x36",
+                                                "width": 36
+                                            },
+                                            "lender_encoded_zuid": "X1-ZUzcvaatzajnrd_4wzn7",
+                                            "nmls_license": 299417,
+                                            "phone": {
+                                                "areacode": "561",
+                                                "number": "2501",
+                                                "prefix": "347"
+                                            },
+                                            "profile_url": "/lender-profile/Ira%20Goldberg/"
+                                        },
+                                        {
+                                            "agent_encoded_zuid": "X1-ZUuk3hbvhyqrrd_14qhe",
+                                            "display_name": "Justin Margolis",
+                                            "image_data": {
+                                                "height": 36,
+                                                "url": "https://mortgageapi.zillow.com/getLenderProfileImage?lenderId=ZUvbao0kgnwdu1_4hje0&imageId=a902f0e787e4d40ceedc434f769f801e&treatment=36x36",
+                                                "width": 36
+                                            },
+                                            "lender_encoded_zuid": "X1-ZUvbao0kgnwdu1_4hje0",
+                                            "nmls_license": 1015413,
+                                            "phone": {
+                                                "areacode": "561",
+                                                "number": "9149",
+                                                "prefix": "504"
+                                            },
+                                            "profile_url": "/lender-profile/MargolisMortgage/"
+                                        }
+                                    ],
+                                    "fallback_form": {
+                                        "contact_recipients": [],
+                                        "cv_27": {
+                                            "bal_checkboxes": "0000",
+                                            "brokerage_product": "00",
+                                            "field_flags": "0",
+                                            "form_identifier": "agent_directory",
+                                            "mortgage_flags": "0"
+                                        },
+                                        "footers": [
+                                            {
+                                                "external": false,
+                                                "text": "Visit professional directory",
+                                                "url": "/professionals/real-estate-agent-reviews/boca-raton-fl/"
+                                            }
+                                        ],
+                                        "hidden_fields": [],
+                                        "subtitle": "Visit our professional directory to find an agent in your area that can help with your home search.",
+                                        "title": "Contact Agent",
+                                        "tour_eligible": false,
+                                        "variant": "agent_directory"
+                                    },
+                                    "hide_textarea": false,
+                                    "info_box_visible": true,
+                                    "keller_williams": false,
+                                    "lender_details": {
+                                        "preapproval": {
+                                            "checked": false,
+                                            "label": "I want financing information",
+                                            "message_when_checked": "A Zillow confirmed lender will contact you."
+                                        },
+                                        "preapproval_info": {
+                                            "property_value": 307500,
+                                            "state_abbr": "FL",
+                                            "zipcode": "33496"
+                                        }
+                                    },
+                                    "listing": {
+                                        "direct_connect": {
+                                            "contact_agent_eligible_v2": true,
+                                            "tour_eligible": true,
+                                            "tour_eligible_v2": true
+                                        },
+                                        "instant_book_region": false,
+                                        "one_advisor": null,
+                                        "supports_unselected_leads": true
+                                    },
+                                    "opaque_la": true,
+                                    "pixel_id": null,
+                                    "pixel_url": null,
+                                    "premier_agent_preferred_property": true,
+                                    "region_phone_number": {
+                                        "areacode": "561",
+                                        "number": "4253",
+                                        "prefix": "203"
+                                    },
+                                    "request_trace": {
+                                        "xpi": null,
+                                        "xsi": "b29665b8934bdfb1",
+                                        "xti": "d2c9323c46a80fbf9628146e248c389d"
+                                    },
+                                    "tcpa": true,
+                                    "text_area": {
+                                        "name": "message",
+                                        "value": "I am interested in 9070 Fairbanks Ln APT 1, Boca Raton, FL 33496."
+                                    },
+                                    "text_fields": [
+                                        {
+                                            "input_type": "text",
+                                            "name": "name",
+                                            "pattern": "^[^!@#$%&*+=]+$",
+                                            "placeholder": "Your Name",
+                                            "required": true,
+                                            "required_for_preapproval": true,
+                                            "tooltip": "Please enter your name."
+                                        },
+                                        {
+                                            "input_type": "tel",
+                                            "intl": false,
+                                            "maxlength": 23,
+                                            "name": "phone",
+                                            "placeholder": "Phone",
+                                            "required": true,
+                                            "tooltip": "Please enter a valid US or Canadian phone number."
+                                        },
+                                        {
+                                            "input_type": "email",
+                                            "name": "email",
+                                            "placeholder": "Email",
+                                            "required": true,
+                                            "tooltip": "Please enter a valid email address."
+                                        }
+                                    ],
+                                    "title": "Contact Agent",
+                                    "tour_config": {
+                                        "useFoundation": true
+                                    },
+                                    "tour_eligible": false,
+                                    "variant": "opaque",
+                                    "zhl_primary_cta_eligible": false
+                                }
+                            },
+                            "submitFlow": [
+                                {
+                                    "__typename": "PropertyLeadSubmitForm",
+                                    "financingCheckbox": {
+                                        "isCheckedInitialState": true,
+                                        "leadFieldName": "wantsFinancing",
+                                        "label": "I want financing information",
+                                        "financingType": "ZGMI"
+                                    },
+                                    "telephoneConsumerProtectionActDisclaimer": {
+                                        "text": "By pressing Contact agent, you agree that Zillow Group and its affiliates, and real estate professionals may call/text you about your inquiry, which may involve use of automated means and prerecorded/artificial voices. You don\u2019t need to consent as a condition of buying any property, goods or services. Message/data rates may apply. You also agree to our Terms of Use. Zillow does not endorse any real estate professionals. We may share information about your recent and future site activity with your agent to help them understand what you\u2019re looking for in a home.",
+                                        "textAttributes": [
+                                            {
+                                                "__typename": "TourViewModuleTextTooltipAttribute",
+                                                "tokenEndIndex": 104,
+                                                "tokenStartIndex": 79,
+                                                "tooltipText": "\u201cReal estate professionals\u201d includes the real estate agents and brokers, mortgage lenders and loan officers, property managers, and other professionals you interact with through Zillow. Zillow Premier Agent is an advertising program that helps connect customers to local real estate professionals. Zillow Premier Agent partners are paid advertisers and are not affiliated with Zillow, Inc. brokerage or any of its affiliates."
+                                            },
+                                            {
+                                                "__typename": "TourViewModuleTextLinkAttribute",
+                                                "tokenEndIndex": 367,
+                                                "tokenStartIndex": 355,
+                                                "url": "https://www.zillow.com/corp/Terms.htm"
+                                            }
+                                        ]
+                                    },
+                                    "title": "Contact agent",
+                                    "heading": null,
+                                    "subheading": null,
+                                    "headingIcon": null,
+                                    "buttonText": "Contact agent",
+                                    "disclosure": null,
+                                    "inputFields": [
+                                        {
+                                            "label": "Name",
+                                            "placeholder": null,
+                                            "validationRegex": null,
+                                            "isRequired": true,
+                                            "inputType": "NAME",
+                                            "clientSideValidationErrorMessage": "Please enter your name.",
+                                            "inputName": "name",
+                                            "isUserInputDisabled": false,
+                                            "value": null,
+                                            "defaultSubmitValue": null,
+                                            "maxCharacters": null
+                                        },
+                                        {
+                                            "label": "Email",
+                                            "placeholder": null,
+                                            "validationRegex": "/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-zA-Z]{2,63}$/i",
+                                            "isRequired": true,
+                                            "inputType": "EMAIL",
+                                            "clientSideValidationErrorMessage": "Please enter a valid email address.",
+                                            "inputName": "emailAddress",
+                                            "isUserInputDisabled": false,
+                                            "value": null,
+                                            "defaultSubmitValue": null,
+                                            "maxCharacters": 320
+                                        },
+                                        {
+                                            "label": "Phone",
+                                            "placeholder": null,
+                                            "validationRegex": "/^\\(?([2-9][0-8][0-9])\\)?[\\-. ]?([2-9][0-9]{2})[\\-. ]?([0-9]{4})(?: x(\\d{1,4}))?$/",
+                                            "isRequired": true,
+                                            "inputType": "PHONE_NUMBER",
+                                            "clientSideValidationErrorMessage": "Please enter a valid US or Canadian phone number.",
+                                            "inputName": "phoneNumber",
+                                            "isUserInputDisabled": false,
+                                            "value": null,
+                                            "defaultSubmitValue": null,
+                                            "maxCharacters": null
+                                        },
+                                        {
+                                            "label": "Message",
+                                            "placeholder": "Add details or questions about what you\u2019re looking for",
+                                            "validationRegex": null,
+                                            "isRequired": false,
+                                            "inputType": "MESSAGE",
+                                            "clientSideValidationErrorMessage": null,
+                                            "inputName": "message",
+                                            "isUserInputDisabled": false,
+                                            "value": "I am interested in 9070 Fairbanks Ln APT 1, Boca Raton, FL 33496.",
+                                            "defaultSubmitValue": null,
+                                            "maxCharacters": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "__typename": "ABAD"
+                                },
+                                {
+                                    "__typename": "FormQuestionnaire"
+                                }
+                            ],
+                            "buildingId": "1013585287",
+                            "virtualTourUrl": "https://www.propertypanorama.com/9070-Fairbanks-Lane-1-Boca-Raton-FL-33496/unbranded",
+                            "hasApprovedThirdPartyVirtualTourUrl": false,
+                            "photoCount": 31,
+                            "livingAreaUnits": "Square Feet",
+                            "lotSize": 0,
+                            "lotAreaValue": 0,
+                            "lotAreaUnits": "Square Feet",
+                            "postingProductType": "Standard",
+                            "marketingName": null,
+                            "ZoDsFsUpsellTop": {
+                                "display": true,
+                                "displayCategory": null,
+                                "displayAttributes": {
+                                    "leadType": "PARTNER_LEADS"
+                                },
+                                "treatment": null,
+                                "surfaceId": "fshdp",
+                                "placementId": "wow-top",
+                                "reason": null
+                            },
+                            "onsiteMessage": {
+                                "eventId": "600af8e2-cd5d-45c7-b530-b78fef13375b",
+                                "decisionContext": {},
+                                "messages": [
+                                    {
+                                        "skipDisplayReason": null,
+                                        "shouldDisplay": true,
+                                        "isGlobalHoldout": false,
+                                        "isPlacementHoldout": false,
+                                        "placementName": "HDPTopSlot",
+                                        "testPhase": "BASELINE",
+                                        "bucket": "BASELINE_TREATMENT",
+                                        "placementId": 399,
+                                        "passThrottle": true,
+                                        "lastModified": "1698769249",
+                                        "eventId": "450a681f-449e-4496-b1ac-cc4ac12c79e0",
+                                        "decisionContext": {
+                                            "guid": "aa2153d6-2b00-4738-9c47-698a98e23dbd",
+                                            "operatingSystem": "unknown",
+                                            "homeStatus": "fsba",
+                                            "isZillowOwned": false,
+                                            "homeType": "SINGLE_FAMILY",
+                                            "listPrice": 307500,
+                                            "zipcode": "33496",
+                                            "isAdsRestricted": false,
+                                            "countyId": "2993",
+                                            "stateId": "14",
+                                            "streetAddress": "9070 Fairbanks Ln APT 1",
+                                            "city": "Boca Raton",
+                                            "state": "FL",
+                                            "mlsid": "RX-10933369",
+                                            "hasUserClaimedHome": false,
+                                            "zestimate": "288700",
+                                            "monthlyHoaFee": "358",
+                                            "shouldDisplayUpsell": true,
+                                            "zoMarketCode": "MIAMI_FL",
+                                            "placementId": "wow-top",
+                                            "surfaceId": "fshdp",
+                                            "leadType": "PARTNER_LEADS",
+                                            "leadTypes": [
+                                                "PARTNER_LEADS"
+                                            ]
+                                        },
+                                        "selectedTreatment": {
+                                            "id": 5681,
+                                            "name": "mortgages-zhl_fshdp_top_purchase-affordability_zhl-dual-cta-pre-qual",
+                                            "component": "UpsellWrapper",
+                                            "status": "BASELINE_EVALUATION",
+                                            "renderingProps": "{\"actionLink\":\"https://www.zillow.com/homeloans/eligibility/?source=Zillow&channel=FSHDP&utm_source=OMP&utm_medium=OMP&utm_campaign=mortgages-zhl_fshdp_top_purchase-affordability_zhl-dual-cta-pre-qual&propertyValue=307500&propertyType=SingleFamilyHome&cityOrZip=33496\",\"actionText\":\"Pre-Qualify\",\"actionType\":\"url_link\",\"actionButtonType\":\"secondary\",\"secondaryActionLink\":\"https://www.zillow.com/mortgage-calculator/house-affordability/?itc=mortgages-zhl_fshdp_top_purchase-affordability_zhl-dual-cta-pre-qual\",\"secondaryActionText\":\"Calculate now\",\"secondaryActionType\":\"url_link\",\"background\":\"backgroundBlue\",\"bodyMarkdownText\":\"Get pre-qualified with us at Zillow Home Loans, or start with our Affordability Calculator.  <p class=\\\"zg-mls-note\\\">An equal housing lender. NMLS #10287.</p><style> div[class*=Upsell-] .zg-mls-note{ font-size: 10px; font-weight: 400; position: absolute; right: 4px; bottom: 0; margin-bottom: -4px; color: grey; } span[class*=UpsellWrapper__StyledTag] { height: auto; max-width:100%; width: 127px; }</style>\",\"headingMarkdownText\":\"Curious what you can afford?\",\"media\":{\"alt\":\"\",\"id\":4917,\"link\":\"https://cms-bedrock-prod.int.zgcp-consumer-prod-k8s.zg-int.net/krang/?attachment_id=4917\",\"caption\":\"\",\"width\":44,\"height\":44,\"src\":\"https://www.zillowstatic.com/bedrock/app/uploads/sites/5/2023/06/%F0%9F%96%A5-DollarHome.svg\",\"sizeSlug\":\"full\"},\"overrideMargin\":\"16px\",\"hasBorder\":false,\"showAdvertisement\":true,\"adTagImage\":{\"alt\":\"\",\"id\":4748,\"link\":\"https://cms-bedrock-prod.int.zgcp-consumer-prod-k8s.zg-int.net/krang/?attachment_id=4748\",\"caption\":\"\",\"width\":2000,\"height\":217,\"src\":\"https://www.zillowstatic.com/bedrock/app/uploads/sites/5/2023/03/Zillow-Home-Loans_Horizontal_NMLS_Large_Blue_RGB.png\",\"sizeSlug\":\"full\"},\"gaImpressionCategory\":\"Homes\",\"gaImpressionAction\":\"ZHL Purchase Upsell\",\"gaImpressionLabel\":\"Display|fshdp|top|zhl-purchase-affordability|zhl-dual-cta-pre-qual|omp\",\"gaEngagementCategory\":\"Homes\",\"gaEngagementAction\":\"ZHL Purchase Upsell\",\"gaEngagementLabel\":\"Click|fshdp|top|zhl-purchase-affordability|zhl-dual-cta-pre-qual-CTA1|omp\",\"gaHoverCategory\":\"Homes\",\"gaHoverAction\":\"ZHL Purchase Upsell\",\"gaHoverLabel\":\"Hover|fshdp|top|zhl-purchase-affordability|zhl-dual-cta-pre-qual-CTA1|omp\",\"gaEngagementSecondaryCategory\":\"Homes\",\"gaEngagementSecondaryAction\":\"ZHL Purchase Upsell\",\"gaEngagementSecondaryLabel\":\"Click|fshdp|top|zhl-purchase-affordability|zhl-dual-cta-calc-CTA2|omp\",\"gaHoverSecondaryCategory\":\"Homes\",\"gaHoverSecondaryAction\":\"ZHL Purchase Upsell\",\"gaHoverSecondaryLabel\":\"Hover|fshdp|top|zhl-purchase-affordability|zhl-dual-cta-calc-CTA2|omp\"}",
+                                            "lastModified": "1701797133"
+                                        },
+                                        "qualifiedTreatments": [
+                                            {
+                                                "id": 2239,
+                                                "name": "ZGM_Purchase_FSHDP_Pre_Qual",
+                                                "status": "PORTFOLIO",
+                                                "lastModified": "1668425760"
+                                            },
+                                            {
+                                                "id": 5677,
+                                                "name": "mortgages-zhl_fshdp_top_purchase-affordability_zhl-pre-qual-corner-logo",
+                                                "status": "BASELINE_EVALUATION",
+                                                "lastModified": "1701792799"
+                                            },
+                                            {
+                                                "id": 5815,
+                                                "name": "mortgages-zhl_fshdp_top_purchase_zhl-pre-qual",
+                                                "status": "PORTFOLIO",
+                                                "lastModified": "1706629052"
+                                            },
+                                            {
+                                                "id": 5681,
+                                                "name": "mortgages-zhl_fshdp_top_purchase-affordability_zhl-dual-cta-pre-qual",
+                                                "status": "BASELINE_EVALUATION",
+                                                "lastModified": "1701797133"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "stateId": 14,
+                            "zipPlusFour": "6654",
+                            "numberOfUnitsTotal": null,
+                            "foreclosureDefaultFilingDate": null,
+                            "foreclosureAuctionFilingDate": null,
+                            "foreclosureLoanDate": null,
+                            "foreclosureLoanOriginator": null,
+                            "foreclosureLoanAmount": null,
+                            "foreclosurePriorSaleDate": null,
+                            "foreclosurePriorSaleAmount": null,
+                            "foreclosureBalanceReportingDate": null,
+                            "foreclosurePastDueBalance": null,
+                            "foreclosureUnpaidBalance": null,
+                            "foreclosureAuctionTime": null,
+                            "foreclosureAuctionDescription": null,
+                            "foreclosureAuctionCity": null,
+                            "foreclosureAuctionLocation": null,
+                            "foreclosureDate": null,
+                            "foreclosureAmount": null,
+                            "foreclosingBank": null,
+                            "foreclosureJudicialType": "Judicial",
+                            "datePostedString": "2023-11-04",
+                            "foreclosureTypes": {
+                                "isBankOwned": false,
+                                "isForeclosedNFS": false,
+                                "isPreforeclosure": false,
+                                "isAnyForeclosure": false,
+                                "wasNonRetailAuction": false,
+                                "wasForeclosed": false,
+                                "wasREO": null,
+                                "wasDefault": null
+                            },
+                            "foreclosureMoreInfo": null,
+                            "hasBadGeocode": false,
+                            "streetViewMetadataUrlMediaWallLatLong": "https://maps.googleapis.com/maps/api/streetview/metadata?location=26.394562,-80.18797&key=AIzaSyARFMLB1na-BBWf7_R3-5YOQQaHqEJf6RQ&source=outdoor&signature=SixFVeX5G1-Bp4aQbX83-6Cdzp0=",
+                            "streetViewMetadataUrlMediaWallAddress": "https://maps.googleapis.com/maps/api/streetview/metadata?location=9070%20Fairbanks%20Ln%2C%20Boca%20Raton%2C%20FL%2033496&key=AIzaSyARFMLB1na-BBWf7_R3-5YOQQaHqEJf6RQ&source=outdoor&signature=x6NdTB5rd7Eq71lIcFVfC2HDXsY=",
+                            "streetViewTileImageUrlMediumLatLong": "https://maps.googleapis.com/maps/api/streetview?location=26.394562,-80.18797&size=400x250&key=AIzaSyARFMLB1na-BBWf7_R3-5YOQQaHqEJf6RQ&source=outdoor&signature=ywy4Vxn0ksalZCVcMdwjtnIcjD8=",
+                            "streetViewTileImageUrlMediumAddress": "https://maps.googleapis.com/maps/api/streetview?location=9070%20Fairbanks%20Ln%2C%20Boca%20Raton%2C%20FL%2033496&size=400x250&key=AIzaSyARFMLB1na-BBWf7_R3-5YOQQaHqEJf6RQ&source=outdoor&signature=f5qG8EhSjKvpyOJmEGKq59kdIdc=",
+                            "streetViewServiceUrl": "https://street-view-url.prod.zgk-partner.zillowapi.com?zpid=46633537&address=9070%20Fairbanks%20Ln%2C%20Boca%20Raton%2C%20FL%2033496&width=512&height=234&key=AIzaSyARFMLB1na-BBWf7_R3-5YOQQaHqEJf6RQ&maxdistance=5280&lat=26.394562&lon=-80.18797&signature=pEGDS6ge7zqDACC8JCSBtEPljAk=",
+                            "postingUrl": null,
+                            "richMedia": null,
+                            "hasPublicVideo": false,
+                            "primaryPublicVideo": null,
+                            "richMediaVideos": null,
+                            "listingSubType": {
+                                "isFSBA": true,
+                                "isFSBO": false,
+                                "isPending": false,
+                                "isNewHome": false,
+                                "isForeclosure": false,
+                                "isBankOwned": false,
+                                "isForAuction": false,
+                                "isOpenHouse": false,
+                                "isComingSoon": false
+                            },
+                            "tourViewCount": 0,
+                            "postingContact": {
+                                "name": "Debbie Wilson",
+                                "photo": null
+                            },
+                            "vrModel": {
+                                "vrModelGuid": null,
+                                "revisionId": null
+                            },
+                            "thirdPartyVirtualTour": {
+                                "externalUrl": "https://www.propertypanorama.com/9070-Fairbanks-Lane-1-Boca-Raton-FL-33496/unbranded",
+                                "lightboxUrl": null,
+                                "staticUrl": null,
+                                "providerKey": null,
+                                "approved": false
+                            },
+                            "listingAccount": null,
+                            "listingFeedID": null,
+                            "livingAreaUnitsShort": "sqft",
+                            "priceChange": null,
+                            "priceChangeDate": null,
+                            "priceChangeDateString": null,
+                            "formattedChip": {
+                                "location": [
+                                    {
+                                        "fullValue": "Town Villas"
+                                    },
+                                    {
+                                        "fullValue": "9070 Fairbanks Ln APT 1"
+                                    },
+                                    {
+                                        "fullValue": "Boca Raton, FL 33496"
+                                    }
+                                ]
+                            },
+                            "hideZestimate": false,
+                            "comingSoonOnMarketDate": null,
+                            "isPreforeclosureAuction": false,
+                            "mortgageRates": {
+                                "thirtyYearFixedRate": 6.35
+                            },
+                            "annualHomeownersInsurance": 1291.5,
+                            "lastSoldPrice": 75000,
+                            "isHousingConnector": false,
+                            "streetViewMetadataUrlMapLightboxAddress": "https://maps.googleapis.com/maps/api/streetview/metadata?location=9070%20Fairbanks%20Ln%2C%20Boca%20Raton%2C%20FL%2033496&key=AIzaSyBV4lXhV-qzQOegyA3m0_AvGy9F21HIyOQ&source=outdoor&signature=gSInw_fKcqztcFgAOxNZmdghZL4=",
+                            "thumb": [
+                                {
+                                    "url": "https://photos.zillowstatic.com/fp/0063b74eff92eddeb634f51ec082f863-p_a.jpg"
+                                }
+                            ],
+                            "neighborhoodMapThumb": [
+                                {
+                                    "url": "https://photos.zillowstatic.com/fp/0063b74eff92eddeb634f51ec082f863-p_c.jpg"
+                                }
+                            ],
+                            "isRecentStatusChange": false,
+                            "isNonOwnerOccupied": false,
+                            "isFeatured": false,
+                            "rentalApplicationsAcceptedType": "REQUEST_TO_APPLY",
+                            "listingTypeDimension": "For Sale by Agent",
+                            "featuredListingTypeDimension": "organic",
+                            "brokerIdDimension": "For Sale by Agent",
+                            "keystoneHomeStatus": "ForSale",
+                            "pageUrlFragment": "ForSale",
+                            "isRentalsLeadCapMet": false,
+                            "isPaidMultiFamilyBrokerId": false,
+                            "selfTour": {
+                                "hasSelfTour": null
+                            },
+                            "countyId": 2993
+                        }
+                    }
+                },
+                "zpid": 46633537,
+                "pageFrame": null,
+                "altId": null,
+                "csrfToken": "itukHbzm-ruMcydPAfm3qL-e1gSCN24Y6C12CPyxHgg",
+                "startedWithSSR": true,
+                "searchPageStateParams": {
+                    "zpid": 46633537,
+                    "query": {
+                        "latitude": 26.394562,
+                        "longitude": -80.18797,
+                        "searchType": "sale",
+                        "regionId": 10477,
+                        "regionType": "6"
+                    }
+                }
+            },
+            "isComposedWithSearch": true,
+            "searchPageState": {
+                "queryState": {
+                    "isMapVisible": true,
+                    "mapBounds": {
+                        "west": -80.23941993713379,
+                        "east": -80.13642311096191,
+                        "south": 26.363803247611298,
+                        "north": 26.4253097891899
+                    },
+                    "regionSelection": [
+                        {
+                            "regionId": 10477,
+                            "regionType": 6
+                        }
+                    ],
+                    "filterState": {
+                        "sortSelection": {
+                            "value": "globalrelevanceex"
+                        },
+                        "isAllHomes": {
+                            "value": true
+                        }
+                    }
+                },
+                "cat1": {
+                    "searchResults": {},
+                    "searchList": {
+                        "expansionDistance": 0,
+                        "staticBaseUrl": null,
+                        "zeroResultsFilters": null,
+                        "pagination": null,
+                        "message": null,
+                        "adsConfig": {
+                            "navAdSlot": "zillow/search_results/buy_general/search_1",
+                            "displayAdSlot": "zillow/search_results/buy_general/b_right_p1",
+                            "targets": {
+                                "guid": "aa2153d6-2b00-4738-9c47-698a98e23dbd",
+                                "vers": "constellation_dynamic,srp_ad_target_refactor",
+                                "premieragent": "no",
+                                "state": "FL",
+                                "dma": "55",
+                                "cnty": "Palm_Beach",
+                                "city": "Boca_Raton",
+                                "mlat": "26.3945565184006",
+                                "mlong": "-80.18792152404785",
+                                "listtp": "buy_general",
+                                "searchtp": "city"
+                            },
+                            "needsUpdate": true
+                        },
+                        "totalResultCount": 0,
+                        "resultsPerPage": 41,
+                        "totalPages": 0,
+                        "limitSearchResultsCount": null,
+                        "listResultsTitle": "Boca Raton FL Real Estate & Homes For Sale",
+                        "resultContexts": null,
+                        "pageRules": null,
+                        "shareConfig": {
+                            "captchaKey": "6Lf2nvMSAAAAAMQ5p6WlAfDEixMdOQgJsij-3_ud",
+                            "csrfToken": ""
+                        },
+                        "gdpUrl": "https://www.zillow.com/graphql/",
+                        "zgGraphUrl": "/zg-graph"
+                    }
+                },
+                "categoryTotals": {
+                    "cat1": {
+                        "totalResultCount": 675
+                    },
+                    "cat2": {
+                        "totalResultCount": 4
+                    }
+                },
+                "defaultFilterState": {
+                    "monthlyCostLoanTerm": {
+                        "min": null,
+                        "max": null
+                    },
+                    "keywords": {
+                        "value": ""
+                    },
+                    "isPublicSchool": {
+                        "value": true
+                    },
+                    "isCityView": {
+                        "value": false
+                    },
+                    "onlyRentalStudentHousingType": {
+                        "value": false
+                    },
+                    "isWaterfront": {
+                        "value": false
+                    },
+                    "isCondo": {
+                        "value": true
+                    },
+                    "onlyRentalExcludeNullAvailabilityDates": {
+                        "value": false
+                    },
+                    "commuteDestination": {
+                        "value": ""
+                    },
+                    "isMountainView": {
+                        "value": false
+                    },
+                    "singleStory": {
+                        "value": false
+                    },
+                    "onlyRentalParkingAvailable": {
+                        "value": false
+                    },
+                    "monthlyPayment": {
+                        "min": null,
+                        "max": null
+                    },
+                    "price": {
+                        "min": null,
+                        "max": null
+                    },
+                    "onlyPriceReduction": {
+                        "value": false
+                    },
+                    "onlyRentalAcceptsApplications": {
+                        "value": false
+                    },
+                    "SEOTypedIdField": {
+                        "value": null,
+                        "field": null,
+                        "id": null
+                    },
+                    "sqft": {
+                        "min": null,
+                        "max": null
+                    },
+                    "onlyRentalSeniorHousingType": {
+                        "value": false
+                    },
+                    "isZillowOwnedOnly": {
+                        "value": false
+                    },
+                    "isForRent": {
+                        "value": false
+                    },
+                    "onlyRentalRequestedAvailabilityDate": {
+                        "value": ""
+                    },
+                    "isForSaleByOwner": {
+                        "value": true
+                    },
+                    "hasAirConditioning": {
+                        "value": false
+                    },
+                    "isApartment": {
+                        "value": true
+                    },
+                    "sortSelection": {
+                        "value": "priorityscore"
+                    },
+                    "isEntirePlaceForRent": {
+                        "value": true
+                    },
+                    "isMiddleSchool": {
+                        "value": true
+                    },
+                    "isWaterView": {
+                        "value": false
+                    },
+                    "isPrivateSchool": {
+                        "value": true
+                    },
+                    "monthlyCostPayment": {
+                        "min": null,
+                        "max": null
+                    },
+                    "onlyRentalIncomeRestricted": {
+                        "value": false
+                    },
+                    "isManufactured": {
+                        "value": true
+                    },
+                    "onlyRentalInUnitLaundry": {
+                        "value": false
+                    },
+                    "isComingSoon": {
+                        "value": true
+                    },
+                    "isSingleFamily": {
+                        "value": true
+                    },
+                    "isForSaleForeclosure": {
+                        "value": true
+                    },
+                    "commuteTimeOfDay": {
+                        "value": "now"
+                    },
+                    "isHighSchool": {
+                        "value": true
+                    },
+                    "onlyWithPhotos": {
+                        "value": false
+                    },
+                    "hoa": {
+                        "min": null,
+                        "max": null
+                    },
+                    "beds": {
+                        "min": null,
+                        "max": null
+                    },
+                    "isAllHomes": {
+                        "value": false
+                    },
+                    "ageRestricted55Plus": {
+                        "value": "i"
+                    },
+                    "onlyRentalCatsAllowed": {
+                        "value": false
+                    },
+                    "includeSchoolsSelection": {
+                        "highSchool": null,
+                        "middleSchool": null,
+                        "elementarySchool": null
+                    },
+                    "isCharterSchool": {
+                        "value": true
+                    },
+                    "onlyRentalPetsAllowed": {
+                        "value": false
+                    },
+                    "isRoomForRent": {
+                        "value": false
+                    },
+                    "isAuction": {
+                        "value": true
+                    },
+                    "is3dHome": {
+                        "value": false
+                    },
+                    "isMultiFamily": {
+                        "value": true
+                    },
+                    "onlyRentalIncomeRestrictedHousingType": {
+                        "value": false
+                    },
+                    "doz": {
+                        "value": "any"
+                    },
+                    "isNewConstruction": {
+                        "value": true
+                    },
+                    "isTownhouse": {
+                        "value": true
+                    },
+                    "isLotLand": {
+                        "value": true
+                    },
+                    "isBasementUnfinished": {
+                        "value": false
+                    },
+                    "isOpenHousesOnly": {
+                        "value": false
+                    },
+                    "isBasementFinished": {
+                        "value": false
+                    },
+                    "dataSourceSelection": {
+                        "value": "all"
+                    },
+                    "isPreMarketForeclosure": {
+                        "value": false
+                    },
+                    "isForSaleByAgent": {
+                        "value": true
+                    },
+                    "parkingSpots": {
+                        "min": null
+                    },
+                    "monthlyCostInterestRate": {
+                        "min": null,
+                        "max": null
+                    },
+                    "onlyRentalMilitaryHousingType": {
+                        "value": false
+                    },
+                    "isPreMarketPreForeclosure": {
+                        "value": false
+                    },
+                    "commuteMaxTime": {
+                        "value": null
+                    },
+                    "hasGarage": {
+                        "value": false
+                    },
+                    "hasPool": {
+                        "value": false
+                    },
+                    "onlyRentalSmallDogsAllowed": {
+                        "value": false
+                    },
+                    "isAcceptingBackupOffersSelected": {
+                        "value": false
+                    },
+                    "built": {
+                        "min": null,
+                        "max": null
+                    },
+                    "onlyRentalLargeDogsAllowed": {
+                        "value": false
+                    },
+                    "monthlyCostDownPayment": {
+                        "value": null
+                    },
+                    "lotSize": {
+                        "min": null,
+                        "max": null,
+                        "units": "sqft"
+                    },
+                    "greatSchoolsRating": {
+                        "min": 1
+                    },
+                    "includeUnratedSchools": {
+                        "value": true
+                    },
+                    "isRecentlySold": {
+                        "value": false
+                    },
+                    "isPendingListingsSelected": {
+                        "value": false
+                    },
+                    "onlyRentalHousingConnector": {
+                        "value": false
+                    },
+                    "onlyRentalDisabledHousingType": {
+                        "value": false
+                    },
+                    "onlyRentalFeaturedMultiFamilyBuilding": {
+                        "value": false
+                    },
+                    "baths": {
+                        "min": null,
+                        "max": null
+                    },
+                    "isApartmentOrCondo": {
+                        "value": true
+                    },
+                    "includeHomesWithNoHoaData": {
+                        "value": true
+                    },
+                    "isElementarySchool": {
+                        "value": true
+                    },
+                    "isParkView": {
+                        "value": false
+                    },
+                    "commuteMode": {
+                        "value": "driving"
+                    },
+                    "enableSchools": {
+                        "value": false
+                    }
+                },
+                "defaultQueryState": {
+                    "filterState": {},
+                    "dataSource": "core",
+                    "isMapVisible": false,
+                    "isListVisible": true,
+                    "mapBounds": {
+                        "west": 0,
+                        "south": 0,
+                        "east": 0,
+                        "north": 0,
+                        "zoom": 10
+                    },
+                    "mapZoom": 10,
+                    "pagination": {
+                        "currentPage": 1
+                    },
+                    "usersSearchTerm": null,
+                    "regionSelection": null,
+                    "schoolId": null,
+                    "districtId": null,
+                    "customRegionId": null,
+                    "savedSearchEnrollmentId": null,
+                    "nearMe": null,
+                    "category": "cat1",
+                    "debugRequest": {},
+                    "commuteLat": null,
+                    "commuteLng": null,
+                    "listPriceActive": true
+                },
+                "searchPageConstants": {
+                    "monthlyInterestRate": 0.0052591665,
+                    "isMobile": false,
+                    "isTablet": false,
+                    "searchMapGoogleAPIKey": "AIzaSyA1uIgJLlFocMlwcu8b3wKPKkdT2mWV3AU",
+                    "mapComboUrl": "https://www.zillowstatic.com",
+                    "debugEnabled": false,
+                    "keystoneTargetUrl": "https://cs.zg-api.com/event",
+                    "categoryOneTitle": "Agent listings",
+                    "categoryTwoTitle": "Other listings",
+                    "gtm": {
+                        "gtmInitialData": [
+                            {
+                                "isTablet": false,
+                                "isPhone": false,
+                                "isMobile": false,
+                                "isMobileApp": false
+                            },
+                            {
+                                "event": "SearchPageView",
+                                "gaCustomDimensions": {
+                                    "dimension3": "FL",
+                                    "dimension4": "Palm Beach County",
+                                    "dimension5": "Boca Raton",
+                                    "dimension6": "",
+                                    "dimension18": "Address",
+                                    "dimension23": "ForSale",
+                                    "dimension66": "Search"
+                                }
+                            }
+                        ],
+                        "gtmContainerID": "GTM-P6HT97",
+                        "isGtmEnabled": true
+                    }
+                }
+            }
+        }
+    },
+    "page": "/for-sale-shopping-page",
+    "isFallback": false,
+    "customServer": true,
+    "gip": true,
+    "appGip": true,
+    "scriptLoader": []
+}

@@ -152,7 +152,7 @@ cython_debug/
 #.idea/
 
 # Custom ignores for project
-HomeData/
-PropertyDetails/
-GC_121_0_6167_85.app/
-.DS_Store
+zillowanalyzer/Data/HomeData/
+zillowanalyzer/Data/PropertyDetails/
+zillowanalyzer/ChromeAssets/GC_121_0_6167_85.app
+*.DS_Store
