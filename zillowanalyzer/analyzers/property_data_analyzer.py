@@ -27,7 +27,6 @@ def calculate_pairwise_correlation():
     plt.figure(figsize=(10, 8))
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', cbar=False, fmt='.1f')
     plt.subplots_adjust(left=0.25, bottom=0, right=1, top=1)
-    plt.show()
     plt.savefig(f'{VISUAL_DATA_PATH}/pairwise_correlation.png', bbox_inches='tight', dpi=300)
 
 
@@ -83,6 +82,6 @@ def calculate_PCA_for_metrics():
 
 
 calculate_pairwise_correlation()
-calculate_pairwise_distribution()
-calculate_PCA_for_metrics()
+# calculate_pairwise_distribution()
+# calculate_PCA_for_metrics()
 

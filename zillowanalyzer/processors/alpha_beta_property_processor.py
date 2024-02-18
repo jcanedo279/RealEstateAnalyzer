@@ -94,8 +94,8 @@ def calculate_alpha_beta_for_property(zestimate_history, index_ticker):
 def calculate_alpha_beta_statistics(index_ticker):
     alpha_beta_values = []
 
-    search_results = load_json(scrape_config['search_results_path'])
-    search_results, num_search_results = load_json(scrape_config['search_results_path']), len(search_results)
+    search_results = load_json(SEARCH_RESULTS_PROCESSED_PATH)
+    search_results, num_search_results = load_json(SEARCH_RESULTS_PROCESSED_PATH), len(search_results)
     for search_result_ind, search_result in enumerate(search_results):
         zip_code, zpid = search_result['zip_code'], search_result['zpid']
 

@@ -153,6 +153,8 @@ cython_debug/
 
 # Custom ignores for project
 zillowanalyzer/Data/HomeData/
+zillowanalyzer/Data/SearchResults/
+zillowanalyzer/Data/SearchResultsMetadata/
 zillowanalyzer/Data/PropertyDetails/
-zillowanalyzer/ChromeAssets/GC_121_0_6167_85.app
+zillowanalyzer/ChromeAssets/Google Chrome for Testing.app
 *.DS_Store

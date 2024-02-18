@@ -70,8 +70,8 @@ def process_all_zip_codes(root_directory):
     sorted_results = sorted(all_results, key=lambda x: x['rentZestimate_to_price_ratio'], reverse=reverse_sort)
 
     # Save all results to a new file
-    with open(scrape_config['search_results_path'], 'w', encoding='utf-8') as outfile:
+    with open(SEARCH_RESULTS_PROCESSED_PATH, 'w', encoding='utf-8') as outfile:
         json.dump(sorted_results, outfile, indent=4)
 
 
-process_all_zip_codes(HOME_DATA_PATH)
+process_all_zip_codes(SEARCH_RESULTS_DATA_PATH)

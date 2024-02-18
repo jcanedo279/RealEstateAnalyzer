@@ -9,7 +9,7 @@ def batch_generator(data, batch_size):
 
 # Roughly 5 seconds per response -> ~ 14 hours for 10,000 requests.
 def extract_property_details_from_search_results(batch_size=5):
-    search_results = load_json(SEARCH_RESULTS_PATH)
+    search_results = load_json(SEARCH_RESULTS_PROCESSED_PATH)
 
     num_batches = math.ceil(len(search_results) / batch_size)
     for batch_ind, batch in enumerate(batch_generator(search_results, batch_size)):

@@ -12,7 +12,7 @@ from fake_useragent import UserAgent
 from functools import wraps
 from contextlib import contextmanager
 from dotenv import load_dotenv
-from seleniumwire import webdriver
+from selenium import webdriver
 import requests
 from selenium.common.exceptions import *
 from selenium.webdriver.common.by import By
@@ -26,7 +26,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
 
 CONFIG_PATH = 'zillowanalyzer/scrapers/scrape_config.cfg'
-CHROME_BINARY_EXECUTABLE_PATH = "zillowanalyzer/ChromeAssets/GC_121_0_6167_85.app/Contents/MacOS/Google Chrome for Testing"
+CHROME_BINARY_EXECUTABLE_PATH = "zillowanalyzer/ChromeAssets/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 # Use chrome://version/ to locate the user_data_dir path.
 CHROME_USER_DATA_DIR = "/Users/jorgecanedo/Library/Application Support/Google/Chrome for Testing"
 local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
@@ -69,7 +69,7 @@ def convert_to_enum(enum_type, value):
     raise ValueError(f"Invalid enum value: {value}")
 
 class ScrapeConfigManager:
-    def __init__(self, ):
+    def __init__(self):
         self.config_dict = {}
         self.enum_types = [SortListingBy]
         self.load_config()
@@ -143,6 +143,10 @@ class CookieManager:
         with get_selenium_driver(f"https://www.zillow.com/homes/{zip_code}_rb/") as driver:
             return extract_cookies_from_driver(driver, scrape_config['3s_delay'])
 
+class FakeUserAgentManager:
+    def __init__(self):
+        self.fake_headers
+
 def get_fake_headers_list():
   response = requests.get(f'http://headers.scrapeops.io/v1/browser-headers?api_key={SCRAPEOPS_API_KEY}')
   json_response = response.json()
@@ -161,9 +165,10 @@ cookie_manager = CookieManager()
 
 DATA_PATH = scrape_config['data_path']
 VISUAL_DATA_PATH = scrape_config['visual_data_path']
-HOME_DATA_PATH = scrape_config['home_data_path']
+SEARCH_RESULTS_DATA_PATH = scrape_config['search_results_data_path']
+SEARCH_RESULTS_METADATA_PATH = scrape_config['search_results_metadata_path']
 PROPERTY_DETAILS_PATH = scrape_config['property_details_path']
-SEARCH_RESULTS_PATH = scrape_config['search_results_path']
+SEARCH_RESULTS_PROCESSED_PATH = scrape_config['search_results_processed_path']
 
 def get_chrome_options(headless=False, incognito=False):
     options = uc.ChromeOptions()
@@ -188,21 +193,8 @@ def get_chrome_options(headless=False, incognito=False):
 @contextmanager
 def get_selenium_driver(url, headless=False, incognito=False):
     # proxy_wrapper = proxy_manager.get_proxy_wrapper()
-    binary_executable_path = CHROME_BINARY_EXECUTABLE_PATH
     options = get_chrome_options(headless=headless, incognito=incognito)
-    driver = uc.Chrome(options=options, browser_executable_path=binary_executable_path)
-    driver.get(url)
-    try:
-        yield driver
-    finally:
-        driver.quit()
-
-@contextmanager
-def get_selenium_wire_driver(url, headless=False, incognito=False):
-    # proxy_wrapper = proxy_manager.get_proxy_wrapper()
-    binary_executable_path = CHROME_BINARY_EXECUTABLE_PATH
-    options = get_chrome_options(headless=headless, incognito=incognito)
-    driver = webdriver.Chrome(options=options, binary_executable_path=binary_executable_path)
+    driver = uc.Chrome(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
     driver.get(url)
     try:
         yield driver
@@ -295,8 +287,7 @@ def extract_zestimate_history_from_driver(driver, delay):
         # There is no Zestimate history for this home (likely its off market).
         return []
 
-    scroll_to_element(driver, "ds-home-values")
-    # time.sleep(10000)
+    scroll_to_element(driver, ".layout-container-desktop", "#ds-home-values")
 
     table_view_button = None
     # We check if the zestimate history button is either directly in our text or in a child's text.
@@ -398,16 +389,28 @@ def is_element_in_viewport(driver, element):
     return driver.execute_script(script, element)
 
 
-def scroll_to_element(driver, element_id, max_attempts=10):
+def scroll_to_element(driver, container_selector, element_selector, max_attempts=10):
     """Scroll to an element until it is visible on the screen."""
     attempts = 0
     while attempts < max_attempts:
         try:
-            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, element_id)))
+            container = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, container_selector)))
+            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, element_selector)))
             if is_element_in_viewport(driver, element):
                 return # Element is in viewport.
             else:
-                driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
+                driver.execute_script("""
+                    var container = arguments[0];
+                    var element = arguments[1];
+                    var elementRect = element.getBoundingClientRect();
+                    var containerRect = container.getBoundingClientRect();
+
+                    // Calculate desired scrollTop for the container
+                    var scrollTop = element.offsetTop - container.offsetTop - (containerRect.height - elementRect.height) / 2;
+                    
+                    // Scroll smoothly
+                    container.scrollTo({top: scrollTop, behavior: 'smooth'});
+                """, container, element)
                 random_delay(scrape_config['1s_delay'], scrape_config['2s_delay'])  # Random delay after scrolling.
         except Exception as e:
             print(f"Scrolling attempt {attempts + 1} failed: {e}")
@@ -417,10 +420,13 @@ def scroll_to_element(driver, element_id, max_attempts=10):
     if attempts >= max_attempts:
         print("Maximum scrolling attempts reached. The element might not be visible.")
 
-def move_to_and_click(element, driver):
+def move_to_and_click(element, driver, and_hold=False):
     """Move to an element before clicking to simulate mouse movement."""
     actions = ActionChains(driver)
-    actions.move_to_element(element).pause(rd.uniform(0.5, 1.5)).click().perform()
+    if and_hold:
+        actions.move_to_element(element).pause(rd.uniform(0.5, 1.5)).click_and_hold(on_element=element).perform()
+    else:
+        actions.move_to_element(element).pause(rd.uniform(0.5, 1.5)).click().perform()
 
 def random_delay(min_delay=1, max_delay=3):
     """Wait for a random time between min_delay and max_delay seconds."""
