@@ -16,7 +16,7 @@ def process_listings(directory):
 
     # Iterate through all files in the directory
     for filename in os.listdir(directory):
-        if filename.endswith(".json") and filename.startswith("listings_page"):
+        if filename.endswith(".json") and filename.startswith("listings_"):
             file_path = os.path.join(directory, filename)
 
             # Read each JSON file
@@ -53,12 +53,12 @@ def process_listings(directory):
                     })
     return results
 
-def process_all_zip_codes(root_directory):
+def process_all_municipalities(root_directory):
     all_results = []
 
     # Iterate through each subdirectory in the root directory
-    for zip_code_folder in os.listdir(root_directory):
-        folder_path = os.path.join(root_directory, zip_code_folder)
+    for municipality_folder in os.listdir(root_directory):
+        folder_path = os.path.join(root_directory, municipality_folder)
 
         # Check if it's a directory
         if os.path.isdir(folder_path):
@@ -74,4 +74,4 @@ def process_all_zip_codes(root_directory):
         json.dump(sorted_results, outfile, indent=4)
 
 
-process_all_zip_codes(SEARCH_RESULTS_DATA_PATH)
+process_all_municipalities(SEARCH_RESULTS_DATA_PATH)

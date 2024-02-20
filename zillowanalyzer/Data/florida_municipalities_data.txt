@@ -1,0 +1,411 @@
+13	Gainesville†	Alachua	141,085	63.2 sq mi	163.6 km2	Commission–manager	City	1869
+165	Alachua	Alachua	10,574	36.2 sq mi	93.7 km2	Commission–manager	City	1905
+188	Newberry	Alachua	7,342	57.6 sq mi	149.2 km2	Commission–manager	City	1908
+207	High Springs	Alachua	6,215	21.8 sq mi	56.4 km2	Commission–manager	City	1892
+312	Hawthorne	Alachua	1,478	7.4 sq mi	19.1 km2	Commission–manager	City	1881
+325-T	Archer	Alachua	1,140	6.4 sq mi	16.5 km2	Commission–manager	City	1850
+338-T	Waldo	Alachua	846	2.2 sq mi	5.6 km2	Council–manager	City	1907
+354	Micanopy	Alachua	648	1.0 sq mi	2.7 km2	Mayor–commission	Town	1837
+387	LaCrosse	Alachua	316	4.6 sq mi	12.0 km2	Mayor–council	Town	1957
+190	Macclenny†	Baker	7,304	4.9 sq mi	12.6 km2	Commission–manager	City	1939
+372-T	Glen St. Mary	Baker	463	0.46 sq mi	1.2 km2	Mayor–council	Town	1957
+87	Panama City†	Bay	32,939	35.1 sq mi	90.9 km2	Commission–manager	City	1909
+120	Lynn Haven	Bay	18,695	10.5 sq mi	27.1 km2	Commission–manager	City	1913
+123	Panama City Beach	Bay	18,094	19.3 sq mi	50.0 km2	Council–manager	City	1977
+152	Callaway	Bay	13,045	9.4 sq mi	24.4 km2	Commission–manager	City	1996
+182	Springfield	Bay	8,075	4.2 sq mi	10.8 km2	Mayor–commission	City	1935
+235	Parker	Bay	4,010	1.9 sq mi	4.9 km2	Mayor–council	City	1967
+332	Mexico Beach	Bay	916	2.3 sq mi	5.9 km2	Council–manager	City	1967
+213	Starke†	Bradford	5,796	7.2 sq mi	18.6 km2	Commission–manager	City	1870
+356	Lawtey	Bradford	636	1.5 sq mi	3.9 km2	Mayor–council	City	1905
+377	Hampton	Bradford	432	1.1 sq mi	2.7 km2	Mayor–council	City	1870
+386	Brooker	Bradford	322	0.53 sq mi	1.4 km2	Mayor–council	Town	1952
+16	Palm Bay	Brevard	119,760	86.4 sq mi	223.8 km2	Council–manager	City	1960
+30	Melbourne	Brevard	84,678	44.1 sq mi	114.3 km2	Council–manager	City	1888
+61	Titusville†	Brevard	48,789	29.2 sq mi	75.7 km2	Council–manager	City	1887
+93	Rockledge	Brevard	27,678	13.2 sq mi	34.2 km2	Council–manager	City	1887
+100	West Melbourne	Brevard	25,924	10.7 sq mi	27.6 km2	Council–manager	City	1959
+118	Cocoa	Brevard	19,041	13.5 sq mi	34.9 km2	Commission–manager	City	1895
+162	Cocoa Beach	Brevard	11,354	4.7 sq mi	12.1 km2	Commission–manager	City	1925
+163	Satellite Beach	Brevard	11,226	2.9 sq mi	7.6 km2	Council–manager	City	1957
+169	Cape Canaveral	Brevard	9,972	2.2 sq mi	5.8 km2	Council–manager	City	1963
+177	Indian Harbour Beach	Brevard	9,019	2.1 sq mi	5.4 km2	Council–manager	City	1955
+230	Grant-Valkaria	Brevard	4,509	27.2 sq mi	70.5 km2	Mayor–council	Town	2006
+252	Melbourne Beach	Brevard	3,231	0.99 sq mi	2.6 km2	Commission–manager	Town	1923
+258-T	Indialantic	Brevard	3,010	0.97 sq mi	2.5 km2	Council–manager	Town	1952
+264	Malabar	Brevard	2,949	10.7 sq mi	27.7 km2	Mayor–council	Town	1962
+322	Palm Shores	Brevard	1,200	0.60 sq mi	1.6 km2	Mayor–council	Town	1959
+353	Melbourne Village	Brevard	681	0.58 sq mi	1.5 km2	Mayor–commission	Town	1957
+10	Fort Lauderdale†	Broward	182,760	34.6 sq mi	89.6 km2	Commission–manager	City	1911
+11	Pembroke Pines	Broward	171,178	32.7 sq mi	84.6 km2	Commission–manager	City	1960
+12	Hollywood	Broward	153,067	27.3 sq mi	70.6 km2	Commission–manager	City	1925
+14	Miramar	Broward	134,721	28.9 sq mi	74.7 km2	Commission–manager	City	1955
+15	Coral Springs	Broward	134,394	22.9 sq mi	59.2 km2	Commission–manager	City	1963
+20	Pompano Beach	Broward	112,046	24.0 sq mi	62.2 km2	Commission–manager	City	1908
+22	Davie	Broward	105,691	34.9 sq mi	90.4 km2	Commission–manager	Town	1925
+24	Sunrise	Broward	97,335	16.2 sq mi	42.0 km2	Commission–manager	City	1961
+26	Plantation	Broward	91,750	21.8 sq mi	56.3 km2	Mayor–council	City	1953
+28	Deerfield Beach	Broward	86,859	14.9 sq mi	38.7 km2	Commission–manager	City	1925
+38	Lauderhill	Broward	74,482	8.5 sq mi	22.1 km2	Commission–manager	City	1959
+40	Tamarac	Broward	71,897	11.6 sq mi	30.0 km2	Commission–manager	City	1963
+41	Weston	Broward	68,107	24.6 sq mi	63.7 km2	Commission–manager	City	1996
+51	Margate	Broward	58,712	8.8 sq mi	22.7 km2	Commission–manager	City	1955
+52	Coconut Creek	Broward	57,833	11.2 sq mi	28.9 km2	Commission–manager	City	1967
+67	North Lauderdale	Broward	44,794	4.6 sq mi	12.0 km2	Commission–manager	City	1963
+68	Oakland Park	Broward	44,229	7.5 sq mi	19.5 km2	Commission–manager	City	1929
+74	Hallandale Beach	Broward	41,217	4.2 sq mi	10.9 km2	Commission–manager	City	1927
+84	Lauderdale Lakes	Broward	35,954	3.7 sq mi	9.5 km2	Commission–manager	City	1961
+85	Parkland	Broward	34,670	12.5 sq mi	32.4 km2	Commission–manager	City	1963
+86	Cooper City	Broward	34,401	8.0 sq mi	20.8 km2	Commission–manager	City	1959
+88	Dania Beach	Broward	31,723	7.8 sq mi	20.2 km2	Commission–manager	City	1904
+139	West Park	Broward	15,130	2.2 sq mi	5.7 km2	Commission–manager	City	2005
+161	Wilton Manors	Broward	11,426	2.0 sq mi	5.1 km2	Commission–manager	City	1947
+166	Lighthouse Point	Broward	10,486	2.3 sq mi	6.0 km2	Mayor–commission	City	1956
+184	Southwest Ranches	Broward	7,607	13.0 sq mi	33.6 km2	Mayor–council	Town	2000
+205	Pembroke Park	Broward	6,260	1.4 sq mi	3.6 km2	Commission–manager	Town	1957
+208	Lauderdale-by-the-Sea	Broward	6,198	0.88 sq mi	2.3 km2	Commission–manager	Town	1924
+290	Hillsboro Beach	Broward	1,987	0.37 sq mi	0.95 km2	Mayor–commission	Town	1939
+362	Sea Ranch Lakes	Broward	540	0.17 sq mi	0.45 km2	Mayor–council	Village	1959
+408	Lazy Lake	Broward	33	0.02 sq mi	0.06 km2	Mayor–council	Village	1953
+281	Blountstown†	Calhoun	2,266	3.2 sq mi	8.3 km2	Council–manager	City	1903
+369	Altha	Calhoun	496	1.3 sq mi	3.5 km2	Mayor–council	Town	1946
+113	Punta Gorda†	Charlotte	19,471	15.5 sq mi	40.1 km2	Council–manager	City	1900
+185	Inverness†	Citrus	7,543	8.3 sq mi	21.6 km2	Council–manager	City	1919
+246	Crystal River	Citrus	3,396	7.5 sq mi	19.4 km2	Council–manager	City	1903
+170	Green Cove Springs†	Clay	9,786	7.5 sq mi	19.5 km2	Council–manager	City	1874
+174	Orange Park	Clay	9,089	3.6 sq mi	9.4 km2	Council–manager	Town	1879
+315	Keystone Heights	Clay	1,446	1.1 sq mi	2.8 km2	Council–manager	City	1925
+340	Penney Farms	Clay	821	1.5 sq mi	3.8 km2	Council–manager	Town	1927
+117	Naples	Collier	19,115	12.3 sq mi	31.9 km2	Council–manager	City	1925
+136	Marco Island	Collier	15,760	12.2 sq mi	31.5 km2	Council–manager	City	1997
+384	Everglades City	Collier	352	0.92 sq mi	2.4 km2	Mayor–council	City	1953
+156	Lake City†	Columbia	12,329	11.8 sq mi	30.7 km2	Council–manager	City	1859
+357	Fort White	Columbia	618	2.4 sq mi	6.3 km2	Mayor–council	Town	1884
+187	Arcadia†	DeSoto	7,420	4.4 sq mi	11.5 km2	Mayor–council	City	1886
+302	Cross City†	Dixie	1,689	1.8 sq mi	4.8 km2	Council–manager	Town	1924
+402	Horseshoe Beach	Dixie	165	0.47 sq mi	1.2 km2	Mayor–council	Town	1963
+1	Jacksonville†	Duval	949,611	747.3 sq mi	1,935.5 km2	Mayor–council	City	1832
+105	Jacksonville Beach	Duval	23,830	7.3 sq mi	19.0 km2	Council–manager	City	1907
+147	Atlantic Beach	Duval	13,513	3.7 sq mi	9.5 km2	Commission–manager	City	1926
+193	Neptune Beach	Duval	7,217	2.3 sq mi	6.1 km2	Council–manager	City	1931
+317	Baldwin	Duval	1,396	2.0 sq mi	5.2 km2	Mayor–council	Town	1876
+56	Pensacola†	Escambia	54,312	22.7 sq mi	58.7 km2	Mayor–council	City	1822
+299	Century	Escambia	1,713	3.2 sq mi	8.3 km2	Mayor–council	Town	1945
+27	Palm Coast	Flagler	89,258	95.4 sq mi	247.0 km2	Council–manager	City	1999
+222	Flagler Beach	Flagler	5,160	3.6 sq mi	9.3 km2	Commission–manager	City	1925
+250	Bunnell†	Flagler	3,276	139.8 sq mi	362.0 km2	Commission–manager	City	1913
+371	Beverly Beach	Flagler	474	0.34 sq mi	0.87 km2	Mayor–commission	Town	1955
+411	Marineland	Flagler St. Johns	15	0.21 sq mi	0.55 km2	Commission–manager	Town	1940
+271	Carrabelle	Franklin	2,606	4.8 sq mi	12.4 km2	Commission–manager	City	1893
+278	Apalachicola†	Franklin	2,341	1.9 sq mi	5.0 km2	Mayor–commission	City	1831
+183	Quincy†	Gadsden	7,970	11.6 sq mi	30.2 km2	Commission–manager	City	1828
+244	Midway	Gadsden	3,537	9.6 sq mi	24.9 km2	Council–manager	City	1986
+263	Chattahoochee	Gadsden	2,955	5.6 sq mi	14.5 km2	Council–manager	City	1921
+300	Havana	Gadsden	1,707	2.8 sq mi	7.2 km2	Council–manager	Town	1906
+319	Gretna	Gadsden	1,357	8.6 sq mi	22.2 km2	Commission–manager	City	1908
+374	Greensboro	Gadsden	461	2.3 sq mi	5.9 km2	Mayor–council	Town	1911
+288	Trenton†	Gilchrist	2,015	3.4 sq mi	8.8 km2	Commission–manager	City	1911
+365	Bell	Gilchrist	518	1.6 sq mi	4.2 km2	Council–manager	Town	1903
+307	Moore Haven†	Glades	1,566	1.1 sq mi	2.8 km2	Council–manager	City	1917
+248	Port St. Joe†	Gulf	3,357	9.4 sq mi	24.3 km2	Commission–manager	City	1913
+287	Wewahitchka	Gulf	2,074	6.7 sq mi	17.3 km2	Commission–manager	City	1959
+242	Jasper†	Hamilton	3,621	2.4 sq mi	6.3 km2	Council–manager	City	1858
+345	Jennings	Hamilton	749	2.7 sq mi	6.9 km2	Council–manager	Town	1900
+347	White Springs	Hamilton	740	1.8 sq mi	4.7 km2	Council–manager	Town	1885
+226	Wauchula†	Hardee	4,900	3.3 sq mi	8.5 km2	Commission–manager	City	1902
+273	Bowling Green	Hardee	2,405	1.3 sq mi	3.3 km2	Commission–manager	City	1927
+298	Zolfo Springs	Hardee	1,737	1.7 sq mi	4.5 km2	Commission–manager	Town	1904
+189	Clewiston	Hendry	7,327	4.5 sq mi	11.7 km2	Commission–manager	City	1925
+225	LaBelle†	Hendry	4,966	14.5 sq mi	37.5 km2	Mayor–commission	City	1925
+178	Brooksville†	Hernando	8,890	11.2 sq mi	29.1 km2	Council–manager	City	1856
+164	Sebring†	Highlands	10,729	10.1 sq mi	26.2 km2	Council–manager	City	1924
+172	Avon Park	Highlands	9,658	10.1 sq mi	26.2 km2	Council–manager	City	1891
+276	Lake Placid	Highlands	2,360	4.7 sq mi	12.0 km2	Mayor–council	Town	1927
+3	Tampa†	Hillsborough	384,959	114.0 sq mi	295.3 km2	Mayor–council	City	1855
+77	Plant City	Hillsborough	39,764	27.6 sq mi	71.4 km2	Commission–manager	City	1885
+97	Temple Terrace	Hillsborough	26,690	7.3 sq mi	19.0 km2	Council–manager	City	1925
+267	Bonifay†	Holmes	2,759	4.7 sq mi	12.2 km2	Mayor–council	City	1886
+367	Ponce de Leon	Holmes	504	5.0 sq mi	12.8 km2	Mayor–council	Town	1963
+385	Esto	Holmes	341	2.2 sq mi	5.6 km2	Council	Town	1883
+392	Westville	Holmes	261	7.2 sq mi	18.7 km2	Mayor–council	Town	1970
+400	Noma	Holmes	208	1.1 sq mi	2.8 km2	Mayor–council	Town	1977
+103	Sebastian	Indian River	25,054	15.8 sq mi	40.9 km2	Council–manager	City	1924
+132	Vero Beach†	Indian River	16,354	11.4 sq mi	29.6 km2	Commission–manager	City	1919
+228	Fellsmere	Indian River	4,834	57.6 sq mi	149.1 km2	Council–manager	City	1911
+234	Indian River Shores	Indian River	4,241	5.1 sq mi	13.3 km2	Council–manager	Town	1953
+366	Orchid	Indian River	516	1.2 sq mi	3.2 km2	Council–manager	Town	1965
+206	Marianna†	Jackson	6,245	18.6 sq mi	48.2 km2	Commission–manager	City	1825
+284	Graceville	Jackson	2,153	4.3 sq mi	11.2 km2	Commission–manager	City	1902
+294	Malone	Jackson	1,959	3.0 sq mi	7.9 km2	Mayor–council	Town	1911
+301	Sneads	Jackson	1,699	4.4 sq mi	11.4 km2	Council–manager	Town	1894
+335	Grand Ridge	Jackson	882	4.3 sq mi	11.3 km2	Council–manager	Town	1951
+337	Cottondale	Jackson	848	3.3 sq mi	8.5 km2	Mayor–commission	Town	1905
+363	Greenwood	Jackson	539	4.6 sq mi	11.8 km2	Mayor–council	Town	1927
+370	Alford	Jackson	484	1.1 sq mi	2.7 km2	Mayor–council	Town	1911
+397-T	Jacob City	Jackson	217	3.0 sq mi	7.9 km2	Council–manager	City	1983
+401	Campbellton	Jackson	191	2.6 sq mi	6.7 km2	Mayor–council	Town	1925
+405	Bascom	Jackson	87	0.24 sq mi	0.62 km2	Mayor–council	Town	1961
+272	Monticello†	Jefferson	2,589	4.0 sq mi	10.4 km2	Council–manager	City	1859
+328	Mayo†	Lafayette	1,055	0.90 sq mi	2.3 km2	Mayor–council	Town	1903
+72	Clermont	Lake	43,021	18.0 sq mi	46.6 km2	Council–manager	City	1916
+95	Leesburg	Lake	27,000	38.4 sq mi	99.6 km2	Commission–manager	City	1875
+106	Eustis	Lake	23,189	10.9 sq mi	28.3 km2	Council–manager	City	1883
+119	Tavares†	Lake	19,003	12.2 sq mi	31.5 km2	Mayor–council	City	1885
+121	Groveland	Lake	18,505	19.7 sq mi	50.9 km2	Council–manager	City	1922
+133	Mount Dora	Lake	16,341	8.0 sq mi	20.8 km2	Council–manager	City	1910
+134	Lady Lake	Lake	15,970	8.3 sq mi	21.5 km2	Commission–manager	Town	1883
+146	Minneola	Lake	13,843	11.1 sq mi	28.8 km2	Council–manager	City	1926
+180	Fruitland Park	Lake	8,325	7.0 sq mi	18.0 km2	Commission–manager	City	1927
+199	Mascotte	Lake	6,609	12.4 sq mi	32.1 km2	Council–manager	City	1925
+240	Umatilla	Lake	3,685	3.6 sq mi	9.3 km2	Council–manager	City	1904
+296	Astatula	Lake	1,889	3.1 sq mi	8.1 km2	Mayor–council	Town	1927
+303	Montverde	Lake	1,655	1.7 sq mi	4.3 km2	Mayor–council	Town	1925
+305	Howey-in-the-Hills	Lake	1,643	3.2 sq mi	8.2 km2	Council-manager	Town	1925
+9	Cape Coral	Lee	194,016	106.0 sq mi	274.6 km2	Council–manager	City	1970
+29	Fort Myers†	Lee	86,395	39.8 sq mi	103.2 km2	Council–manager	City	1886
+57	Bonita Springs	Lee	53,644	38.4 sq mi	99.5 km2	Council–manager	City	1999
+82	Estero	Lee	36,939	24.4 sq mi	63.1 km2	Council-manager	Village	2015
+202	Sanibel	Lee	6,382	16.2 sq mi	41.9 km2	Council–manager	City	1974
+215	Fort Myers Beach	Lee	5,582	2.8 sq mi	7.2 km2	Council–manager	Town	1995
+8	Tallahassee # †	Leon	196,169	100.9 sq mi	261.4 km2	Commission–manager	City	1825
+261	Williston	Levy	2,976	6.8 sq mi	17.7 km2	Council–manager	City	1929
+279	Chiefland	Levy	2,316	6.8 sq mi	17.5 km2	Commission–manager	City	1913
+313	Inglis	Levy	1,476	3.4 sq mi	8.8 km2	Mayor–commission	Town	1956
+325-T	Bronson†	Levy	1,140	4.3 sq mi	11.1 km2	Mayor–council	Town	1951
+352	Cedar Key	Levy	687	1.0 sq mi	2.6 km2	Mayor–commission	City	1923
+359	Yankeetown	Levy	588	7.7 sq mi	20.0 km2	Mayor–council	Town	1925
+404	Otter Creek	Levy	108	1.4 sq mi	3.5 km2	Mayor–council	Town	1969
+324	Fanning Springs	Levy Gilchrist	1,182	4.9 sq mi	12.6 km2	Mayor–council	City	1965
+331	Bristol†	Liberty	918	1.6 sq mi	4.2 km2	Mayor–council	City	1958
+265	Madison†	Madison	2,912	2.6 sq mi	6.8 km2	Commission–manager	City	1945
+346	Greenville	Madison	746	1.3 sq mi	3.4 km2	Mayor–council	Town	1907
+382	Lee	Madison	375	2.4 sq mi	6.3 km2	Council–manager	Town	1909
+53	Bradenton†	Manatee	55,698	14.3 sq mi	37.2 km2	Mayor–council	City	1903
+148	Palmetto	Manatee	13,323	5.4 sq mi	13.9 km2	Mayor–council	City	1897
+258-T	Holmes Beach	Manatee	3,010	1.7 sq mi	4.3 km2	Mayor–commission	City	1950
+329	Anna Maria	Manatee	968	0.74 sq mi	1.9 km2	Mayor–commission	City	1923
+333	Bradenton Beach	Manatee	908	0.52 sq mi	1.3 km2	Mayor–commission	City	1952
+186	Longboat Key	Manatee Sarasota	7,505	4.1 sq mi	10.6 km2	Commission–manager	Town	1955
+43	Ocala†	Marion	63,591	47.3 sq mi	122.4 km2	Council–manager	City	1869
+217	Belleview	Marion	5,413	3.9 sq mi	10.1 km2	Mayor–commission	City	1885
+295	Dunnellon	Marion	1,928	8.8 sq mi	22.8 km2	Council–manager	City	1891
+372-T	McIntosh	Marion	463	0.71 sq mi	1.8 km2	Council–manager	Town	1913
+376	Reddick	Marion	449	1.3 sq mi	3.3 km2	Mayor–council	Town	1925
+124	Stuart†	Martin	17,425	7.0 sq mi	18.3 km2	Commission–manager	City	1914
+201	Indiantown	Martin	6,560	14.2 sq mi	36.7 km2	Mayor–council	Village	2017
+289	Sewall's Point	Martin	1,991	1.2 sq mi	3.1 km2	Commission–manager	Town	1957
+341	Jupiter Island	Martin	804	2.7 sq mi	7.0 km2	Commission–manager	Town	1953
+388-T	Ocean Breeze	Martin	301	0.17 sq mi	0.43 km2	Council–manager	Town	1960
+2	Miami†	Miami-Dade	442,241	36.0 sq mi	93.2 km2	Mayor–commission	City	1896
+6	Hialeah	Miami-Dade	223,109	21.6 sq mi	55.9 km2	Mayor–council	City	1925
+21	Miami Gardens	Miami-Dade	111,640	18.2 sq mi	47.2 km2	Council–manager	City	2003
+31	Miami Beach	Miami-Dade	82,890	7.7 sq mi	19.9 km2	Commission–manager	City	1915
+33	Homestead	Miami-Dade	80,737	15.1 sq mi	39.1 km2	Council–manager	City	1913
+36	Doral	Miami-Dade	75,874	13.8 sq mi	35.8 km2	Council–manager	City	2003
+48	North Miami	Miami-Dade	60,191	8.4 sq mi	21.8 km2	Council–manager	City	1926
+59	Coral Gables	Miami-Dade	49,248	12.9 sq mi	33.5 km2	Commission–manager	City	1925
+66	Cutler Bay	Miami-Dade	45,425	9.9 sq mi	25.6 km2	Commission–manager	Town	2005
+70	North Miami Beach	Miami-Dade	43,676	4.8 sq mi	12.5 km2	Council–manager	City	1926
+75	Aventura	Miami-Dade	40,242	2.6 sq mi	6.9 km2	Council–manager	City	1995
+89	Miami Lakes	Miami-Dade	30,467	5.7 sq mi	14.7 km2	Council–manager	Town	2000
+104	Palmetto Bay	Miami-Dade	24,439	8.3 sq mi	21.5 km2	Council–manager	Village	2002
+108	Hialeah Gardens	Miami-Dade	23,068	3.2 sq mi	8.3 km2	Mayor–council	City	1948
+109	Sunny Isles Beach	Miami-Dade	22,342	1.0 sq mi	2.6 km2	Commission–manager	City	1997
+115	Sweetwater	Miami-Dade	19,363	2.2 sq mi	5.7 km2	Mayor–commission	City	1941
+122	Pinecrest	Miami-Dade	18,388	7.5 sq mi	19.3 km2	Council–manager	Village	1996
+130	Opa-locka	Miami-Dade	16,463	4.3 sq mi	11.2 km2	Commission–manager	City	1926
+142	Key Biscayne	Miami-Dade	14,809	1.2 sq mi	3.2 km2	Council–manager	Village	1991
+145	Miami Springs	Miami-Dade	13,859	2.9 sq mi	7.5 km2	Council–manager	City	1926
+150	Florida City	Miami-Dade	13,085	6.0 sq mi	15.5 km2	Mayor–commission	City	1914
+157	South Miami	Miami-Dade	12,026	2.3 sq mi	5.9 km2	Commission–manager	City	1926
+159	Miami Shores	Miami-Dade	11,567	2.5 sq mi	6.4 km2	Council–manager	Village	1932
+181	North Bay Village	Miami-Dade	8,159	0.37 sq mi	0.96 km2	Commission–manager	City	1945
+192	West Miami	Miami-Dade	7,233	0.71 sq mi	1.8 km2	Commission–manager	City	1947
+210	Bay Harbor Islands	Miami-Dade	5,922	0.40 sq mi	1.0 km2	Council–manager	Town	1947
+214	Surfside	Miami-Dade	5,689	0.56 sq mi	1.4 km2	Commission–manager	Town	1935
+253	Biscayne Park	Miami-Dade	3,117	0.62 sq mi	1.6 km2	Commission–manager	Village	1933
+254	Bal Harbour	Miami-Dade	3,093	0.38 sq mi	0.99 km2	Council–manager	Village	1946
+274	Virginia Gardens	Miami-Dade	2,364	0.29 sq mi	0.76 km2	Mayor–council	Village	1947
+291-T	El Portal	Miami-Dade	1,986	0.42 sq mi	1.1 km2	Council–manager	Village	1937
+327	Medley	Miami-Dade	1,056	5.1 sq mi	13.2 km2	Mayor–council	Town	1949
+330	Golden Beach	Miami-Dade	961	0.33 sq mi	0.84 km2	Council–manager	Town	1929
+406	Indian Creek	Miami-Dade	84	0.43 sq mi	1.1 km2	Council–manager	Village	1939
+99	Key West†	Monroe	26,444	5.6 sq mi	14.5 km2	Commission–manager	City	1828
+171	Marathon	Monroe	9,689	8.4 sq mi	21.9 km2	Council–manager	City	1999
+194	Islamorada	Monroe	7,107	6.4 sq mi	16.7 km2	Council–manager	Village	1997
+342	Key Colony Beach	Monroe	790	0.44 sq mi	1.1 km2	Mayor–commission	City	1957
+399	Layton	Monroe	210	0.16 sq mi	0.42 km2	Mayor–council	City	1963
+151	Fernandina Beach†	Nassau	13,052	11.8 sq mi	30.6 km2	Commission–manager	City	1825
+262	Hilliard	Nassau	2,967	5.5 sq mi	14.3 km2	Mayor–council	Town	1947
+310	Callahan	Nassau	1,526	1.8 sq mi	4.7 km2	Council–manager	Town	1911
+94	Crestview†	Okaloosa	27,134	16.6 sq mi	42.9 km2	Mayor–council	City	1916
+111	Fort Walton Beach	Okaloosa	20,922	7.6 sq mi	19.8 km2	Council–manager	City	1941
+135	Niceville	Okaloosa	15,772	13.1 sq mi	33.8 km2	Council–manager	City	1938
+144	Destin	Okaloosa	13,931	7.7 sq mi	20.0 km2	Council–manager	City	1984
+229	Valparaiso	Okaloosa	4,752	11.8 sq mi	30.7 km2	Mayor–commission	City	1921
+236	Mary Esther	Okaloosa	3,982	1.5 sq mi	3.8 km2	Council–manager	City	1946
+348	Shalimar	Okaloosa	737	0.29 sq mi	0.75 km2	Commission–manager	Town	1947
+360	Laurel Hill	Okaloosa	584	4.2 sq mi	10.9 km2	Mayor–council	City	1905
+375	Cinco Bayou	Okaloosa	457	0.17 sq mi	0.44 km2	Council–manager	Town	1950
+219	Okeechobee†	Okeechobee	5,254	4.1 sq mi	10.5 km2	Mayor–council	City	1915
+4	Orlando†	Orange	307,573	110.6 sq mi	286.5 km2	Mayor–council	City	1875
+54	Apopka	Orange	54,873	34.6 sq mi	89.5 km2	Mayor–council	City	1882
+63	Ocoee	Orange	47,295	15.6 sq mi	40.4 km2	Commission–manager	City	1923
+64	Winter Garden	Orange	46,964	16.3 sq mi	42.2 km2	Commission–manager	City	1908
+91	Winter Park	Orange	29,795	8.8 sq mi	22.7 km2	Commission–manager	City	1887
+112	Maitland	Orange	19,543	5.4 sq mi	13.9 km2	Council–manager	City	1885
+195	Belle Isle	Orange	7,032	2.4 sq mi	6.2 km2	Council–manager	City	1924
+245	Oakland	Orange	3,516	2.3 sq mi	6.0 km2	Commission–manager	Town	1887
+257	Windermere	Orange	3,030	1.9 sq mi	5.0 km2	Council–manager	Town	1925
+270	Edgewood	Orange	2,685	1.2 sq mi	3.2 km2	Mayor–council	City	1924
+277	Eatonville	Orange	2,349	0.99 sq mi	2.6 km2	Mayor–council	Town	1887
+409	Bay Lake	Orange	29	21.5 sq mi	55.7 km2	Council–manager	City	1967
+410	Lake Buena Vista	Orange	24	3.0 sq mi	7.8 km2	Council–manager	City	1967
+35	Kissimmee†	Osceola	79,226	21.5 sq mi	55.7 km2	Council–manager	City	1883
+50	St. Cloud	Osceola	58,964	25.5 sq mi	65.9 km2	Council–manager	City	1911
+17	West Palm Beach†	Palm Beach	117,415	53.8 sq mi	139.4 km2	Mayor–commission	City	1894
+23	Boca Raton	Palm Beach	97,422	29.2 sq mi	75.6 km2	Council–manager	City	1925
+34	Boynton Beach	Palm Beach	80,380	16.2 sq mi	41.8 km2	Commission–manager	City	1907
+42	Delray Beach	Palm Beach	66,846	15.9 sq mi	41.2 km2	Commission–manager	City	1911
+45	Wellington	Palm Beach	61,637	45.0 sq mi	116.5 km2	Council–manager	Village	1995
+47	Jupiter	Palm Beach	61,047	21.6 sq mi	56.0 km2	Council–manager	Town	1925
+49	Palm Beach Gardens	Palm Beach	59,182	58.7 sq mi	152.1 km2	Council–manager	City	1959
+69	Greenacres	Palm Beach	43,990	5.9 sq mi	15.4 km2	Commission–manager	City	1926
+73	Lake Worth Beach	Palm Beach	42,219	5.9 sq mi	15.3 km2	Commission–manager	City	1912
+78	Royal Palm Beach	Palm Beach	38,932	11.3 sq mi	29.4 km2	Council–manager	Village	1959
+80	Riviera Beach	Palm Beach	37,604	8.3 sq mi	21.4 km2	Council–manager	City	1922
+96	Palm Springs	Palm Beach	26,890	4.2 sq mi	10.9 km2	Council–manager	Village	1957
+129	Belle Glade	Palm Beach	16,698	7.0 sq mi	18.1 km2	Council–manager	City	1928
+149	North Palm Beach	Palm Beach	13,162	3.3 sq mi	8.5 km2	Council–manager	Village	1956
+160	Lantana	Palm Beach	11,504	2.4 sq mi	6.1 km2	Council–manager	Town	1921
+173	Palm Beach	Palm Beach	9,245	3.8 sq mi	9.8 km2	Council–manager	Town	1911
+175	Lake Park	Palm Beach	9,047	2.1 sq mi	5.4 km2	Commission–manager	Town	1921
+209	Tequesta	Palm Beach	6,158	1.8 sq mi	4.7 km2	Council–manager	Village	1957
+216	Pahokee	Palm Beach	5,524	5.3 sq mi	13.8 km2	Commission–manager	City	1922
+227	South Bay	Palm Beach	4,860	2.9 sq mi	7.4 km2	Commission–manager	City	1941
+231	Highland Beach	Palm Beach	4,295	0.54 sq mi	1.4 km2	Commission–manager	Town	1949
+239	Juno Beach	Palm Beach	3,858	2.0 sq mi	5.3 km2	Council–manager	Town	1953
+243	Lake Clarke Shores	Palm Beach	3,564	0.92 sq mi	2.4 km2	Mayor–council	Town	1957
+249	Loxahatchee Groves	Palm Beach	3,355	12.5 sq mi	32.4 km2	Council–manager	Town	2006
+269	Hypoluxo	Palm Beach	2,687	0.57 sq mi	1.5 km2	Mayor–council	Town	1955
+282	Haverhill	Palm Beach	2,187	0.63 sq mi	1.6 km2	Council–manager	Town	1950
+285-T	Atlantis	Palm Beach	2,142	1.4 sq mi	3.5 km2	Council–manager	City	1959
+285-T	Mangonia Park	Palm Beach	2,142	0.75 sq mi	1.9 km2	Council–manager	Town	1947
+297	Ocean Ridge	Palm Beach	1,830	0.76 sq mi	2.0 km2	Commission–manager	Town	1931
+314	South Palm Beach	Palm Beach	1,471	0.11 sq mi	0.28 km2	Council–manager	Town	1955
+320	Palm Beach Shores	Palm Beach	1,330	0.29 sq mi	0.76 km2	Commission–manager	Town	1951
+334	Westlake	Palm Beach	906	6.4 sq mi	16.5 km2	Mayor–council	City	2017
+336	Gulf Stream	Palm Beach	880	0.79 sq mi	2.0 km2	Commission–manager	Town	1925
+368	Briny Breezes	Palm Beach	502	0.06 sq mi	0.15 km2	Mayor–council	Town	1963
+379	Manalapan	Palm Beach	419	0.45 sq mi	1.2 km2	Commission–manager	Town	1931
+380	Jupiter Inlet Colony	Palm Beach	405	0.16 sq mi	0.40 km2	Mayor–commission	Town	1959
+393	Golf	Palm Beach	255	0.82 sq mi	2.1 km2	Council–manager	Village	1957
+397-T	Glen Ridge	Palm Beach	217	0.17 sq mi	0.44 km2	Council–manager	Town	1947
+403	Cloud Lake	Palm Beach	134	0.05 sq mi	0.14 km2	Mayor–council	Town	1948
+125	Zephyrhills	Pasco	17,194	9.5 sq mi	24.6 km2	Council–manager	City	1914
+128	New Port Richey	Pasco	16,728	4.5 sq mi	11.8 km2	Council–manager	City	1924
+191	Dade City†	Pasco	7,275	6.2 sq mi	16.0 km2	Commission–manager	City	1889
+255	Port Richey	Pasco	3,052	2.2 sq mi	5.7 km2	Council–manager	City	1925
+275	St. Leo	Pasco	2,362	1.1 sq mi	2.9 km2	Mayor–commission	Town	1891
+321	San Antonio	Pasco	1,297	1.4 sq mi	3.5 km2	Mayor–commission	City	1891
+5	St. Petersburg	Pinellas	258,308	61.8 sq mi	160.1 km2	Mayor–commission	City	1903
+18	Clearwater†	Pinellas	117,292	26.1 sq mi	67.6 km2	Council–manager	City	1891
+32	Largo	Pinellas	82,485	18.5 sq mi	48.0 km2	Commission–manager	City	1905
+58	Pinellas Park	Pinellas	53,093	16.1 sq mi	41.7 km2	Council–manager	City	1915
+83	Dunedin	Pinellas	36,068	10.4 sq mi	27.0 km2	Commission–manager	City	1899
+102	Tarpon Springs	Pinellas	25,117	9.1 sq mi	23.6 km2	Commission–manager	City	1887
+114	Seminole	Pinellas	19,364	5.2 sq mi	13.4 km2	Council–manager	City	1970
+126	Safety Harbor	Pinellas	17,072	4.9 sq mi	12.8 km2	Commission–manager	City	1917
+141	Oldsmar	Pinellas	14,898	8.9 sq mi	23.2 km2	Council–manager	City	1936
+158	Gulfport	Pinellas	11,783	2.8 sq mi	7.2 km2	Council–manager	City	1910
+179	St. Pete Beach	Pinellas	8,879	2.1 sq mi	5.5 km2	Commission–manager	City	1957
+200	Treasure Island	Pinellas	6,584	1.5 sq mi	4.0 km2	Commission–manager	City	1955
+218	South Pasadena	Pinellas	5,353	0.61 sq mi	1.6 km2	Mayor–commission	City	1955
+224	Kenneth City	Pinellas	5,047	0.71 sq mi	1.8 km2	Council-manager	Town	1957
+232	Indian Rocks Beach	Pinellas	4,286	0.85 sq mi	2.2 km2	Commission–manager	City	1956
+233	Belleair	Pinellas	4,273	1.7 sq mi	4.5 km2	Council–manager	Town	1924
+237	Madeira Beach	Pinellas	3,895	0.98 sq mi	2.5 km2	Commission–manager	City	1947
+280	Belleair Bluffs	Pinellas	2,311	0.46 sq mi	1.2 km2	Mayor–commission	City	1963
+283	Redington Shores	Pinellas	2,176	0.33 sq mi	0.85 km2	Mayor–commission	Town	1955
+306	Belleair Beach	Pinellas	1,633	0.48 sq mi	1.2 km2	Council–manager	City	1950
+311	North Redington Beach	Pinellas	1,495	0.26 sq mi	0.68 km2	Mayor–commission	Town	1953
+318	Redington Beach	Pinellas	1,376	0.36 sq mi	0.93 km2	Mayor–commission	Town	1944
+323	Indian Shores	Pinellas	1,190	0.33 sq mi	0.87 km2	Mayor–council	Town	1949
+407	Belleair Shore	Pinellas	73	0.06 sq mi	0.15 km2	Mayor–commission	Town	1955
+19	Lakeland	Polk	112,641	66.2 sq mi	171.3 km2	Commission–manager	City	1885
+60	Winter Haven	Polk	49,219	32.5 sq mi	84.1 km2	Commission–manager	City	1923
+98	Haines City	Polk	26,669	18.8 sq mi	48.6 km2	Council–manager	City	1914
+116	Bartow†	Polk	19,309	46.3 sq mi	120.0 km2	Commission–manager	City	1882
+131	Lake Wales	Polk	16,361	18.8 sq mi	48.8 km2	Commission–manager	City	1917
+138	Auburndale	Polk	15,616	13.6 sq mi	35.1 km2	Commission–manager	City	1911
+176	Davenport	Polk	9,043	3.7 sq mi	9.7 km2	Commission–manager	City	1915
+203	Lake Alfred	Polk	6,374	9.3 sq mi	24.0 km2	Commission–manager	City	1915
+220	Dundee	Polk	5,235	10.5 sq mi	27.2 km2	Council–manager	Town	1925
+223	Fort Meade	Polk	5,100	8.2 sq mi	21.2 km2	Commission–manager	City	1885
+237	Mulberry	Polk	3,952	6.2 sq mi	16.0 km2	Commission–manager	City	1901
+251	Frostproof	Polk	3,273	10.7 sq mi	27.8 km2	Council–manager	City	1921
+260	Eagle Lake	Polk	3,008	2.0 sq mi	5.1 km2	Commission–manager	City	1921
+268	Polk City	Polk	2,713	4.5 sq mi	11.7 km2	Council–manager	Town	1925
+309	Lake Hamilton	Polk	1,537	3.1 sq mi	8.1 km2	Mayor–council	Town	1925
+391	Highland Park	Polk	264	0.55 sq mi	1.4 km2	Mayor–commission	Village	1927
+394	Hillcrest Heights	Polk	243	0.16 sq mi	0.41 km2	Mayor–commission	Town	1923
+167	Palatka†	Putnam	10,446	9.8 sq mi	25.3 km2	Commission–manager	City	1853
+304	Crescent City	Putnam	1,654	2.1 sq mi	5.3 km2	Commission–manager	City	1883
+316	Interlachen	Putnam	1,441	6.1 sq mi	15.8 km2	Mayor–council	Town	1888
+343	Pomona Park	Putnam	784	3.0 sq mi	7.9 km2	Mayor–council	Town	1894
+350	Welaka	Putnam	714	1.5 sq mi	3.8 km2	Mayor–council	Town	1887
+168	Milton†	Santa Rosa	10,197	5.6 sq mi	14.4 km2	Council–manager	City	1844
+204	Gulf Breeze	Santa Rosa	6,302	4.7 sq mi	12.1 km2	Council–manager	City	1961
+364	Jay	Santa Rosa	524	1.7 sq mi	4.3 km2	Mayor–council	Town	1939
+37	North Port	Sarasota	74,793	99.4 sq mi	257.4 km2	Commission–manager	City	1959
+55	Sarasota†	Sarasota	54,842	14.7 sq mi	38.1 km2	Commission–manager	City	1902
+101	Venice	Sarasota	25,463	15.9 sq mi	41.3 km2	Council–manager	City	1926
+46	Sanford†	Seminole	61,051	23.6 sq mi	61.1 km2	Commission–manager	City	1877
+65	Altamonte Springs	Seminole	46,231	9.1 sq mi	23.5 km2	Commission–manager	City	1920
+76	Oviedo	Seminole	40,059	15.5 sq mi	40.1 km2	Council–manager	City	1925
+79	Winter Springs	Seminole	38,342	14.9 sq mi	38.5 km2	Commission–manager	City	1959
+92	Casselberry	Seminole	28,794	7.0 sq mi	18.0 km2	Commission–manager	City	1940
+127	Lake Mary	Seminole	16,798	9.1 sq mi	23.5 km2	Commission–manager	City	1973
+140	Longwood	Seminole	15,087	5.5 sq mi	14.2 km2	Mayor–commission	City	1875
+143	St. Augustine†	St. Johns	14,329	9.5 sq mi	24.7 km2	Commission–manager	City	1822
+197	St. Augustine Beach	St. Johns	6,803	2.1 sq mi	5.5 km2	Commission–manager	City	1959
+7	Port St. Lucie	St. Lucie	204,851	119.2 sq mi	308.8 km2	Council–manager	City	1961
+62	Fort Pierce†	St. Lucie	47,297	23.8 sq mi	61.6 km2	Commission–manager	City	1901
+358	St. Lucie Village	St. Lucie	613	0.90 sq mi	2.3 km2	Mayor–council	Town	1961
+137	Wildwood	Sumter	15,730	56.3 sq mi	145.8 km2	Commission–manager	City	1877
+256	Bushnell†	Sumter	3,047	12.4 sq mi	32.2 km2	Council–manager	City	1911
+338	Center Hill	Sumter	846	6.1 sq mi	15.8 km2	Mayor–council	City	1925
+344	Webster	Sumter	778	1.6 sq mi	4.1 km2	Mayor–commission	City	1957
+355	Coleman	Sumter	642	2.2 sq mi	5.8 km2	Mayor–council	City	1908
+198	Live Oak†	Suwannee	6,735	7.6 sq mi	19.8 km2	Mayor–council	City	1878
+351	Branford	Suwannee	711	1.1 sq mi	2.9 km2	Mayor–council	Town	1961
+196	Perry†	Taylor	6,898	9.4 sq mi	24.4 km2	Council–manager	City	1903
+291-T	Lake Butler†	Union	1,986	2.3 sq mi	6.0 km2	Commission–manager	City	1893
+381	Worthington Springs	Union	378	0.96 sq mi	2.5 km2	Mayor–council	Town	1963
+396	Raiford	Union	224	0.55 sq mi	1.4 km2	Mayor–council	Town	1900
+25	Deltona	Volusia	93,692	37.3 sq mi	96.7 km2	Commission–manager	City	1995
+39	Daytona Beach	Volusia	72,647	65.6 sq mi	169.9 km2	Commission–manager	City	1876
+44	Port Orange	Volusia	62,596	26.8 sq mi	69.4 km2	Council–manager	City	1867
+71	Ormond Beach	Volusia	43,475	34.7 sq mi	89.9 km2	Commission–manager	City	1880
+81	DeLand†	Volusia	37,351	19.0 sq mi	49.3 km2	Council–manager	City	1882
+90	New Smyrna Beach	Volusia	30,142	37.7 sq mi	97.7 km2	Commission–manager	City	1887
+107	Edgewater	Volusia	23,097	24.6 sq mi	63.7 km2	Council–manager	City	1924
+110	DeBary	Volusia	22,260	19.0 sq mi	49.1 km2	Council–manager	City	1993
+153	Holly Hill	Volusia	12,958	4.0 sq mi	10.3 km2	Commission–manager	City	1901
+154	South Daytona	Volusia	12,865	3.7 sq mi	9.6 km2	Council–manager	City	1938
+155	Orange City	Volusia	12,632	7.8 sq mi	20.2 km2	Council–manager	City	1882
+221	Daytona Beach Shores	Volusia	5,179	0.85 sq mi	2.2 km2	Council–manager	City	1960
+247	Ponce Inlet	Volusia	3,364	4.5 sq mi	11.6 km2	Council–manager	Town	1963
+266	Lake Helen	Volusia	2,842	4.6 sq mi	11.8 km2	Commission-manager	City	1888
+291-T	Oak Hill	Volusia	1,986	6.7 sq mi	17.4 km2	Mayor–commission	City	1927
+308	Pierson	Volusia	1,542	10.2 sq mi	26.4 km2	Mayor–council	Town	1926
+378	Sopchoppy	Wakulla	426	1.7 sq mi	4.3 km2	Mayor–council	City	1955
+390	St. Marks	Wakulla	274	2.0 sq mi	5.1 km2	Commission–manager	City	1963
+211	DeFuniak Springs†	Walton	5,919	14.0 sq mi	36.1 km2	Council–manager	City	1901
+212	Freeport	Walton	5,861	18.9 sq mi	49.1 km2	Mayor–council	City	1963
+361	Paxton	Walton	556	3.7 sq mi	9.6 km2	Mayor–council	Town	1952
+241	Chipley†	Washington	3,660	4.2 sq mi	11.0 km2	Mayor–council	City	1901
+349	Vernon	Washington	732	4.8 sq mi	12.3 km2	Mayor–council	City	1926
+383	Wausau	Washington	371	1.2 sq mi	3.0 km2	Mayor–council	Town	1963
+388-T	Caryville	Washington	301	3.0 sq mi	7.8 km2	Council	Town	1965
+395	Ebro	Washington	237	4.7 sq mi	12.2 km2	Mayor–council	Town	1967

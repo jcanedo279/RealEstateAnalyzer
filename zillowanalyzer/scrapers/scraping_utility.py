@@ -21,6 +21,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from dateutil.parser import parse
 import pandas as pd
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
@@ -127,21 +128,22 @@ class ScrapeConfigManager:
     def __getitem__(self, key, default=None):
         return self.config_dict.get(key, default)
 
-class CookieManager:
-    def __init__(self):
-        self.cookie_string = None
-        self.zip_code = None
+    def __setitem__(self, key, value):
+        self.config_dict[key] = value
 
-    def get_cookie_for_zip_code(self, zip_code):
-        if zip_code != self.zip_code or self.cookie_string is None:
-            self.zip_code = zip_code
-            self.cookie_string = self.fetch_cookie_from_zip_code(zip_code)
-        return self.cookie_string
-
-    def fetch_cookie_from_zip_code(self, zip_code):
-        # Simulate fetching a cookie string for the given zip code
-        with get_selenium_driver(f"https://www.zillow.com/homes/{zip_code}_rb/") as driver:
-            return extract_cookies_from_driver(driver, scrape_config['3s_delay'])
+class ZillowChromeDriver(uc.Chrome):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    def get(self, url):
+        super().get(url)
+        # If a Captcha is detected, stop scraping.
+        try:
+            while self.find_element(By.ID, 'px-captcha-wrapper'):
+                print(f"I need halp on profile: {scrape_config['profile_number']} :<")
+                time.sleep(20)
+        except:
+            pass
 
 class FakeUserAgentManager:
     def __init__(self):
@@ -160,7 +162,6 @@ if not SCRAPEOPS_API_KEY:
     sys.exit("A SCRAPEOPS_API_KEY is required to generate plausible headers when scraping :<")
 GENERATED_HEADERS = get_fake_headers_list()
 USER_AGENT = UserAgent()
-cookie_manager = CookieManager()
 # proxy_manager = ProxyManager()
 
 DATA_PATH = scrape_config['data_path']
@@ -180,9 +181,11 @@ def get_chrome_options(headless=False, incognito=False):
     if incognito:
         options.add_argument("--incognito")
     elif local_path_exists:
-        user_data_dir = CHROME_USER_DATA_DIR
-        profile_directory = f"Profile {rd.randint(5, 9)}"
-        options.add_argument(f"--user-data-dir={user_data_dir}")
+        profile_number = rd.randint(scrape_config['min_profile_number'], scrape_config['max_profile_number'])
+        # We update the scrape_config with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
+        scrape_config['profile_number'] = profile_number
+        profile_directory = f"Profile {profile_number}"
+        options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
         options.add_argument(f"--profile-directory={profile_directory}")
     options.add_argument('--ignore-ssl-errors=yes')
     options.add_argument('--ignore-certificate-errors')
@@ -194,7 +197,7 @@ def get_chrome_options(headless=False, incognito=False):
 def get_selenium_driver(url, headless=False, incognito=False):
     # proxy_wrapper = proxy_manager.get_proxy_wrapper()
     options = get_chrome_options(headless=headless, incognito=incognito)
-    driver = uc.Chrome(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
+    driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
     driver.get(url)
     try:
         yield driver
@@ -235,6 +238,14 @@ def extract_region_data_from_driver(driver, delay):
         script_content = script_tag.string
         return json.loads(script_content)['props']['pageProps']['searchPageState']['queryState']
     return None
+
+def extract_search_page_state_from_driver(driver, delay):
+    random_delay(delay, 2*delay)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    script_tag = soup.find('script', string=re.compile('regionSelection'))
+    if script_tag:
+        script_content = script_tag.string
+        return json.loads(script_content)['props']['pageProps']['searchPageState']
 
 @retry_request(scrape_config)
 def extract_property_details_from_driver(driver, delay):
@@ -287,8 +298,6 @@ def extract_zestimate_history_from_driver(driver, delay):
         # There is no Zestimate history for this home (likely its off market).
         return []
 
-    scroll_to_element(driver, ".layout-container-desktop", "#ds-home-values")
-
     table_view_button = None
     # We check if the zestimate history button is either directly in our text or in a child's text.
     try:
@@ -299,7 +308,7 @@ def extract_zestimate_history_from_driver(driver, delay):
     if not table_view_button or not table_view_button.is_displayed():
         try:
             show_more_button = container.find_element(By.XPATH, ".//button[contains(., 'Show more')]")
-            move_to_and_click(show_more_button, driver)
+            offscreen_click(show_more_button, driver)
             table_view_button = container.find_element(By.XPATH, ".//button[contains(text(), 'Table view')]")
         except NoSuchElementException:
             pass
@@ -310,7 +319,7 @@ def extract_zestimate_history_from_driver(driver, delay):
             return []
     except NoSuchElementException:
         pass
-    move_to_and_click(table_view_button, driver)
+    offscreen_click(table_view_button, driver)
     
     # Wait for the element to be loaded.
     zestimate_history_selector = '//table[@data-testid="zestimate-history"]'
@@ -353,30 +362,7 @@ def what_is_my_ip():
             return ip_addresses
         except:
             return
-        
-# reference_url is used as the previous url which we are coming from.
-# zip_code is used more generally by the cookie_manager to allow all requests in a zip_code to re-use the same cookie_string.
-def gen_headers_for_zillow(zip_code, reference_url, client_id=None):
-    generated_headers = rd.choice(GENERATED_HEADERS)
-    headers = {
-        'cookie': cookie_manager.get_cookie_for_zip_code(zip_code),
-        'authority': "www.zillow.com",
-        'accept': "*/*",
-        'accept-language': generated_headers['accept-language'],
-        'content-type': "application/json",
-        'origin': "https://www.zillow.com",
-        'referer': reference_url,
-        'sec-ch-ua': generated_headers['sec-ch-ua'],
-        'sec-ch-ua-mobile': generated_headers['sec-ch-ua-mobile'],
-        'sec-ch-ua-platform': generated_headers['sec-ch-ua-platform'],
-        'sec-fetch-dest': "empty",
-        'sec-fetch-mode': "cors",
-        'sec-fetch-site': "same-origin",
-        'user-agent': generated_headers['user-agent']
-    }
-    if client_id:
-        headers['client-id'] = client_id
-    return headers
+
 
 def is_element_in_viewport(driver, element):
     script = """
@@ -392,41 +378,34 @@ def is_element_in_viewport(driver, element):
 def scroll_to_element(driver, container_selector, element_selector, max_attempts=10):
     """Scroll to an element until it is visible on the screen."""
     attempts = 0
+    try:
+        container = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, container_selector)))
+        element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, element_selector)))
+        move_to_and_click(container, driver)
+    except Exception as e:
+        print(f"Either the container or element could not be located.")
     while attempts < max_attempts:
-        try:
-            container = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, container_selector)))
-            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, element_selector)))
-            if is_element_in_viewport(driver, element):
-                return # Element is in viewport.
-            else:
-                driver.execute_script("""
-                    var container = arguments[0];
-                    var element = arguments[1];
-                    var elementRect = element.getBoundingClientRect();
-                    var containerRect = container.getBoundingClientRect();
-
-                    // Calculate desired scrollTop for the container
-                    var scrollTop = element.offsetTop - container.offsetTop - (containerRect.height - elementRect.height) / 2;
-                    
-                    // Scroll smoothly
-                    container.scrollTo({top: scrollTop, behavior: 'smooth'});
-                """, container, element)
-                random_delay(scrape_config['1s_delay'], scrape_config['2s_delay'])  # Random delay after scrolling.
-        except Exception as e:
-            print(f"Scrolling attempt {attempts + 1} failed: {e}")
+        if is_element_in_viewport(driver, element):
+            return # Element is in viewport.
+        else:
+            ActionChains(driver).send_keys(Keys.PAGE_DOWN).perform()
+            # random_delay(0, 0.025)  # Random delay after scrolling.
         attempts += 1
         random_delay(scrape_config['1s_delay'], scrape_config['2s_delay'])  # Random delay before next attempt.
 
     if attempts >= max_attempts:
         print("Maximum scrolling attempts reached. The element might not be visible.")
 
+def offscreen_click(element, driver):
+    driver.execute_script("arguments[0].click();", element)
+
 def move_to_and_click(element, driver, and_hold=False):
     """Move to an element before clicking to simulate mouse movement."""
     actions = ActionChains(driver)
     if and_hold:
-        actions.move_to_element(element).pause(rd.uniform(0.5, 1.5)).click_and_hold(on_element=element).perform()
+        actions.move_to_element(element).pause(rd.uniform(0.1, 0.5)).click_and_hold(on_element=element).perform()
     else:
-        actions.move_to_element(element).pause(rd.uniform(0.5, 1.5)).click().perform()
+        actions.move_to_element(element).pause(rd.uniform(0.1, 0.5)).click().perform()
 
 def random_delay(min_delay=1, max_delay=3):
     """Wait for a random time between min_delay and max_delay seconds."""
