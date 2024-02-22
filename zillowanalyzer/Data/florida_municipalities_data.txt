@@ -167,7 +167,7 @@
 82	Estero	Lee	36,939	24.4 sq mi	63.1 km2	Council-manager	Village	2015
 202	Sanibel	Lee	6,382	16.2 sq mi	41.9 km2	Council–manager	City	1974
 215	Fort Myers Beach	Lee	5,582	2.8 sq mi	7.2 km2	Council–manager	Town	1995
-8	Tallahassee # †	Leon	196,169	100.9 sq mi	261.4 km2	Commission–manager	City	1825
+8	Tallahassee †	Leon	196,169	100.9 sq mi	261.4 km2	Commission–manager	City	1825
 261	Williston	Levy	2,976	6.8 sq mi	17.7 km2	Council–manager	City	1929
 279	Chiefland	Levy	2,316	6.8 sq mi	17.5 km2	Commission–manager	City	1913
 313	Inglis	Levy	1,476	3.4 sq mi	8.8 km2	Mayor–commission	Town	1956

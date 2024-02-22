@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from zillowanalyzer.scrapers.scraping_utility import *
 
 
-SEARCH_COOLDOWN_TIME_WINDOW = timedelta(days=1)
+SEARCH_COOLDOWN_TIME_WINDOW = timedelta(days=2)
 profile_search_setup_done = {profile_number:False for profile_number in range(scrape_config['min_profile_number'], scrape_config['max_profile_number']+1)}
 
 def load_all_municipalities():
@@ -57,50 +57,21 @@ def should_process_municipality(municipality):
         return False
     return True
 
-def maybe_click_next_page(driver, current_page, skip_scrolling=False):
-    try:
-        next_page_link = driver.find_element(By.CSS_SELECTOR, f'a[title="Page {current_page+1}"]')
-        if not skip_scrolling:
-            scroll_to_element(driver, "#search-page-list-container", ".search-pagination")
-        if next_page_link:
-            offscreen_click(next_page_link, driver)
-            random_delay(scrape_config['1s_delay'], scrape_config['2s_delay'])
-        else:
-            return False
-    except NoSuchElementException:
-        return False
-    except TimeoutException:
-        return False
-    return True
-
-def maybe_save_new_search_results(municipality, search_results, new_zpids_in_municipality, saved_zpids_in_municipality):
+def maybe_save_current_search_results(municipality, search_results):
     municipality_path = f"{SEARCH_RESULTS_DATA_PATH}/{municipality}"
-    new_search_results = [search_result for search_result in search_results if search_result['zpid'] in new_zpids_in_municipality]
     # We save even if new_search_results is empty to ensure the metadata exists to skip over this municipality.
     current_datetime = datetime.now()
     ensure_directory_exists(municipality_path)
-    save_json(new_search_results, f'{municipality_path}/listings_{current_datetime.strftime("%Y-%m-%d_%H-%M")}.json')
-    saved_zpids_in_municipality.update(new_zpids_in_municipality)
+    save_json(search_results, f'{municipality_path}/listings_{current_datetime.strftime("%Y-%m-%d_%H-%M")}.json')
+    municipality_to_zpids[municipality].update([new_search_result['zpid'] for new_search_result in search_results])
 
     search_metadata = {
-        'zpids': list(saved_zpids_in_municipality),
+        'zpids': list(municipality_to_zpids[municipality]),
         'last_checked': current_datetime.isoformat()
     }
     save_json(search_metadata, f'{SEARCH_RESULTS_METADATA_PATH}/{municipality}_metadata.json')
-    
-def update_new_zpids_in_municipality(search_results, new_zpids_in_municipality, saved_zpids_in_municipality):
-    current_zpid_set = {search_result['zpid'] for search_result in search_results}
-    # Determine new zpids and so we can save only those.
-    new_zpids = current_zpid_set - saved_zpids_in_municipality
-    if force_visit_all_listings and not new_zpids:
-        # We break if we have already explored all the zpids in this municipality (listings sorted by date).
-        # We do not break if we have already seen these zpids from the MASTER_ZPID_SET since these could be due to no bound filters.
-        return
-    new_zpids -= MASTER_ZPID_SET
-    new_zpids_in_municipality.update(new_zpids)
-    MASTER_ZPID_SET.update(new_zpids)
 
-def get_search_results_from_driver(driver):
+def get_search_page_state_from_driver(driver):
     # Parse page source code.
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     script_tag = soup.find('script', attrs={'id': '__NEXT_DATA__', 'type': 'application/json'})
@@ -108,47 +79,80 @@ def get_search_results_from_driver(driver):
         return {}
 
     data = json.loads(script_tag.string)
-    # If no house listings, stop searchign in this zip code.
-    if not data or 'props' not in data or 'searchResults' not in data['props']['pageProps']['searchPageState']['cat1'] or 'listResults' not in data['props']['pageProps']['searchPageState']['cat1']['searchResults']:
-        return {}
-    
-    return data['props']['pageProps']['searchPageState']['cat1']['searchResults']['listResults']
+    save_json(data, 'data.json')
+    return data['props']['pageProps']['searchPageState']
 
 def scrape_listings():
     for municipality_ind, municipality in enumerate(all_municipalities):
         scrape_listings_in_municipality(municipality_ind, municipality)
 
 def scrape_listings_in_municipality(municipality_ind, municipality):
-    print(f'Searching for listings in municipality: {municipality} # [{municipality_ind+1} | {len(all_municipalities)}]', end='         \r')
-    
     # Check whether this municipality was processed within the municipality cooldown window.
     if not should_process_municipality(municipality):
         return
     
-    saved_zpids_in_municipality = municipality_to_zpids[municipality]
-    new_zpids_in_municipality = set()
     search_results = []
     base_url = f"https://www.zillow.com/homes/{municipality}-fl/"
 
     # Make an initial request on the municipality Zillow page, we use this to grab region bounds for filtering homes outside the municipality.
     with get_selenium_driver("about:blank") as driver:
         driver.get(base_url)
-        random_delay(0.25, 1)
+        random_delay(1, 2)
+        search_page_state_data = get_search_page_state_from_driver(driver)
+        if not search_page_state_data:
+            # Sometimes a municipality either DNE or has no homes, in which case we exit.
+            maybe_save_current_search_results(municipality, search_results)
+            return
+        total_pages = search_page_state_data['cat1']['searchList']['totalPages']
+        # total_results = search_page_state_data['cat1']['searchList']['totalResultCount']
+        query_state_data = search_page_state_data['queryState']
+        save_json(search_page_state_data, 'search_page_state_data.json')
 
-        for page in range(1,scrape_config['max_pages_requested_per_zip']+1):
-            new_search_results = get_search_results_from_driver(driver)
-            search_results.extend([search_result for search_result in new_search_results if search_result['zpid'] not in MASTER_ZPID_SET])
-            if not new_search_results:
-                break
-            update_new_zpids_in_municipality(new_search_results, new_zpids_in_municipality, saved_zpids_in_municipality)
+        for page in range(1,total_pages+1):
+            # print(filter_state)
+            print(f'Searching for listings in municipality: {municipality} # [{municipality_ind+1} | {len(all_municipalities)}]  page [{page} | {total_pages}]', end='         \r')
+            query_state_data["pagination"] = {"currentPage": page}
+            js_code = f"""
+                (async () => {{
+                    const response = await fetch("https://www.zillow.com/async-create-search-page-state", {{
+                        method: "PUT",
+                        headers: {{
+                            "content-type": "application/json",
+                            "cookie": "{'; '.join([f'{cookie["name"]}={cookie["value"]}' for cookie in driver.get_cookies()])}",
+                            "user-agent": "{driver.execute_script("return navigator.userAgent;")}"
+                        }},
+                        body: JSON.stringify({{
+                            "searchQueryState": {json.dumps(query_state_data)},
+                            "wants": {{
+                                "cat1": ["listResults", "mapResults"],
+                                "cat2": ["total"]
+                            }},
+                            "requestId": 5,
+                            "isDebugRequest": false
+                        }})
+                    }});
+                    const data = await response.json();
+                    window.fetchData = data; // Store the data in a global variable for Selenium to access
+                }})();
+                """
 
-            can_go_to_next_page = maybe_click_next_page(driver, page, skip_scrolling=True)
-            if not can_go_to_next_page:
-                break
-        random_delay(0.25, 1)
+            driver.execute_script(js_code)
+            data, start_time = None, time.time()
+            # Wait for data to asynchronously update for a maximum of 10 seconds.
+            while not data and time.time() < start_time + 10:
+                data = driver.execute_script("return window.fetchData;")
+                time.sleep(0.1)
+            
+            if not data:
+                sys.exit()
+            current_search_results = [search_result for search_result in data['cat1']['searchResults']['listResults'] if search_result['zpid'] not in MASTER_ZPID_SET]
+            search_results.extend(current_search_results)
+            MASTER_ZPID_SET.update([search_result['zpid'] for search_result in current_search_results])
+            random_delay(1, 2)
 
-    maybe_save_new_search_results(municipality, search_results, new_zpids_in_municipality, saved_zpids_in_municipality)
+    maybe_save_current_search_results(municipality, search_results)
     random_delay(scrape_config['1s_delay'], scrape_config['2s_delay'])
 
-should_filter_results, force_visit_all_listings = False, True
-scrape_listings()
+if __name__ == '__main__':
+    should_filter_results, force_visit_all_listings = False, True
+    # scrape_listings()

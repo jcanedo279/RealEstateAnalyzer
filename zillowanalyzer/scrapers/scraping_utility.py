@@ -78,7 +78,6 @@ class ScrapeConfigManager:
     def load_config(self):
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
-
         for section in config.sections():
             for key, value in config.items(section):
                 if key == 'sort_listing_by':
@@ -181,6 +180,7 @@ def get_chrome_options(headless=False, incognito=False):
     if incognito:
         options.add_argument("--incognito")
     elif local_path_exists:
+        print(scrape_config['min_profile_number'])
         profile_number = rd.randint(scrape_config['min_profile_number'], scrape_config['max_profile_number'])
         # We update the scrape_config with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
         scrape_config['profile_number'] = profile_number
@@ -198,6 +198,7 @@ def get_selenium_driver(url, headless=False, incognito=False):
     # proxy_wrapper = proxy_manager.get_proxy_wrapper()
     options = get_chrome_options(headless=headless, incognito=incognito)
     driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
+    # driver = ZillowChromeDriver(options=options)
     driver.get(url)
     try:
         yield driver
