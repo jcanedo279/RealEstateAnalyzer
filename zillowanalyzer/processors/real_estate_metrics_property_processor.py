@@ -1,6 +1,7 @@
 import os
 import json
 import glob
+import csv
 from datetime import datetime
 
 from zillowanalyzer.scrapers.scraping_utility import *
@@ -130,6 +131,8 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
         for json_file_path in glob.glob(os.path.join(zip_code_folder, '*_property_details.json')):
             with open(json_file_path, 'r') as json_file:
                 property_details = json.load(json_file)
+                if 'props' not in property_details:
+                    continue
                 property_data = property_details['props']['pageProps']['componentProps']['gdpClientCache']
                 first_key = next(iter(property_data))
                 property_info = property_data[first_key].get("property", None)
@@ -164,10 +167,28 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
                 results.append(metrics)
 
     # Sort the list of dictionaries for the current zip code by 'adj_CoC' with some percentage down, in descending order
-    results.sort(key=lambda x: x['adj_CoC 5.0% Down'], reverse=True)
+    sorted_metrics = sorted(results, key=lambda x: x['adj_CoC 5.0% Down'], reverse=True)
 
-    # Save the results to a JSON file.
-    save_json(results, f'{DATA_PATH}/processed_property_metric_results.json')
+    # Open CSV file for writing
+    csv_columns = ['zpid', 'street_address', 'zip_code', 'purchase_price', 'gross_rent_multiplier']
+    for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
+        down_payment_literal = f"{down_payment_percentage * 100}% Down"
+        csv_columns.extend([
+            f'break_even_ratio {down_payment_literal}',
+            f'CoC_no_prepaids {down_payment_literal}',
+            f'CoC {down_payment_literal}',
+            f'adj_CoC_no_prepaids {down_payment_literal}',
+            f'adj_CoC {down_payment_literal}',
+            f'cap_rate {down_payment_literal}',
+            f'adj_cap_rate {down_payment_literal}',
+        ])
+    with open(os.path.join(DATA_PATH, 'processed_property_metric_results.csv'), mode='w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+        writer.writeheader()
+        
+        # Write the sorted metrics to the CSV file
+        for metrics in sorted_metrics:
+            writer.writerow(metrics)
 
 
 results = calculate_real_estate_metrics()

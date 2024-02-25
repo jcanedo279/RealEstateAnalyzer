@@ -180,7 +180,6 @@ def get_chrome_options(headless=False, incognito=False):
     if incognito:
         options.add_argument("--incognito")
     elif local_path_exists:
-        print(scrape_config['min_profile_number'])
         profile_number = rd.randint(scrape_config['min_profile_number'], scrape_config['max_profile_number'])
         # We update the scrape_config with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
         scrape_config['profile_number'] = profile_number

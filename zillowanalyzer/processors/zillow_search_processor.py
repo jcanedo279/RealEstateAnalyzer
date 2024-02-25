@@ -1,5 +1,6 @@
 import os
 import json
+import csv
 from enum import Enum
 from zillowanalyzer.scrapers.scraping_utility import *
 
@@ -70,8 +71,14 @@ def process_all_municipalities(root_directory):
     sorted_results = sorted(all_results, key=lambda x: x['rentZestimate_to_price_ratio'], reverse=reverse_sort)
 
     # Save all results to a new file
-    with open(SEARCH_RESULTS_PROCESSED_PATH, 'w', encoding='utf-8') as outfile:
-        json.dump(sorted_results, outfile, indent=4)
+    csv_file_path = os.path.join(DATA_PATH, 'search_listings.csv')
+    with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for result in sorted_results:
+            writer.writerow(result)
 
 
 process_all_municipalities(SEARCH_RESULTS_DATA_PATH)
