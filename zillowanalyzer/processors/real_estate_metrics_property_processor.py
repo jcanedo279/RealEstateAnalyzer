@@ -13,9 +13,9 @@ MONTHS_IN_YEAR = 12
 AVERAGE_HOME_INSURANCE_RATE = 0.02
 # Update from https://www.myfico.com/credit-education/calculators/loan-savings-calculator/ by FL state.
 MIN_APR = 6.281
-DOWN_PAYMENT_PERCENTAGES = [0.05, 0.1, 0.2]
+DOWN_PAYMENT_PERCENTAGES = [0.05, 1.0]
 # This was just manually calculated for a property work 725k (maybe a bit high, aim 400k), on 02/04/2024 (high interst), maybe calc when it gets lower.
-DOWN_PAYMENT_TO_ANNUAL_PMI_RATE = { 0.05 : 0.0072, 0.1 : 0.0053, 0.15 : 0.0037, 0.2 : 0 }
+DOWN_PAYMENT_TO_ANNUAL_PMI_RATE = { 0.05 : 0.0072, 1.0 : 0 }
 # I've noticed that actual mortage rates are about 5% smaller.
 PRINCIPAL_AND_INTEREST_DEDUCTION = 0.04
 VACANCY_RATE = 0.075
@@ -62,13 +62,13 @@ def calculate_fees(purchase_price, down_payment):
     total_fees = origination_fee + lenders_title_insurance_fee + owners_title_insurance_fee + state_and_stamps_tax + intangible_tax
     return total_fees
 
-def calculate_monthly_costs(purchase_price, down_payment_percentage, annual_interest_rate, property_details, loan_term_years=30):
+def calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_details, loan_term_years=30):
     # Calculate the down payment amount and financed amount
     down_payment_amount = purchase_price * down_payment_percentage
     loan_amount = purchase_price - down_payment_amount
     
     # Monthly mortgage payment calculation
-    monthly_interest_rate = annual_interest_rate / MONTHS_IN_YEAR / 100
+    monthly_interest_rate = mortgage_rate / MONTHS_IN_YEAR / 100
     n_payments = loan_term_years * MONTHS_IN_YEAR
     monthly_mortgage_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** n_payments) * (1-PRINCIPAL_AND_INTEREST_DEDUCTION) / ((1 + monthly_interest_rate) ** n_payments - 1)
     
@@ -96,7 +96,7 @@ def calculate_monthly_costs(purchase_price, down_payment_percentage, annual_inte
     monthly_pmi = purchase_price * DOWN_PAYMENT_TO_ANNUAL_PMI_RATE[down_payment_percentage] / MONTHS_IN_YEAR
 
     # Total monthly costs
-    total_monthly_costs = monthly_mortgage_payment + monthly_pmi + monthly_property_tax + monthly_homeowners_insurance
+    total_monthly_costs = monthly_mortgage_payment + monthly_pmi + monthly_property_tax + monthly_homeowners_insurance + hoa_fee
 
     # Prepaids are typically paid upfront and not included in monthly costs but affect total cash invested.
     prepaid_real_estate_tax_escrow = monthly_property_tax * CURRENT_MONTH
@@ -124,10 +124,12 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
     results = []
 
     # Loop through each zip code.
+    total_props = 0
     for zip_code_folder in glob.glob(os.path.join(base_path, '*')):
         zip_code = os.path.basename(zip_code_folder)
         
         # Process each JSON file within the zip code folder (each property).
+        total_props += len(glob.glob(os.path.join(zip_code_folder, '*_property_details.json')))
         for json_file_path in glob.glob(os.path.join(zip_code_folder, '*_property_details.json')):
             with open(json_file_path, 'r') as json_file:
                 property_details = json.load(json_file)
@@ -143,6 +145,41 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
                 rent_estimate = property_info.get('rentZestimate', 0)
                 rent_estimate = 0 if not rent_estimate else rent_estimate
                 purchase_price = property_info.get('price', 0)
+                year_built = property_info.get('yearBuilt', 1960)
+                bedrooms = property_info.get('bedrooms', 0)
+                if not bedrooms:
+                    bedrooms = 0
+                bathrooms = property_info.get('bathrooms', 0)
+                if not bathrooms:
+                    bathrooms = 0
+                page_view_count = property_info.get('pageViewCount', 0)
+                if not page_view_count:
+                    page_view_count = 0
+                favorite_count = property_info.get('favoriteCount', 0)
+                if not favorite_count:
+                    favorite_count = 0
+                time_on_zillow = property_info.get('timeOnZillow', '0 days')
+                property_tax_rate = property_info.get('propertyTaxRate', 0)
+                living_area = property_info.get('livingArea', 0)
+                if not living_area:
+                    living_area = 0
+                lot_size = property_info.get('lotSize', 0)
+                if not lot_size:
+                    lot_size = living_area
+                home_type = property_info.get('homeType', 'SINGLE_FAMILY')
+                mortgage_rate = property_info.get('mortgageRates', { "thirtyYearFixedRate": 6 })
+                if mortgage_rate:
+                    mortgage_rate = mortgage_rate.get('thirtyYearFixedRate', 6)
+                if not mortgage_rate:
+                    mortgage_rate = 6
+                annual_homeowners_insurance = property_info.get('annualHomeownersInsurance', 0)
+                days_on_zillow = time_on_zillow.split()[0]
+                if time_on_zillow.split()[1] in {"day", "hours"}:
+                    days_on_zillow = 1
+                hoa_fee = property_info.get("monthlyHoaFee", 0)
+                if not hoa_fee:
+                    hoa_fee = 0
+
 
                 metrics = {
                     'zpid' : property_info.get('zpid', 0),
@@ -150,44 +187,48 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
                     'zip_code': zip_code,
                     'purchase_price': purchase_price,
                     'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
+                    'year_built': year_built,
+                    'bedrooms': bedrooms, 'bathrooms': bathrooms,
+                    'page_view_count': page_view_count, 'favorite_count': favorite_count,
+                    'days_on_zillow': days_on_zillow,
+                    'property_tax_rate': property_tax_rate,
+                    'living_area': living_area,
+                    'lot_size': lot_size,
+                    'home_type': home_type,
+                    'mortgage_rate': mortgage_rate,
+                    'annual_homeowners_insurance': annual_homeowners_insurance,
+                    'hoa_fee': hoa_fee
                 }
 
                 for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
-                    down_payment_literal = f"{down_payment_percentage * 100}% Down"
-                    total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, MIN_APR, property_info)
+                    down_payment_literal = f" {down_payment_percentage * 100}% Down" if down_payment_percentage != 1 else ""
+                    total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_info)
                     metrics.update({
-                        f'break_even_ratio {down_payment_literal}' : (total_monthly_costs * 12 + annual_debt_service) / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
-                        f'CoC_no_prepaids {down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / total_cash_invested,
-                        f'CoC {down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / (total_cash_invested - total_prepaid_costs),
-                        f'adj_CoC_no_prepaids {down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / total_cash_invested,
-                        f'adj_CoC {down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / (total_cash_invested - total_prepaid_costs),
-                        f'cap_rate {down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / purchase_price,
-                        f'adj_cap_rate {down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / purchase_price,
+                        f'break_even_ratio{down_payment_literal}' : (total_monthly_costs * 12 + annual_debt_service) / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
+                        f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / total_cash_invested,
+                        f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / (total_cash_invested - total_prepaid_costs),
+                        f'adj_CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / total_cash_invested,
+                        f'adj_CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / (total_cash_invested - total_prepaid_costs),
+                        f'cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / purchase_price,
+                        f'adj_cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / purchase_price,
                     })
                 results.append(metrics)
+
+    print(len(results))
 
     # Sort the list of dictionaries for the current zip code by 'adj_CoC' with some percentage down, in descending order
     sorted_metrics = sorted(results, key=lambda x: x['adj_CoC 5.0% Down'], reverse=True)
 
     # Open CSV file for writing
-    csv_columns = ['zpid', 'street_address', 'zip_code', 'purchase_price', 'gross_rent_multiplier']
-    for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
-        down_payment_literal = f"{down_payment_percentage * 100}% Down"
-        csv_columns.extend([
-            f'break_even_ratio {down_payment_literal}',
-            f'CoC_no_prepaids {down_payment_literal}',
-            f'CoC {down_payment_literal}',
-            f'adj_CoC_no_prepaids {down_payment_literal}',
-            f'adj_CoC {down_payment_literal}',
-            f'cap_rate {down_payment_literal}',
-            f'adj_cap_rate {down_payment_literal}',
-        ])
+    csv_columns = results[0].keys()
     with open(os.path.join(DATA_PATH, 'processed_property_metric_results.csv'), mode='w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
         writer.writeheader()
         
         # Write the sorted metrics to the CSV file
+        total_count = 0
         for metrics in sorted_metrics:
+            total_count += 1
             writer.writerow(metrics)
 
 

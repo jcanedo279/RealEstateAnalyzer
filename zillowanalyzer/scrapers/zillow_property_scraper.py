@@ -36,14 +36,14 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
             # Navigate to the property's page and parse the HTML content.
             driver.get(property_url)
             zestimate_history = extract_zestimate_history_from_driver(driver, scrape_config['2s_delay'])
-            response = extract_property_details_from_driver(driver, scrape_config['2s_delay'])
+            response = extract_property_details_from_driver(driver, 1)
             if not response:
                 save_json({}, property_path)
                 continue
             response['zestimateHistory'] = zestimate_history
 
             save_json(response, property_path)
-            random_delay(scrape_config['3s_delay'], scrape_config['5s_delay'])
+            random_delay(2, 4)
 
 # Roughly 5 seconds per response -> ~ 14 hours for 10,000 requests.
 def extract_property_details_from_search_results(batch_size=5):

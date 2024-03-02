@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
-from zillowanalyzer.scrapers.scraping_utility import *
+from zillowanalyzer.scrapers.scraping_utility import VISUAL_DATA_PATH, ensure_directory_exists
 
 
 
@@ -50,7 +51,7 @@ def plot_scatter(data, labels, title, ax, x_label='', y_label='', legend_title='
     if is_outlier:
         ax.scatter(data[:, 0], data[:, 1], color=['blue' if x == 1 else 'red' for x in labels], edgecolor='k', alpha=0.7)
     else:
-        sns.scatterplot(x=data[:, 0], y=data[:, 1], hue=labels, palette='viridis', legend='full', ax=ax)
+        sns.scatterplot(x=data[:, 0], y=data[:, 1], hue=labels, palette='rocket', legend='full', ax=ax)
     ax.set_title(title)
     if x_label:
         ax.set_xlabel(x_label)
@@ -146,7 +147,7 @@ def visualize_cluster_density_heatmaps(tsne_results, umap_results):
         hist, x_edges, y_edges = np.histogram2d(data[:, 0], data[:, 1], bins=num_bins)
         
         # Plot the heatmap
-        sns.heatmap(hist.T, cmap='viridis', cbar=True, ax=ax)
+        sns.heatmap(hist.T, cmap='rocket', cbar=True, ax=ax)
         ax.set_title(f'{title} Heatmap')
         ax.set_xlabel(f'{title} dimension 1')
         ax.set_ylabel(f'{title} dimension 2')
@@ -154,19 +155,28 @@ def visualize_cluster_density_heatmaps(tsne_results, umap_results):
     plt.tight_layout()
     plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_density_heatmaps.png')
 
-def visualize_clusters_by_input_features(tsne_results, umap_results, df_scaled):
-    num_subplots = len(df_scaled.columns)
+def visualize_clusters_by_input_features(tsne_results, umap_results, df):
+    num_subplots = len(df.columns)
     fig, axes = plt.subplots(num_subplots, 2, figsize=(15, 5 * num_subplots))
 
-    for i, feature in enumerate(df_scaled.columns):
+    for i, feature in enumerate(df.columns):
         # Discretize feature into bins based on quantiles
         quantiles = np.linspace(0, 1, 6)
-        bin_edges = np.quantile(df_scaled[feature], quantiles)
-        # Using the original quantiles as bin edges
-        original_quantile_values = bin_edges
+        bin_edges = np.quantile(df[feature], quantiles)
+        # Ensure bin edges are unique by using np.unique
+        unique_bin_edges = np.unique(bin_edges)
+        
+        # If binning results in less than 2 edges (not enough for binning), skip this feature
+        if len(unique_bin_edges) < 2:
+            print(f"Not enough unique bin edges for feature {feature}. Skipping.")
+            continue
+
         # Adjust labels for plotting
-        bin_labels = pd.cut(df_scaled[feature], bins=bin_edges, labels=False, include_lowest=True)
-        bin_labels_formatted = bin_labels.apply(lambda x: f"{original_quantile_values[x]:.2f}>{original_quantile_values[x+1]:.2f}" if x < len(original_quantile_values) - 1 else f"{original_quantile_values[x]:.2f}+")
+        bin_labels = pd.cut(df[feature], bins=unique_bin_edges, labels=False, include_lowest=True)
+        
+        # Handling potential issue with labels referencing bins out of bounds after deduplication
+        max_label = len(unique_bin_edges) - 2  # Maximum label after deduplication
+        bin_labels_formatted = bin_labels.apply(lambda x: f"{format_label(unique_bin_edges[max(x, 0)])} > {format_label(unique_bin_edges[min(x+1, max_label)])}")
 
         # t-SNE
         plot_scatter(tsne_results, bin_labels_formatted, f't-SNE colored by {feature}', axes[i, 0])
@@ -192,23 +202,3 @@ def visualize_clusters_by_adjusted_clustering_labels(tsne_results, umap_results,
 
     plt.tight_layout()
     plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_by_adjusted_clustering_labels.png')
-
-def visualize_isolation_forest_outliers(tsne_results, umap_results, outliers):
-    # Prepare results for plotting
-    results = [('t-SNE', tsne_results), ('UMAP', umap_results)]
-
-    # Create subplots
-    fig, axes = plt.subplots(1, 2, figsize=(20, 10))
-    for i, (method, result) in enumerate(results):
-        plot_scatter(result, outliers, f'Isolation Forest Outliers on {method}', axes[i], x_label=f'{method} 1', y_label=f'{method} 2', is_outlier=True)
-        
-        # Create a custom legend
-        legend_elements = [
-            Line2D([0], [0], marker='o', color='w', label='Inlier', markerfacecolor='blue', markersize=10),
-            Line2D([0], [0], marker='o', color='w', label='Outlier', markerfacecolor='red', markersize=10)
-        ]
-        axes[i].legend(handles=legend_elements, loc='best')
-
-    plt.tight_layout()
-    plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_isolation_forest_outliers.png')
-
