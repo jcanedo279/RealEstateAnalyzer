@@ -8,26 +8,34 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 
 from zillowanalyzer.scrapers.scraping_utility import *
 from zillowanalyzer.processors.real_estate_metrics_property_processor import *
+from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
 import sys
 
 LOAN_TERM_YEARS = 30
 
+ALPHA_BETA_PATH = f'{DATA_PATH}/AlphaBetaStats.csv'
+
+def download_full_data(index_ticker, rf_ticker):
+    # Download index data
+    index_data = yf.download(index_ticker, progress=False)
+    index_data.index = index_data.index.tz_localize(None)
+
+    # Download risk-free rate data
+    rf_data = yf.download(rf_ticker, progress=False)
+    rf_data['Risk Free Rate'] = rf_data['Adj Close'].apply(lambda x: deannualize(x/100))
+    rf_data.index = rf_data.index.tz_localize(None)
+
+    return index_data, rf_data['Risk Free Rate']
 
 def deannualize(annual_rate, periods=365):
     return (1 + annual_rate) ** (1/periods) - 1
 
-def fetch_risk_free_rate(start_date):
-    df_rf = yf.download("^IRX", start=start_date, progress=False)
-    df_rf['Risk Free Rate'] = df_rf['Adj Close'].apply(lambda x: deannualize(x/100))
-    return df_rf['Risk Free Rate']
+def get_risk_free_rate_subset(df_rf, start_date):
+    return df_rf[start_date:]
 
-# Function to fetch historical data for a given ticker
-def fetch_stock_data_frame(ticker, starting_date):
-    df = yf.download(ticker, start=starting_date, progress=False)
-    # Ensure the datetime index is timezone-naive for compatibility.
-    df.index = df.index.tz_localize(None)
-    return df
+def get_stock_data_frame_subset(index_data, start_date):
+    return index_data[start_date:]
 
 def calculate_monthly_mortgage_payment(loan_amount, annual_interest_rate, loan_term_years):
     monthly_interest_rate = annual_interest_rate / MONTHS_IN_YEAR / 100
@@ -35,7 +43,7 @@ def calculate_monthly_mortgage_payment(loan_amount, annual_interest_rate, loan_t
     monthly_mortgage_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** n_payments) / ((1 + monthly_interest_rate) ** n_payments - 1)
     return monthly_mortgage_payment
 
-def calculate_alpha_beta_for_property(zestimate_history, index_ticker):
+def calculate_alpha_beta_for_property(zestimate_history, index_data, rf_data):
     # Extract and convert time series from json to a Pandas DF.
     if len(zestimate_history) <= 3:
         return
@@ -49,8 +57,8 @@ def calculate_alpha_beta_for_property(zestimate_history, index_ticker):
     zestimate_history_df.rename(columns={'Price' : 'Home Price'}, inplace=True)
     zestimate_history_df['Home Price Returns'] = zestimate_history_df['Home Price'].pct_change()
 
-    index_df = fetch_stock_data_frame(index_ticker, zestimate_history_df.index[0])
-    df_rf = fetch_risk_free_rate(zestimate_history_df.index[0])
+    index_df = get_stock_data_frame_subset(index_data, zestimate_history_df.index[0])
+    df_rf = get_risk_free_rate_subset(rf_data, zestimate_history_df.index[0])
 
     aligned_df = pd.merge_asof(zestimate_history_df, index_df, on='Date', direction='nearest')
     aligned_df = pd.merge_asof(aligned_df, df_rf, on='Date', direction='nearest')
@@ -67,13 +75,13 @@ def calculate_alpha_beta_for_property(zestimate_history, index_ticker):
         monthly_mortgage_payment = calculate_monthly_mortgage_payment(loan_amount, MIN_APR, LOAN_TERM_YEARS)
 
         # Calculate leveraged returns
-        lev_column_name = f'Leveraged Returns {down_payment_percentage*100}% Down'
+        lev_column_percentage = f' {down_payment_percentage*100}% Down' if down_payment_percentage != 1 else ''
+        lev_column_name = f'Returns{lev_column_percentage}'
         aligned_df['Cumulative Mortgage Payments'] = monthly_mortgage_payment
         aligned_df['Cumulative Mortgage Payments'] = aligned_df['Cumulative Mortgage Payments'].cumsum()
         aligned_df['Equity'] = aligned_df['Home Price'] - loan_amount + down_payment_amount - aligned_df['Cumulative Mortgage Payments']
         aligned_df[lev_column_name] = aligned_df['Equity'].pct_change()
         return_columns.append(lev_column_name)
-    return_columns.append('Home Price Returns')
 
     # Get rid of the first row since it does not have a percent change reference.
     aligned_df.dropna(inplace=True)
@@ -90,41 +98,47 @@ def calculate_alpha_beta_for_property(zestimate_history, index_ticker):
     return processed_data
 
 
+def load_existing_stats(file_path):
+    """Load existing statistics from a CSV file, if available."""
+    if os.path.exists(file_path):
+        return pd.read_csv(file_path)
+    return pd.DataFrame()
 
-def calculate_alpha_beta_statistics(index_ticker):
-    alpha_beta_values = []
 
-    search_results = load_json(SEARCH_RESULTS_PROCESSED_PATH)
-    search_results, num_search_results = load_json(SEARCH_RESULTS_PROCESSED_PATH), len(search_results)
-    for search_result_ind, search_result in enumerate(search_results):
-        zip_code, zpid = search_result['zip_code'], search_result['zpid']
+def calculate_alpha_beta_statistics(index_ticker, rf_ticker):
+    existing_stats_df = load_existing_stats(ALPHA_BETA_PATH)
+    existing_zpids = set(existing_stats_df['zpid']) if not existing_stats_df.empty else set()
+    new_stats = []
 
-        property_data = None
-        with open(f'{PROPERTY_DETAILS_PATH}/{zip_code}/{zpid}_property_details.json') as json_file:
-            property_data = json.load(json_file)
-        if not property_data:
+    index_data, rf_data = download_full_data(index_ticker, rf_ticker)
+
+    for property_details in property_details_iterator(skip_zpid_set = existing_zpids):
+        property_info = get_property_info_from_property_details(property_details)
+        if not property_info:
             continue
-        print(f'Processing property: {zpid} in zip_code: {zip_code}... property number: [{search_result_ind} / {num_search_results}]', end='         \r')
-        
-        zestimate_history = property_data['zestimateHistory']
-        alpha_beta_value = calculate_alpha_beta_for_property(zestimate_history, index_ticker)
-        if not alpha_beta_value:
+        if 'zestimateHistory' not in property_details:
             continue
-        alpha_beta_value['zip_code'] = zip_code
-        alpha_beta_value['zpid'] = zpid
-        alpha_beta_values.append(alpha_beta_value)
-        
+        zestimate_history = property_details['zestimateHistory']
+        stats = calculate_alpha_beta_for_property(zestimate_history, index_data, rf_data)
+        if not stats:
+            continue
+        stats['zip_code'], stats['zpid'] = property_info.get("zipcode", 0), property_info.get("zpid", 0)
+        new_stats.append(stats)
+    
+    if new_stats:
+        new_stats_df = pd.DataFrame(new_stats)
+        updated_stats_df = pd.concat([existing_stats_df, new_stats_df], ignore_index=True)
+        updated_stats_df.to_csv(ALPHA_BETA_PATH, index=False)
+        print(f"Updated statistics saved to {ALPHA_BETA_PATH}.")
+        print(updated_stats_df.describe())
+    else:
+        print("No new properties to process.")
 
-    alpha_beta_df = pd.DataFrame(alpha_beta_values)
-    alpha_beta_df.sort_values('Home Price Alpha', ascending=False, inplace=True)
-    # Calculate aggregate statistics.
-    alpha_beta_df.to_csv(f'{DATA_PATH}/AlphaBetaStats.csv', index=False)
-    aggregate_statistics = alpha_beta_df.describe()
-
-    print(aggregate_statistics)
 
 if __name__ == "__main__":
     # index_ticker = "SPY" # SnP 500
     # index_ticker = "SPG"  # Simon Property Group
     index_ticker = "O" # Realty income corporations
-    calculate_alpha_beta_statistics(index_ticker)
+
+    rf_ticker = "^IRX"
+    calculate_alpha_beta_statistics(index_ticker, rf_ticker)

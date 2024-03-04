@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from enum import Enum, auto
 from collections import defaultdict
 from sklearn.pipeline import Pipeline
@@ -14,7 +15,11 @@ from zillowanalyzer.scrapers.scraping_utility import DATA_PATH
 def load_data():
     alpha_beta_df = pd.read_csv(f'{DATA_PATH}/AlphaBetaStats.csv').drop(['zip_code'], axis=1)
     property_metrics_df = pd.read_csv(f'{DATA_PATH}/processed_property_metric_results.csv').drop(['zip_code', 'street_address'], axis=1)
-    combined_df = pd.merge(alpha_beta_df, property_metrics_df, on='zpid', how='inner').drop(['zpid'], axis=1)
+    combined_df = pd.merge(alpha_beta_df, property_metrics_df, on='zpid', how='inner').set_index('zpid')
+
+    # Load from home features from disk.
+    shap_output_df = pd.read_parquet(f'{DATA_PATH}/SavedDataframes/home_features_df.parquet')
+    combined_df['home_features_score'] = shap_output_df['home_features_score']
     return combined_df
 
 def calculate_vif(dataframe):
@@ -23,6 +28,8 @@ def calculate_vif(dataframe):
     """
     vif_data = pd.DataFrame()
     vif_data["Feature"] = dataframe.columns
+    nan_columns = dataframe.isna().any()
+    inf_columns = dataframe.apply(lambda x: np.isinf(x).any())
     vif_data["VIF"] = [variance_inflation_factor(dataframe.values, i) for i in range(dataframe.shape[1])]
     return vif_data
 
@@ -157,9 +164,11 @@ class InvertibleColumnTransformer(ColumnTransformer):
 
 
 def preprocess_dataframe(df, filter_method = FilterMethod.FILTER_NONE):
-    num_cols = set( df.select_dtypes(include=['int64', 'float64']).columns )
+    num_cols = set( df.select_dtypes(include=['int64', 'float32', 'float64']).columns )
     cat_cols = [column for column in df.columns if column not in num_cols]
     num_cols = list(num_cols)
+
+    df = df.replace([np.inf, -np.inf], np.nan).dropna()
 
     df_preprocess = df
     df_preprocess[cat_cols] = df_preprocess[cat_cols].astype('category')
@@ -178,7 +187,7 @@ def preprocess_dataframe(df, filter_method = FilterMethod.FILTER_NONE):
             ('cat', cat_preprocessor, cat_cols)
         ]
     )
-    # Remove columns (features) with high multicollinearity with other features.
+    # Remove columns (features) with high multicollinearity (VIF) with other features.
     features_to_remove = features_to_remove_by_vif(df_preprocess[num_cols])
     print(features_to_remove)
     df_preprocess.drop(columns=features_to_remove)

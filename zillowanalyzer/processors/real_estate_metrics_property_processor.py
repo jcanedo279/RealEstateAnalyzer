@@ -5,6 +5,7 @@ import csv
 from datetime import datetime
 
 from zillowanalyzer.scrapers.scraping_utility import *
+from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
 
 # CONSTANTS
@@ -122,97 +123,85 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
     annual_debt_service = 0
 
     results = []
+    for property_details in property_details_iterator():
+        property_info = get_property_info_from_property_details(property_details)
+        if not property_info:
+            continue
+        zip_code = property_info.get('zipcode', 0)
 
-    # Loop through each zip code.
-    total_props = 0
-    for zip_code_folder in glob.glob(os.path.join(base_path, '*')):
-        zip_code = os.path.basename(zip_code_folder)
-        
-        # Process each JSON file within the zip code folder (each property).
-        total_props += len(glob.glob(os.path.join(zip_code_folder, '*_property_details.json')))
-        for json_file_path in glob.glob(os.path.join(zip_code_folder, '*_property_details.json')):
-            with open(json_file_path, 'r') as json_file:
-                property_details = json.load(json_file)
-                if 'props' not in property_details:
-                    continue
-                property_data = property_details['props']['pageProps']['componentProps']['gdpClientCache']
-                first_key = next(iter(property_data))
-                property_info = property_data[first_key].get("property", None)
-                
-                if not property_info or property_info.get('price', 0) < MIN_PROPERTY_VALUE:
-                    continue
-
-                rent_estimate = property_info.get('rentZestimate', 0)
-                rent_estimate = 0 if not rent_estimate else rent_estimate
-                purchase_price = property_info.get('price', 0)
-                year_built = property_info.get('yearBuilt', 1960)
-                bedrooms = property_info.get('bedrooms', 0)
-                if not bedrooms:
-                    bedrooms = 0
-                bathrooms = property_info.get('bathrooms', 0)
-                if not bathrooms:
-                    bathrooms = 0
-                page_view_count = property_info.get('pageViewCount', 0)
-                if not page_view_count:
-                    page_view_count = 0
-                favorite_count = property_info.get('favoriteCount', 0)
-                if not favorite_count:
-                    favorite_count = 0
-                time_on_zillow = property_info.get('timeOnZillow', '0 days')
-                property_tax_rate = property_info.get('propertyTaxRate', 0)
-                living_area = property_info.get('livingArea', 0)
-                if not living_area:
-                    living_area = 0
-                lot_size = property_info.get('lotSize', 0)
-                if not lot_size:
-                    lot_size = living_area
-                home_type = property_info.get('homeType', 'SINGLE_FAMILY')
-                mortgage_rate = property_info.get('mortgageRates', { "thirtyYearFixedRate": 6 })
-                if mortgage_rate:
-                    mortgage_rate = mortgage_rate.get('thirtyYearFixedRate', 6)
-                if not mortgage_rate:
-                    mortgage_rate = 6
-                annual_homeowners_insurance = property_info.get('annualHomeownersInsurance', 0)
-                days_on_zillow = time_on_zillow.split()[0]
-                if time_on_zillow.split()[1] in {"day", "hours"}:
-                    days_on_zillow = 1
-                hoa_fee = property_info.get("monthlyHoaFee", 0)
-                if not hoa_fee:
-                    hoa_fee = 0
+        rent_estimate = property_info.get('rentZestimate', 0)
+        rent_estimate = 0 if not rent_estimate else rent_estimate
+        purchase_price = property_info.get('price', 1)
+        if not purchase_price:
+            purchase_price = 1
+        year_built = property_info.get('yearBuilt', 1960)
+        bedrooms = property_info.get('bedrooms', 0)
+        if not bedrooms:
+            bedrooms = 0
+        bathrooms = property_info.get('bathrooms', 0)
+        if not bathrooms:
+            bathrooms = 0
+        page_view_count = property_info.get('pageViewCount', 0)
+        if not page_view_count:
+            page_view_count = 0
+        favorite_count = property_info.get('favoriteCount', 0)
+        if not favorite_count:
+            favorite_count = 0
+        time_on_zillow = property_info.get('timeOnZillow', '0 days')
+        property_tax_rate = property_info.get('propertyTaxRate', 0)
+        living_area = property_info.get('livingArea', 0)
+        if not living_area:
+            living_area = 0
+        lot_size = property_info.get('lotSize', 0)
+        if not lot_size:
+            lot_size = living_area
+        home_type = property_info.get('homeType', 'SINGLE_FAMILY')
+        mortgage_rate = property_info.get('mortgageRates', { "thirtyYearFixedRate": 6 })
+        if mortgage_rate:
+            mortgage_rate = mortgage_rate.get('thirtyYearFixedRate', 6)
+        if not mortgage_rate:
+            mortgage_rate = 6
+        annual_homeowners_insurance = property_info.get('annualHomeownersInsurance', 0)
+        days_on_zillow = time_on_zillow.split()[0]
+        if time_on_zillow.split()[1] in {"day", "hours"}:
+            days_on_zillow = 1
+        hoa_fee = property_info.get("monthlyHoaFee", 0)
+        if not hoa_fee:
+            hoa_fee = 0
 
 
-                metrics = {
-                    'zpid' : property_info.get('zpid', 0),
-                    'street_address': property_info.get('streetAddress', 'No Property Address Located'),
-                    'zip_code': zip_code,
-                    'purchase_price': purchase_price,
-                    'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
-                    'year_built': year_built,
-                    'bedrooms': bedrooms, 'bathrooms': bathrooms,
-                    'page_view_count': page_view_count, 'favorite_count': favorite_count,
-                    'days_on_zillow': days_on_zillow,
-                    'property_tax_rate': property_tax_rate,
-                    'living_area': living_area,
-                    'lot_size': lot_size,
-                    'home_type': home_type,
-                    'mortgage_rate': mortgage_rate,
-                    'annual_homeowners_insurance': annual_homeowners_insurance,
-                    'hoa_fee': hoa_fee
-                }
+        metrics = {
+            'zpid' : property_info.get('zpid', 0),
+            'street_address': property_info.get('streetAddress', 'No Property Address Located'),
+            'zip_code': zip_code,
+            'purchase_price': purchase_price,
+            'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
+            'year_built': year_built,
+            'bedrooms': bedrooms, 'bathrooms': bathrooms,
+            'page_view_count': page_view_count, 'favorite_count': favorite_count,
+            'days_on_zillow': days_on_zillow,
+            'property_tax_rate': property_tax_rate,
+            'living_area': living_area,
+            'lot_size': lot_size,
+            'home_type': home_type,
+            'mortgage_rate': mortgage_rate,
+            'annual_homeowners_insurance': annual_homeowners_insurance,
+            'hoa_fee': hoa_fee
+        }
 
-                for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
-                    down_payment_literal = f" {down_payment_percentage * 100}% Down" if down_payment_percentage != 1 else ""
-                    total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_info)
-                    metrics.update({
-                        f'break_even_ratio{down_payment_literal}' : (total_monthly_costs * 12 + annual_debt_service) / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
-                        f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / total_cash_invested,
-                        f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / (total_cash_invested - total_prepaid_costs),
-                        f'adj_CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / total_cash_invested,
-                        f'adj_CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / (total_cash_invested - total_prepaid_costs),
-                        f'cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / purchase_price,
-                        f'adj_cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / purchase_price,
-                    })
-                results.append(metrics)
+        for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
+            down_payment_literal = f" {down_payment_percentage * 100}% Down" if down_payment_percentage != 1 else ""
+            total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_info)
+            metrics.update({
+                f'break_even_ratio{down_payment_literal}' : (total_monthly_costs * 12 + annual_debt_service) / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
+                f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / total_cash_invested,
+                f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / (total_cash_invested - total_prepaid_costs),
+                f'adj_CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / total_cash_invested,
+                f'adj_CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / (total_cash_invested - total_prepaid_costs),
+                f'cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / purchase_price,
+                f'adj_cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / purchase_price,
+            })
+        results.append(metrics)
 
     print(len(results))
 
@@ -232,4 +221,5 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
             writer.writerow(metrics)
 
 
-results = calculate_real_estate_metrics()
+if __name__ == '__main__':
+    results = calculate_real_estate_metrics()

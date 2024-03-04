@@ -47,17 +47,22 @@ def calculate_pca(df_scaled, features):
 ## VISUAL ANALYSIS ##
 #####################
 
-def visualize_pairwise_correlation(df_scaled):
+def visualize_pairwise_correlation(df_scaled, path=f'{CORRELATORY_VISUAL_DATA_PATH}/pairwise_correlation.png', title="Pairwise Correlation"):
     corr_matrix = df_scaled.corr()
     plt.figure(figsize=(10, 8))
     sns.heatmap(corr_matrix, cmap='coolwarm', cbar=True)
-    plt.title("Pairwise Correlation")
+    plt.title(title)
     plt.tight_layout()
-    plt.savefig(f'{CORRELATORY_VISUAL_DATA_PATH}/pairwise_correlation.png', dpi=300)
+    plt.savefig(path, dpi=300)
+    plt.close()
 
-def visualize_pairwise_distribution(df_scaled):
-    sns.pairplot(df_scaled, diag_kind='kde')
-    plt.savefig(f'{CORRELATORY_VISUAL_DATA_PATH}/pairwise_distribution.png')
+def visualize_pairwise_distribution(df_scaled, path=f'{CORRELATORY_VISUAL_DATA_PATH}/pairwise_distribution.png', title="Pairwise Distribution"):
+    plt.figure(figsize=(10, 8))
+    pairplot = sns.pairplot(df_scaled, diag_kind='kde', corner=True)
+    pairplot.fig.suptitle(title)
+    plt.tight_layout()
+    plt.savefig(path, dpi=300)
+    plt.close()
 
 
 
