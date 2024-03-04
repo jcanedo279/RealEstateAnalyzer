@@ -2,7 +2,7 @@ import os
 import json
 from glob import glob
 
-from zillowanalyzer.scrapers.scraping_utility import DATA_PATH
+from zillowanalyzer.utility.utility import DATA_PATH
 
 # Assuming the base directory for listing data files
 base_directory = 'zillowanalyzer/Data/SearchResultsMetadata/'

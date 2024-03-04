@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 from zillowanalyzer.analyzers.preprocessing import load_data, preprocess_dataframe, FilterMethod, calculate_vif
-from zillowanalyzer.scrapers.scraping_utility import VISUAL_DATA_PATH, ensure_directory_exists
+from zillowanalyzer.utility.utility import VISUAL_DATA_PATH, ensure_directory_exists
 
 
 CORRELATORY_VISUAL_DATA_PATH = os.path.join(VISUAL_DATA_PATH, 'correlatory')

@@ -2,12 +2,11 @@ import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
-from zillowanalyzer.scrapers.scraping_utility import VISUAL_DATA_PATH, ensure_directory_exists
+from zillowanalyzer.utility.utility import VISUAL_DATA_PATH, ensure_directory_exists
 
 
 

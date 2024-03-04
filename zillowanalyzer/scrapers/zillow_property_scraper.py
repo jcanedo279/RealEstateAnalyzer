@@ -1,6 +1,9 @@
+import os
 import math
 import csv
-from zillowanalyzer.scrapers.scraping_utility import *
+from zillowanalyzer.scrapers.scraping_utility import retry_request, get_selenium_driver, extract_zestimate_history_from_driver, extract_property_details_from_driver
+from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, PROPERTY_DETAILS_PATH
+from zillowanalyzer.utility.utility import save_json, random_delay, ensure_directory_exists
 
 
 def batch_generator(data, batch_size):
@@ -14,7 +17,7 @@ def batch_generator(data, batch_size):
     if batch:
         yield batch
 
-@retry_request(scrape_config)
+@retry_request(PROJECT_CONFIG)
 def extract_property_details_from_batch(property_data, batch_ind, batch_size, num_batches):
     # Start a driver context to scrape the unprocessed properties.
     with get_selenium_driver("about:blank") as driver:
@@ -35,7 +38,7 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
             
             # Navigate to the property's page and parse the HTML content.
             driver.get(property_url)
-            zestimate_history = extract_zestimate_history_from_driver(driver, scrape_config['2s_delay'])
+            zestimate_history = extract_zestimate_history_from_driver(driver, 2)
             response = extract_property_details_from_driver(driver, 1)
             if not response:
                 save_json({}, property_path)

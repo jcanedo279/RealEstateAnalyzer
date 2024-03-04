@@ -4,7 +4,7 @@ import json
 import random as rd
 from collections import defaultdict
 
-from zillowanalyzer.scrapers.scraping_utility import PROPERTY_DETAILS_PATH, save_json, DATA_PATH
+from zillowanalyzer.utility.utility import PROPERTY_DETAILS_PATH, DATA_PATH, save_json
 
 
 def aggregate_options(data, options_dict, parent_key=''):

@@ -18,7 +18,7 @@ def print_analysis_progress(start_time, analysis_index, analysis_len):
     progress_percentage = 100 * (analysis_index+1) / analysis_len
     print(f"Analysing property [{analysis_index} | {analysis_len}]. {progress_percentage:.2f}% analyzed, time remaining: ~{formatted_time_remaining}", end=' '*30 + '\r')
 
-def property_details_iterator(skip_zpid_set = set()):
+def property_details_iterator():
     pattern = os.path.join(PROPERTY_DETAILS_DIR_PATH, "*", "*_property_details.json")
     property_detail_files = glob.glob(pattern)
     num_properties = len(property_detail_files)
@@ -27,9 +27,6 @@ def property_details_iterator(skip_zpid_set = set()):
 
     # Use glob to find all matching files
     for json_file_index, json_file_path in enumerate(property_detail_files):
-        zpid = json_file_path.split('/')[-1].split('_')[0]
-        if zpid in skip_zpid_set:
-            continue
         print_analysis_progress(start_time, json_file_index, num_properties)
         # Open and load JSON data from the file
         with open(json_file_path, 'r') as json_file:

@@ -6,13 +6,13 @@ import glob
 from collections import defaultdict
 
 from zillowanalyzer.scrapers.zillow_search_scraper import maybe_save_current_search_results
-from zillowanalyzer.scrapers.scraping_utility import load_json, DATA_PATH, SEARCH_RESULTS_METADATA_PATH
+from zillowanalyzer.utility.utility import load_json, DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
 
 base_dir = "zillowanalyzer/Data/SearchResults/"
 
 municipality_to_zpids = defaultdict(set)
 def load_all_metadata():
-    for file_path in glob.glob(os.path.join(SEARCH_RESULTS_METADATA_PATH, "*_metadata.json")):
+    for file_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
         municipality = os.path.basename(file_path).split("_metadata.json")[0]
         print( municipality, file_path )
         

@@ -40,8 +40,6 @@ def apply_dimensionality_reduction_and_clustering(df):
     return tsne, umap, clustering_labels_tsne, clustering_labels_umap
 
 def main():
-    target_features = ['Home Price Beta', 'Home Price Alpha', 'purchase_price', 'gross_rent_multiplier', 'adj_CoC 5.0% Down']
-
     combined_df = load_data()
 
     df_preprocessed, preprocessor = preprocess_dataframe(combined_df, filter_method=FilterMethod.FILTER_P_SCORE)

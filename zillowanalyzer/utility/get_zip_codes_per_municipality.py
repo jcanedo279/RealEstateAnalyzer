@@ -3,7 +3,8 @@ import requests
 import urllib
 import json
 
-from zillowanalyzer.scrapers.scraping_utility import DATA_PATH, save_json, get_selenium_driver
+from zillowanalyzer.utility.utility import DATA_PATH, save_json
+from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver
 
 
 def format_payload(city, state="FL"):

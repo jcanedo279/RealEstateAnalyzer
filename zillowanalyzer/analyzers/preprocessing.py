@@ -10,7 +10,7 @@ from sklearn.ensemble import IsolationForest
 from scipy import stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-from zillowanalyzer.scrapers.scraping_utility import DATA_PATH
+from zillowanalyzer.utility.utility import DATA_PATH
 
 def load_data():
     alpha_beta_df = pd.read_csv(f'{DATA_PATH}/AlphaBetaStats.csv').drop(['zip_code'], axis=1)
@@ -28,8 +28,6 @@ def calculate_vif(dataframe):
     """
     vif_data = pd.DataFrame()
     vif_data["Feature"] = dataframe.columns
-    nan_columns = dataframe.isna().any()
-    inf_columns = dataframe.apply(lambda x: np.isinf(x).any())
     vif_data["VIF"] = [variance_inflation_factor(dataframe.values, i) for i in range(dataframe.shape[1])]
     return vif_data
 

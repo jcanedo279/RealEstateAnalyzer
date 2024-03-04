@@ -1,18 +1,15 @@
-import glob
 import os
-import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import re
 import shap
-import seaborn as sns
 import numpy as np
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
+from zillowanalyzer.utility.utility import DATA_PATH, VISUAL_DATA_PATH, ensure_directory_exists
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
-from zillowanalyzer.scrapers.scraping_utility import PROPERTY_DETAILS_PATH, DATA_PATH, VISUAL_DATA_PATH, ensure_directory_exists
 from zillowanalyzer.analyzers.correlatory_data_analysis import visualize_pairwise_correlation, visualize_pairwise_distribution
 
 # Define feature categories

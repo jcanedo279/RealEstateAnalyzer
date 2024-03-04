@@ -2,7 +2,10 @@ import os
 import json
 import csv
 from enum import Enum
-from zillowanalyzer.scrapers.scraping_utility import *
+from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH
+
+
+SEARCH_LISTINGS_CSV_FILE_PATH = os.path.join(DATA_PATH, 'search_listings.csv')
 
 class SortOrder(Enum):
     SORT_ORDER_ASCENDING = 1
@@ -72,7 +75,7 @@ def process_all_municipalities(root_directory):
 
     # Save all results to a new file
     csv_file_path = os.path.join(DATA_PATH, 'search_listings.csv')
-    with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(SEARCH_LISTINGS_CSV_FILE_PATH, 'w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -81,4 +84,4 @@ def process_all_municipalities(root_directory):
             writer.writerow(result)
 
 
-process_all_municipalities(SEARCH_RESULTS_DATA_PATH)
+process_all_municipalities(SEARCH_LISTINGS_DATA_PATH)

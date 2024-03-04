@@ -1,22 +1,29 @@
 import os
+import sys
+import time
 import json
 import glob
 import re
 from collections import defaultdict
 from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
 
-from zillowanalyzer.scrapers.scraping_utility import *
+from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
+from zillowanalyzer.utility.utility import ensure_directory_exists, load_json, save_json, random_delay
+from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver
 
 
 SEARCH_COOLDOWN_TIME_WINDOW = timedelta(days=2)
-profile_search_setup_done = {profile_number:False for profile_number in range(scrape_config['min_profile_number'], scrape_config['max_profile_number']+1)}
+
+
+MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
+
 
 def load_all_municipalities():
-    file_path = f'{DATA_PATH}/florida_municipalities_data.txt'
     # A dictionary to hold the mapping of counties to their municipalities
     county_to_municipalities = defaultdict(list)
 
-    with open(file_path, 'r') as file:
+    with open(MUNICIPALITIES_DATA_PATH, 'r') as file:
         for line in file:
             # Using regex to split the line by tabs or multiple spaces
             fields = re.split(r'\t+', line.strip())
@@ -31,7 +38,7 @@ def load_all_municipalities():
     return county_to_municipalities
 
 def load_all_metadata():
-    for file_path in glob.glob(os.path.join(SEARCH_RESULTS_METADATA_PATH, "*_metadata.json")):
+    for file_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
         municipality = os.path.basename(file_path).split("_metadata.json")[0]
         
         with open(file_path, "r") as file:
@@ -39,13 +46,13 @@ def load_all_metadata():
 
 county_to_municipalities = load_all_municipalities()
 municipality_to_zpids = defaultdict(set)
-ensure_directory_exists(SEARCH_RESULTS_METADATA_PATH)
+ensure_directory_exists(SEARCH_LISTINGS_METADATA_PATH)
 load_all_metadata()
 MASTER_ZPID_SET = {zpid for zpid_set in municipality_to_zpids.values() for zpid in zpid_set}
 all_municipalities = [municipality for county in county_to_municipalities.keys() for municipality in county_to_municipalities[county]]
 
 def should_process_municipality(municipality):
-    search_results_metadata_path = f'{SEARCH_RESULTS_METADATA_PATH}/{municipality}_metadata.json'
+    search_results_metadata_path = f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json'
     if not os.path.exists(search_results_metadata_path):
         return True
     search_results_metadta = load_json(search_results_metadata_path)
@@ -58,7 +65,7 @@ def should_process_municipality(municipality):
     return True
 
 def maybe_save_current_search_results(municipality, search_results):
-    municipality_path = f"{SEARCH_RESULTS_DATA_PATH}/{municipality}"
+    municipality_path = f"{SEARCH_LISTINGS_DATA_PATH}/{municipality}"
     # We save even if new_search_results is empty to ensure the metadata exists to skip over this municipality.
     current_datetime = datetime.now()
     ensure_directory_exists(municipality_path)
@@ -69,7 +76,7 @@ def maybe_save_current_search_results(municipality, search_results):
         'zpids': list(municipality_to_zpids[municipality]),
         'last_checked': current_datetime.isoformat()
     }
-    save_json(search_metadata, f'{SEARCH_RESULTS_METADATA_PATH}/{municipality}_metadata.json')
+    save_json(search_metadata, f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json')
 
 def get_search_page_state_from_driver(driver):
     # Parse page source code.
@@ -103,13 +110,14 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
             # Sometimes a municipality either DNE or has no homes, in which case we exit.
             maybe_save_current_search_results(municipality, search_results)
             return
-        total_pages = search_page_state_data['cat1']['searchList']['totalPages']
-        # total_results = search_page_state_data['cat1']['searchList']['totalResultCount']
+        total_pages = min(search_page_state_data['cat1']['searchList']['totalPages'], 20)
         query_state_data = search_page_state_data['queryState']
-        save_json(search_page_state_data, 'search_page_state_data.json')
+        query_state_data['filterState']['sortSelection']['value'] = 'days'
+
+        user_agent = driver.execute_script("return navigator.userAgent;")
+        cookie_string = '; '.join([f'{cookie["name"]}={cookie["value"]}' for cookie in driver.get_cookies()])
 
         for page in range(1,total_pages+1):
-            # print(filter_state)
             print(f'Searching for listings in municipality: {municipality} # [{municipality_ind+1} | {len(all_municipalities)}]  page [{page} | {total_pages}]', end='         \r')
             query_state_data["pagination"] = {"currentPage": page}
             js_code = f"""
@@ -118,8 +126,8 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
                         method: "PUT",
                         headers: {{
                             "content-type": "application/json",
-                            "cookie": "{'; '.join([f'{cookie["name"]}={cookie["value"]}' for cookie in driver.get_cookies()])}",
-                            "user-agent": "{driver.execute_script("return navigator.userAgent;")}"
+                            "cookie": "{cookie_string}",
+                            "user-agent": "{user_agent}"
                         }},
                         body: JSON.stringify({{
                             "searchQueryState": {json.dumps(query_state_data)},
@@ -132,7 +140,7 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
                         }})
                     }});
                     const data = await response.json();
-                    window.fetchData = data; // Store the data in a global variable for Selenium to access
+                    window.fetchData = data;
                 }})();
                 """
 
@@ -144,15 +152,17 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
                 time.sleep(0.1)
             
             if not data:
-                sys.exit()
+                return
             current_search_results = [search_result for search_result in data['cat1']['searchResults']['listResults'] if search_result['zpid'] not in MASTER_ZPID_SET]
+            if not current_search_results:
+                return
             search_results.extend(current_search_results)
             MASTER_ZPID_SET.update([search_result['zpid'] for search_result in current_search_results])
             random_delay(1, 2)
 
     maybe_save_current_search_results(municipality, search_results)
-    random_delay(scrape_config['1s_delay'], scrape_config['2s_delay'])
+    random_delay(1, 2)
 
 if __name__ == '__main__':
     should_filter_results, force_visit_all_listings = False, True
-    # scrape_listings()
+    scrape_listings()

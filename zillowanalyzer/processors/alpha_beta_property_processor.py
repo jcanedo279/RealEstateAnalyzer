@@ -1,16 +1,13 @@
 import os
-import json
-import glob
 import yfinance as yf
 import pandas as pd
 import warnings
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-from zillowanalyzer.scrapers.scraping_utility import *
-from zillowanalyzer.processors.real_estate_metrics_property_processor import *
+from zillowanalyzer.utility.utility import DATA_PATH
+from zillowanalyzer.processors.real_estate_metrics_property_processor import MONTHS_IN_YEAR, DOWN_PAYMENT_PERCENTAGES, MIN_APR
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
-import sys
 
 LOAN_TERM_YEARS = 30
 
@@ -112,9 +109,9 @@ def calculate_alpha_beta_statistics(index_ticker, rf_ticker):
 
     index_data, rf_data = download_full_data(index_ticker, rf_ticker)
 
-    for property_details in property_details_iterator(skip_zpid_set = existing_zpids):
+    for property_details in property_details_iterator():
         property_info = get_property_info_from_property_details(property_details)
-        if not property_info:
+        if not property_info or property_info.get('zpid', 0) in existing_zpids:
             continue
         if 'zestimateHistory' not in property_details:
             continue

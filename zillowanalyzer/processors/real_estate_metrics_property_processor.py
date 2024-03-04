@@ -1,10 +1,8 @@
 import os
-import json
-import glob
 import csv
 from datetime import datetime
 
-from zillowanalyzer.scrapers.scraping_utility import *
+from zillowanalyzer.utility.utility import DATA_PATH, PROPERTY_DETAILS_PATH
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
 
