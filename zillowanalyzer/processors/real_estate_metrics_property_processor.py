@@ -2,7 +2,7 @@ import os
 import csv
 from datetime import datetime
 
-from zillowanalyzer.utility.utility import DATA_PATH, PROPERTY_DETAILS_PATH
+from zillowanalyzer.utility.utility import PROPERTY_DETAILS_PATH, REAL_ESTATE_METRICS_DATA_PATH
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
 
@@ -17,7 +17,7 @@ DOWN_PAYMENT_PERCENTAGES = [0.05, 1.0]
 DOWN_PAYMENT_TO_ANNUAL_PMI_RATE = { 0.05 : 0.0072, 1.0 : 0 }
 # I've noticed that actual mortage rates are about 5% smaller.
 PRINCIPAL_AND_INTEREST_DEDUCTION = 0.04
-VACANCY_RATE = 0.075
+VACANCY_RATE = 0.1
 MONTHLY_MAINTENANCE_RATE = 0.00017
 MIN_PROPERTY_VALUE = 50000
 FIXED_FEES = {
@@ -116,7 +116,7 @@ def calculate_monthly_mortgage(purchase_price, down_payment_percentage, annual_i
     monthly_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** n_payments) / ((1 + monthly_interest_rate) ** n_payments - 1)
     return monthly_payment
 
-def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
+def real_estate_metrics_property_processing_pipeline():
     results = {}
     annual_debt_service = 0
 
@@ -173,6 +173,7 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
             'street_address': property_info.get('streetAddress', 'No Property Address Located'),
             'zip_code': zip_code,
             'purchase_price': purchase_price,
+            'restimate': rent_estimate,
             'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
             'year_built': year_built,
             'bedrooms': bedrooms, 'bathrooms': bathrooms,
@@ -208,7 +209,7 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
 
     # Open CSV file for writing
     csv_columns = results[0].keys()
-    with open(os.path.join(DATA_PATH, 'processed_property_metric_results.csv'), mode='w', newline='', encoding='utf-8') as csvfile:
+    with open(REAL_ESTATE_METRICS_DATA_PATH, mode='w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
         writer.writeheader()
         
@@ -220,4 +221,4 @@ def calculate_real_estate_metrics(base_path=PROPERTY_DETAILS_PATH):
 
 
 if __name__ == '__main__':
-    results = calculate_real_estate_metrics()
+    results = real_estate_metrics_property_processing_pipeline()

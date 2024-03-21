@@ -9,7 +9,6 @@ from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 from zillowanalyzer.utility.utility import VISUAL_DATA_PATH, ensure_directory_exists
 
 
-
 CLUSTER_VISUAL_DATA_PATH = os.path.join(VISUAL_DATA_PATH, 'cluster')
 ensure_directory_exists(CLUSTER_VISUAL_DATA_PATH)
 
@@ -170,17 +169,22 @@ def visualize_clusters_by_input_features(tsne_results, umap_results, df):
             print(f"Not enough unique bin edges for feature {feature}. Skipping.")
             continue
 
-        # Adjust labels for plotting
+        # Sort labels and tsne/umap results for plotting
         bin_labels = pd.cut(df[feature], bins=unique_bin_edges, labels=False, include_lowest=True)
-        
-        # Handling potential issue with labels referencing bins out of bounds after deduplication
-        max_label = len(unique_bin_edges) - 2  # Maximum label after deduplication
-        bin_labels_formatted = bin_labels.apply(lambda x: f"{format_label(unique_bin_edges[max(x, 0)])} > {format_label(unique_bin_edges[min(x+1, max_label)])}")
+        sort_indices = np.argsort(bin_labels.to_numpy())
+        sorted_bin_labels = bin_labels.iloc[sort_indices]
+        sorted_tsne_results = tsne_results[sort_indices]
+        sorted_umap_results = umap_results[sort_indices]
+
+        # Generate formatted labels for the legend
+        label_mapping = {i: f"{format_label(unique_bin_edges[i])} to {format_label(unique_bin_edges[i+1])}" for i in range(len(unique_bin_edges)-1)}
+
+        bin_labels_formatted = sorted_bin_labels.map(label_mapping)
 
         # t-SNE
-        plot_scatter(tsne_results, bin_labels_formatted, f't-SNE colored by {feature}', axes[i, 0])
+        plot_scatter(sorted_tsne_results, bin_labels_formatted, f't-SNE colored by {feature}', axes[i, 0])
         # UMAP
-        plot_scatter(umap_results, bin_labels_formatted, f'UMAP colored by {feature}', axes[i, 1])
+        plot_scatter(sorted_umap_results, bin_labels_formatted, f'UMAP colored by {feature}', axes[i, 1])
 
     plt.tight_layout()
     plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_by_input_features.png')

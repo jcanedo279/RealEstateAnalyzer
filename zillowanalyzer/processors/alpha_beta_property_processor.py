@@ -4,14 +4,12 @@ import pandas as pd
 import warnings
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-from zillowanalyzer.utility.utility import DATA_PATH
+from zillowanalyzer.utility.utility import ALPHA_BETA_DATA_PATH
 from zillowanalyzer.processors.real_estate_metrics_property_processor import MONTHS_IN_YEAR, DOWN_PAYMENT_PERCENTAGES, MIN_APR
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
 
 LOAN_TERM_YEARS = 30
-
-ALPHA_BETA_PATH = f'{DATA_PATH}/AlphaBetaStats.csv'
 
 def download_full_data(index_ticker, rf_ticker):
     # Download index data
@@ -103,7 +101,7 @@ def load_existing_stats(file_path):
 
 
 def calculate_alpha_beta_statistics(index_ticker, rf_ticker):
-    existing_stats_df = load_existing_stats(ALPHA_BETA_PATH)
+    existing_stats_df = load_existing_stats(ALPHA_BETA_DATA_PATH)
     existing_zpids = set(existing_stats_df['zpid']) if not existing_stats_df.empty else set()
     new_stats = []
 
@@ -125,17 +123,20 @@ def calculate_alpha_beta_statistics(index_ticker, rf_ticker):
     if new_stats:
         new_stats_df = pd.DataFrame(new_stats)
         updated_stats_df = pd.concat([existing_stats_df, new_stats_df], ignore_index=True)
-        updated_stats_df.to_csv(ALPHA_BETA_PATH, index=False)
-        print(f"Updated statistics saved to {ALPHA_BETA_PATH}.")
+        updated_stats_df.to_csv(ALPHA_BETA_DATA_PATH, index=False)
+        print(f"Updated statistics saved to {ALPHA_BETA_DATA_PATH}.")
         print(updated_stats_df.describe())
     else:
         print("No new properties to process.")
 
-
-if __name__ == "__main__":
+def alpha_beta_property_processing_pipeline():
     # index_ticker = "SPY" # SnP 500
     # index_ticker = "SPG"  # Simon Property Group
     index_ticker = "O" # Realty income corporations
 
     rf_ticker = "^IRX"
     calculate_alpha_beta_statistics(index_ticker, rf_ticker)
+
+
+if __name__ == "__main__":
+    alpha_beta_property_processing_pipeline()

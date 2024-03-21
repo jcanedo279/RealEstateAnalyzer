@@ -1,0 +1,12 @@
+/* Add Materialize CSS via CDN */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
+
+
+/* Custom styles */
+body {
+    margin: 20px 0;
+}
+
+.form-element {
+    margin-bottom: 20px; /* Adjust the space below each form element */
+}

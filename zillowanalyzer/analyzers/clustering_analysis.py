@@ -16,8 +16,8 @@ def apply_dimensionality_reduction_and_clustering(df):
 
     # Clustering
     kmeans = KMeans(n_clusters=5, random_state=42)
-    tsne_dbscan = DBSCAN(eps=5, min_samples=7)
-    umap_dbscan = DBSCAN(eps=0.2, min_samples=7)
+    tsne_dbscan = DBSCAN(eps=5, min_samples=15)
+    umap_dbscan = DBSCAN(eps=0.5, min_samples=15)
     hdbscan = HDBSCAN(min_samples=10, min_cluster_size=15)
 
     # Clustering on Dimensionality Reduction Results

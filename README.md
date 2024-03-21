@@ -7,7 +7,6 @@ ZillowAnalyzer is a comprehensive toolkit designed for scraping, analyzing, and 
 - Scraping property details and Zestimate history from Zillow.
 - Calculating real estate investment metrics.
 - Leveraging Chrome profiles for more efficient scraping.
-- Using SCRAPE_OPS_API_KEY for generating fake profile data.
 
 ## Getting Started
 

@@ -1,10 +1,10 @@
 import pandas as pd
 
+from zillowanalyzer.utility.utility import REAL_ESTATE_METRICS_DATA_PATH
 
-file_path = 'zillowanalyzer/Data/processed_property_metric_results.csv'
 
 # Read the CSV file
-df = pd.read_csv(file_path)
+df = pd.read_csv(REAL_ESTATE_METRICS_DATA_PATH)
 
 # Count unique homes by 'zpid'
 unique_homes_count = df['zpid'].nunique()

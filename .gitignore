@@ -153,6 +153,7 @@ cython_debug/
 
 # Custom ignores for project
 zillowanalyzer/Data/HomeData/
+zillowanalyzer/Data/Images/
 zillowanalyzer/Data/SearchResults/
 zillowanalyzer/Data/SearchResultsMetadata/
 zillowanalyzer/Data/PropertyDetails/

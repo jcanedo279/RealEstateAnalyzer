@@ -166,3 +166,7 @@ SEARCH_LISTINGS_DATA_PATH = PROJECT_CONFIG['search_results_data_path']
 SEARCH_LISTINGS_METADATA_PATH = PROJECT_CONFIG['search_results_metadata_path']
 PROPERTY_DETAILS_PATH = PROJECT_CONFIG['property_details_path']
 SEARCH_RESULTS_PROCESSED_PATH = PROJECT_CONFIG['search_results_processed_path']
+
+ALPHA_BETA_DATA_PATH = f'{DATA_PATH}/PropertyData/alpha_beta_data.csv'
+REAL_ESTATE_METRICS_DATA_PATH = f'{DATA_PATH}/PropertyData/real_estate_metrics_data.csv'
+HOME_FEATURES_DATAFRAME_PATH = f'{DATA_PATH}/PropertyData/home_features_df.parquet'

@@ -1,6 +1,7 @@
 import os
 import math
 import csv
+
 from zillowanalyzer.scrapers.scraping_utility import retry_request, get_selenium_driver, extract_zestimate_history_from_driver, extract_property_details_from_driver
 from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, PROPERTY_DETAILS_PATH
 from zillowanalyzer.utility.utility import save_json, random_delay, ensure_directory_exists

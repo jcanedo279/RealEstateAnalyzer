@@ -10,16 +10,19 @@ from sklearn.ensemble import IsolationForest
 from scipy import stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-from zillowanalyzer.utility.utility import DATA_PATH
+from zillowanalyzer.utility.utility import ALPHA_BETA_DATA_PATH, REAL_ESTATE_METRICS_DATA_PATH, HOME_FEATURES_DATAFRAME_PATH
+
 
 def load_data():
-    alpha_beta_df = pd.read_csv(f'{DATA_PATH}/AlphaBetaStats.csv').drop(['zip_code'], axis=1)
-    property_metrics_df = pd.read_csv(f'{DATA_PATH}/processed_property_metric_results.csv').drop(['zip_code', 'street_address'], axis=1)
+    alpha_beta_df = pd.read_csv(ALPHA_BETA_DATA_PATH)
+    property_metrics_df = pd.read_csv(REAL_ESTATE_METRICS_DATA_PATH).drop(['zip_code', 'street_address'], axis=1)
     combined_df = pd.merge(alpha_beta_df, property_metrics_df, on='zpid', how='inner').set_index('zpid')
 
     # Load from home features from disk.
-    shap_output_df = pd.read_parquet(f'{DATA_PATH}/SavedDataframes/home_features_df.parquet')
+    shap_output_df = pd.read_parquet(HOME_FEATURES_DATAFRAME_PATH)
     combined_df['home_features_score'] = shap_output_df['home_features_score']
+    combined_df['is_waterfront'] = 1 - shap_output_df['waterView_None']
+    print(combined_df['is_waterfront'].unique())
     return combined_df
 
 def calculate_vif(dataframe):
@@ -187,7 +190,6 @@ def preprocess_dataframe(df, filter_method = FilterMethod.FILTER_NONE):
     )
     # Remove columns (features) with high multicollinearity (VIF) with other features.
     features_to_remove = features_to_remove_by_vif(df_preprocess[num_cols])
-    print(features_to_remove)
     df_preprocess.drop(columns=features_to_remove)
     # Remove rows (instances) which are deemd "outliers".
     df_preprocess = preprocessor.filter_dataframe(df_preprocess, filter_method=filter_method)
@@ -211,7 +213,11 @@ def preprocess_test():
     df_preprocess, preprocessor = preprocess_dataframe(df_mock)
     print(df_preprocess)
 
-    df_preprocess_dropped = df_preprocess_dropped.drop(['num1', 'cat1_a'], axis=1)
+    df_preprocess_dropped = df_preprocess.drop(['num1', 'cat1_a'], axis=1)
 
     df_mock_dropped = preprocessor.inverse_transform(df_preprocess_dropped)
     print(df_mock_dropped)
+
+
+if __name__ == '__main__':
+    preprocess_test()

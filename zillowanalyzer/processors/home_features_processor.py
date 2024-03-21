@@ -8,18 +8,18 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
-from zillowanalyzer.utility.utility import DATA_PATH, VISUAL_DATA_PATH, ensure_directory_exists
+from zillowanalyzer.utility.utility import VISUAL_DATA_PATH, HOME_FEATURES_DATAFRAME_PATH, ensure_directory_exists
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 from zillowanalyzer.analyzers.correlatory_data_analysis import visualize_pairwise_correlation, visualize_pairwise_distribution
 
 # Define feature categories
 FEATURE_CATEGORIES = {
     'bool_features': {'canRaiseHorses', 'furnished', 'hasAssociation', 'hasAttachedGarage', 'hasAttachedProperty', 'hasCooling', 'hasCarport', 'hasElectricOnProperty', 'hasFireplace', 'hasGarage', 'hasHeating', 'hasOpenParking', 'hasPrivatePool', 'hasView', 'hasWaterfrontView', 'isSeniorCommunity', 'hasAdditionalParcels', 'hasPetsAllowed', 'isNewConstruction'},
-    'container_features': {'accessibilityFeatures', 'associationAmenities', 'appliances', 'communityFeatures', 'cooling', 'doorFeatures', 'electric', 'fireplaceFeatures', 'flooring', 'greenEnergyEfficient', 'heating', 'horseAmenities', 'interiorFeatures', 'laundryFeatures', 'patioAndPorchFeatures', 'poolFeatures', 'roadSurfaceType', 'securityFeatures', 'sewer', 'spaFeatures', 'utilities', 'waterSource', 'waterfrontFeatures', 'windowFeatures', 'buildingFeatures', 'otherStructures'},
+    'container_features': {'accessibilityFeatures', 'associationAmenities', 'appliances', 'communityFeatures', 'cooling', 'doorFeatures', 'electric', 'fireplaceFeatures', 'flooring', 'greenEnergyEfficient', 'heating', 'horseAmenities', 'interiorFeatures', 'laundryFeatures', 'patioAndPorchFeatures', 'poolFeatures', 'roadSurfaceType', 'securityFeatures', 'sewer', 'spaFeatures', 'utilities', 'waterSource', 'waterfrontFeatures', 'windowFeatures', 'buildingFeatures', 'otherStructures', 'propertyCondition'},
     'composite_container_features': {'waterView', 'roofType', 'fencing'},
     'categorical_features': {'basement', 'commonWalls', 'architecturalStyle'}
 }
-MIN_THRESHOLD = 1000
+MIN_THRESHOLD = 500
 
 # Create a directory for plots if it doesn't exist
 bool_home_features = os.path.join(VISUAL_DATA_PATH, "home_features", "bool_features")
@@ -174,9 +174,7 @@ def plot_feature_histograms(features_df):
             plt.close()
 
 
-
-
-def main():
+def home_features_processing_pipeline():
     features_df = load_and_aggregate_features()
     features_df = filter_features_by_threshold(features_df)
     plot_feature_histograms(features_df.drop(columns=['purchase_price'], errors='ignore'))
@@ -186,12 +184,16 @@ def main():
     shap_correlation_df = add_shap_for_home_features(model, features_df, predictor)
     print(shap_correlation_df)
 
-    home_features_df = features_df[['home_features_score', 'purchase_price']]
+    home_features_df = features_df[['home_features_score', 'purchase_price', 'waterView_None']]
     # Save to Parquet (efficient and preserves data types well)
-    home_features_df.to_parquet(f'{DATA_PATH}/SavedDataframes/home_features_df.parquet')
+    home_features_df.to_parquet(HOME_FEATURES_DATAFRAME_PATH)
 
     visualize_pairwise_correlation(home_features_df, path=f"{VISUAL_DATA_PATH}/correlatory/home_features_pairwise_correlation.png", title="Home Features vs. Price Correlation (SHAP)")
     visualize_pairwise_distribution(home_features_df, path=f"{VISUAL_DATA_PATH}/correlatory/home_features_pairwise_distribution.png", title="Home Features vs. Price Distribution (SHAP)")
+
+
+def main():
+    home_features_processing_pipeline()
 
 if __name__ == "__main__":
     main()
