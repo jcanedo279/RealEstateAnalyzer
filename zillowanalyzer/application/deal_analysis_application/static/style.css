@@ -3,10 +3,33 @@
 
 
 /* Custom styles */
-body {
-    margin: 20px 0;
+
+body, nav {
+    margin: 0;
+    padding: 0;
+}
+
+.fullscreen-div {
+    width: 100vw; /* 100% of the viewport width */
+    height: 100vh; /* 100% of the viewport height */
+    margin: 0;
+    padding: 0;
+}
+
+.fullscreen-div-padding {
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .form-element {
-    margin-bottom: 20px; /* Adjust the space below each form element */
+    margin-bottom: 20px;
+}
+
+.content-top-spacing {
+    margin-top: 50px;
+}
+
+/* Custom styles for table columns */
+.table-bordered td:not(:last-child) {
+    border-right: 1px solid #e0e0e0; /* Change the color as needed */
 }

@@ -185,7 +185,8 @@ def real_estate_metrics_property_processing_pipeline():
             'home_type': home_type,
             'mortgage_rate': mortgage_rate,
             'annual_homeowners_insurance': annual_homeowners_insurance,
-            'hoa_fee': hoa_fee
+            'hoa_fee': hoa_fee,
+            'city': property_info.get('city', '')
         }
 
         for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Z-Analyzer Home</title>
+    <!-- External CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Page navigation sidebar goes here -->
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">Menu</i></a>
+            <a href="/" class="brand-logo center">Zillow Analyzer</a>
+        </div>
+    </nav>
+    <ul id="slide-out" class="sidenav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/explore">Explore</a></li>
+        <li><a href="/search">Property Search</a></li>
+    </ul>
+
+    <!-- Page specific content goes here -->
+    <div class="content-top-spacing">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
