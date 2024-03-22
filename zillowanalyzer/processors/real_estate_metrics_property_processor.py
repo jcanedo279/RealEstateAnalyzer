@@ -191,14 +191,16 @@ def real_estate_metrics_property_processing_pipeline():
         for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
             down_payment_literal = f" {down_payment_percentage * 100}% Down" if down_payment_percentage != 1 else ""
             total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_info)
+            monthly_rental_income = rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)
             metrics.update({
                 f'break_even_ratio{down_payment_literal}' : (total_monthly_costs * 12 + annual_debt_service) / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
                 f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / total_cash_invested,
                 f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / (total_cash_invested - total_prepaid_costs),
-                f'adj_CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / total_cash_invested,
-                f'adj_CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / (total_cash_invested - total_prepaid_costs),
+                f'adj_CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / total_cash_invested,
+                f'adj_CoC{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / (total_cash_invested - total_prepaid_costs),
+                f'rental_income{down_payment_literal}' : monthly_rental_income,
                 f'cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / purchase_price,
-                f'adj_cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)) / purchase_price,
+                f'adj_cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / purchase_price,
             })
         results.append(metrics)
 

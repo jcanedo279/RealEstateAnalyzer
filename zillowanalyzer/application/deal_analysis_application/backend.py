@@ -5,7 +5,7 @@ import json
 from collections import OrderedDict
 
 from zillowanalyzer.utility.utility import get_abs_path
-from zillowanalyzer.analyzers.preprocessing import load_data
+from zillowanalyzer.analyzers.preprocessing import load_data, preprocess_dataframe, FilterMethod
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
 
 
@@ -31,11 +31,10 @@ def search():
     year_built = int(data.get('year_built'))
     max_price = float(data.get('max_price'))
     is_waterfront = bool(data.get('is_waterfront'))
+    is_cashflowing = bool(data.get('is_cashflowing'))
     number_deals = int(data.get('num_deals'))
 
-    app.logger.info(f"is waterfront: {is_waterfront}")
-
-    filtered_df = combined_df
+    filtered_df = combined_df.copy()
     if region != "ANY_AREA":
         filtered_df = filtered_df[filtered_df['zip_code'].isin(region_to_zip_codes[region])]
     if home_type != "ANY":
@@ -46,13 +45,15 @@ def search():
         filtered_df = filtered_df[filtered_df['purchase_price'] <= max_price]
     if is_waterfront:
         filtered_df = filtered_df[filtered_df['is_waterfront'] > 0.0]
+    if is_cashflowing:
+        filtered_df = filtered_df[filtered_df['adj_CoC 5.0% Down'] >= 0.0]
     
 
     number_properties = filtered_df.shape[0]
-    filtered_data = filtered_df[:number_deals] if number_deals else filtered_df
-    filtered_data = filtered_data.sort_values(by='adj_CoC 5.0% Down', ascending=False)
+    filtered_df = filtered_df.sort_values(by='adj_CoC 5.0% Down', ascending=False)
+    filtered_df = filtered_df[:number_deals] if number_deals else filtered_df
 
-    for zpid, filtered_property in filtered_data.iterrows():
+    for zpid, filtered_property in filtered_df.iterrows():
         zip_code, zpid = int(filtered_property['zip_code']), int(zpid)
         with open(get_abs_path(f'Data/PropertyDetails/{zip_code}/{zpid}_property_details.json'), 'r') as json_file:
             property_details = json.load(json_file)
@@ -60,18 +61,22 @@ def search():
             if 'props' in property_details:
                 property_info = get_property_info_from_property_details(property_details)
                 image_url = property_info['originalPhotos'][0]['mixedSources']['jpeg'][1]['url']
-                filtered_data.at[zpid, 'image_url'] = image_url
+                filtered_df.loc[zpid, 'image_url'] = image_url
+                filtered_df.loc[zpid, 'property_url'] = 'https://zillow.com' + property_info['hdpUrl']
+                filtered_df.loc[zpid, 'city'] = property_info['city']
             else:
-                filtered_data.at[zpid, 'image_url'] = None
+                filtered_df.loc[zpid, 'image_url'] = None
+                filtered_df.loc[zpid, 'property_url'] = None
+                filtered_df.loc[zpid, 'city'] = None
 
     # Add the zpid as a column.
-    filtered_data = filtered_data.reset_index()
-    filtered_data.rename(columns={'index': 'zpid'}, inplace=True)
+    filtered_df = filtered_df.reset_index()
+    filtered_df.rename(columns={'index': 'zpid'}, inplace=True)
 
     if number_properties:
-        target_cols = ['image_url', 'zpid', 'zip_code', 'purchase_price', 'restimate', 'adj_CoC 5.0% Down', 'year_built', 'bedrooms', 'bathrooms']
-        ordered_cols = target_cols + [col for col in filtered_data.columns if col not in set(target_cols)]
-        ordered_data = filtered_data[ordered_cols].to_json(orient="records")
+        target_cols = ['image_url', 'zpid', 'zip_code', 'purchase_price', 'restimate', 'adj_CoC 5.0% Down', 'rental_income 5.0% Down', 'year_built', 'bedrooms', 'bathrooms']
+        ordered_cols = target_cols + [col for col in filtered_df.columns if col not in set(target_cols)]
+        ordered_data = filtered_df[ordered_cols].to_json(orient="records")
     else:
         ordered_data = '{}'
 

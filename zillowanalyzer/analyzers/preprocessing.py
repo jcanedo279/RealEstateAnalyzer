@@ -22,7 +22,6 @@ def load_data():
     shap_output_df = pd.read_parquet(HOME_FEATURES_DATAFRAME_PATH)
     combined_df['home_features_score'] = shap_output_df['home_features_score']
     combined_df['is_waterfront'] = 1 - shap_output_df['waterView_None']
-    print(combined_df['is_waterfront'].unique())
     return combined_df
 
 def calculate_vif(dataframe):

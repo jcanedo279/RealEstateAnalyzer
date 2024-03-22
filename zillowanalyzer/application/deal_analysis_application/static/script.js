@@ -5,6 +5,7 @@ document.getElementById("submitBtn").onclick = function() {
         year_built: document.getElementById("year_built").value,
         max_price: document.getElementById("max_price").value,
         is_waterfront: document.getElementById("is_waterfront").checked,
+        is_cashflowing: document.getElementById("is_cashflowing").checked,
         num_deals: document.getElementById("num_deals").value,
     };
 
@@ -24,6 +25,10 @@ document.getElementById("submitBtn").onclick = function() {
         if (data.properties && data.properties.length > 0) {
             const totalCountDiv = document.createElement('div');
             totalCountDiv.textContent = `Total Properties: ${data.total_properties}`;
+            totalCountDiv.style.fontSize = '24px';
+            totalCountDiv.style.fontWeight = 'bold';
+            totalCountDiv.style.marginBottom = '20px';
+            totalCountDiv.style.marginTop = '20px';
             resultsDiv.appendChild(totalCountDiv);
 
             // Create a table
@@ -48,11 +53,19 @@ document.getElementById("submitBtn").onclick = function() {
                 Object.entries(item).forEach(([key, value]) => {
                     const td = document.createElement('td');
                     if (key === 'image_url' && value) {
+                        const imgLink = document.createElement('a');
+                        imgLink.href = item['property_url']; // Use the property URL
+                        imgLink.target = "_blank"; // Open in a new tab
+
                         const img = document.createElement('img');
                         img.src = value;
                         img.style.maxWidth = '150px'; // Set image size
-                        td.appendChild(img);
-                    } else {
+
+                        imgLink.appendChild(img);
+                        td.appendChild(imgLink);
+                    } else if (key === 'property_url' && value) {
+                        td.textContent = value;
+                    }else {
                         td.textContent = value;
                     }
                     row.appendChild(td);
