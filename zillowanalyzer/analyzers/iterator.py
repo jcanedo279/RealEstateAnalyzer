@@ -4,8 +4,8 @@ import json
 import time
 from datetime import timedelta
 
-# Define the base path for PropertyDetails
-PROPERTY_DETAILS_DIR_PATH = "zillowanalyzer/Data/PropertyDetails"
+from zillowanalyzer.utility.utility import PROPERTY_DETAILS_PATH
+
 
 def print_analysis_progress(start_time, analysis_index, analysis_len):
     current_time = time.time()
@@ -19,7 +19,7 @@ def print_analysis_progress(start_time, analysis_index, analysis_len):
     print(f"Analysing property [{analysis_index} | {analysis_len}]. {progress_percentage:.2f}% analyzed, time remaining: ~{formatted_time_remaining}", end=' '*30 + '\r')
 
 def property_details_iterator():
-    pattern = os.path.join(PROPERTY_DETAILS_DIR_PATH, "*", "*_property_details.json")
+    pattern = os.path.join(PROPERTY_DETAILS_PATH, "*", "*_property_details.json")
     property_detail_files = glob.glob(pattern)
     num_properties = len(property_detail_files)
 

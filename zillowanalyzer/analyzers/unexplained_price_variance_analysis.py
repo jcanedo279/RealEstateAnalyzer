@@ -9,7 +9,7 @@ import sys
 
 from zillowanalyzer.analyzers.preprocessing import load_data, preprocess_dataframe, FilterMethod
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
-from zillowanalyzer.utility.utility import VISUAL_DATA_PATH
+from zillowanalyzer.utility.utility import VISUAL_DATA_PATH, DATA_PATH, PROPERTY_DETAILS_PATH
 
 combined_df = load_data()
 # target_zip_codes = {33859,33863,33831,33813,33846,33884,33812,33880,33839,33811,33877,33807,33885,33566,33838,33840,33803,33563,33564,33882,33883,33888,33804,33802,33815,33801,33806,33851,33881,33844,33823,33850,33805,33565,33845,33810,33809,33868}
@@ -74,8 +74,8 @@ def calc_and_save_cum_unexplained_price_variance(drop_zip_code = False):
     plt.savefig(f'{VISUAL_DATA_PATH}/distributional/unexplained_price_var_by_input_features_{zip_code_incl_string}_zip_code.png')
     plt.close()
 
-calc_and_save_cum_unexplained_price_variance()
 calc_and_save_cum_unexplained_price_variance(drop_zip_code=True)
+calc_and_save_cum_unexplained_price_variance()
 
 df_preprocessed['predicted_price'] = model.predict(df_preprocessed.drop(['purchase_price'], axis=1))
 df_preprocessed['residual'] = df_preprocessed['purchase_price'] - df_preprocessed['predicted_price']
@@ -96,7 +96,7 @@ underpriced_homes_iter = inv_sorted_underpriced_homes.head(max_rows).iterrows()
 home_num = 0
 for index, home in underpriced_homes_iter:
     zip_code, zpid = int(home['zip_code']), int(index)
-    with open(f'zillowanalyzer/Data/PropertyDetails/{zip_code}/{zpid}_property_details.json', 'r') as json_file:
+    with open(f'{PROPERTY_DETAILS_PATH}/{zip_code}/{zpid}_property_details.json', 'r') as json_file:
         property_details = json.load(json_file)
         # Yield the loaded JSON data
         if 'props' not in property_details:
@@ -110,7 +110,7 @@ for index, home in underpriced_homes_iter:
         # Check if the request was successful
         if response.status_code == 200:
             # Specify the local path where you want to save the image
-            image_path = f"zillowanalyzer/Data/InvestmentSelections/im_{home_num}.jpg"
+            image_path = f"{DATA_PATH}/InvestmentSelections/im_{home_num}.jpg"
             
             # Open the specified path in binary write mode and save the image
             with open(image_path, "wb") as file:
