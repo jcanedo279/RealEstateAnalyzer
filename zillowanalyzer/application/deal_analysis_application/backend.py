@@ -4,6 +4,7 @@ import os
 import json
 from collections import OrderedDict
 
+from zillowanalyzer.utility.utility import get_abs_path
 from zillowanalyzer.analyzers.preprocessing import load_data
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
 
@@ -53,7 +54,7 @@ def search():
 
     for zpid, filtered_property in filtered_data.iterrows():
         zip_code, zpid = int(filtered_property['zip_code']), int(zpid)
-        with open(f'zillowanalyzer/Data/PropertyDetails/{zip_code}/{zpid}_property_details.json', 'r') as json_file:
+        with open(get_abs_path(f'Data/PropertyDetails/{zip_code}/{zpid}_property_details.json'), 'r') as json_file:
             property_details = json.load(json_file)
             # Yield the loaded JSON data
             if 'props' in property_details:

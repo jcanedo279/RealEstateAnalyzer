@@ -10,7 +10,13 @@ from dateutil.parser import parse
 from enum import Enum, auto
 
 
-CONFIG_PATH = 'zillowanalyzer/utility/project_config.cfg'
+# Get the directory of the current script
+SCRIPT_PATH = os.path.realpath(__file__)
+ZILLOW_ANALYZER_PATH = '/'.join( SCRIPT_PATH.split('/')[:-2] )
+
+def get_abs_path(rel_path):
+    return os.path.join(ZILLOW_ANALYZER_PATH, rel_path)
+CONFIG_PATH = get_abs_path('utility/project_config.cfg')
 
 
 ###############################
@@ -91,6 +97,7 @@ class ProjectConfigManager:
     def load_config(self):
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
+        print("Current working directory:", os.getcwd())
         for section in config.sections():
             for key, value in config.items(section):
                 if key == 'sort_listing_by':
@@ -160,13 +167,14 @@ if not SCRAPEOPS_API_KEY:
 
 PROJECT_CONFIG = ProjectConfigManager()
 
-DATA_PATH = PROJECT_CONFIG['data_path']
-VISUAL_DATA_PATH = PROJECT_CONFIG['visual_data_path']
-SEARCH_LISTINGS_DATA_PATH = PROJECT_CONFIG['search_results_data_path']
-SEARCH_LISTINGS_METADATA_PATH = PROJECT_CONFIG['search_results_metadata_path']
-PROPERTY_DETAILS_PATH = PROJECT_CONFIG['property_details_path']
-SEARCH_RESULTS_PROCESSED_PATH = PROJECT_CONFIG['search_results_processed_path']
+DATA_PATH = get_abs_path('Data')
 
-ALPHA_BETA_DATA_PATH = f'{DATA_PATH}/PropertyData/alpha_beta_data.csv'
-REAL_ESTATE_METRICS_DATA_PATH = f'{DATA_PATH}/PropertyData/real_estate_metrics_data.csv'
-HOME_FEATURES_DATAFRAME_PATH = f'{DATA_PATH}/PropertyData/home_features_df.parquet'
+VISUAL_DATA_PATH = get_abs_path('Data/VisualData')
+SEARCH_LISTINGS_DATA_PATH = get_abs_path('Data/SearchResults')
+SEARCH_LISTINGS_METADATA_PATH = get_abs_path('Data/SearchResultsMetadata')
+PROPERTY_DETAILS_PATH = get_abs_path('Data/PropertyDetails')
+SEARCH_RESULTS_PROCESSED_PATH = get_abs_path('Data/search_listings.csv')
+
+ALPHA_BETA_DATA_PATH = get_abs_path('Data/PropertyData/alpha_beta_data.csv')
+REAL_ESTATE_METRICS_DATA_PATH = get_abs_path('Data/PropertyData/real_estate_metrics_data.csv')
+HOME_FEATURES_DATAFRAME_PATH = get_abs_path('Data/PropertyData/home_features_df.parquet')
