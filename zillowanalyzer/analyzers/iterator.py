@@ -37,7 +37,14 @@ def property_details_iterator():
             yield property_details
 
 def get_property_info_from_property_details(property_details):
-    property_data = property_details['props']['pageProps']['componentProps']['gdpClientCache']
+    property_data = property_details['props']['pageProps']['componentProps']
+    property_data = property_data['gdpClientCache'] if 'gdpClientCache' in property_data else property_data['gdp']
+    if 'gdp' in property_data:
+        property_data = property_data['gdp']
+    elif 'gdpClientCache' in property_data:
+        property_data = property_data['gdpClientCache']
+    else:
+        return None
     first_key = next(iter(property_data))
     property_info = property_data[first_key].get("property", None)
     

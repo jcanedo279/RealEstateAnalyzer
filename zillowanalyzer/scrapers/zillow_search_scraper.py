@@ -4,18 +4,17 @@ import time
 import json
 import glob
 import re
+import random as rd
 from collections import defaultdict
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
-from zillowanalyzer.utility.utility import ensure_directory_exists, load_json, save_json, random_delay
+from zillowanalyzer.utility.utility import ensure_directory_exists, load_json, save_json, random_delay, is_last_checked_string_within_search_cooldown
 from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver
 
 
-SEARCH_COOLDOWN_TIME_WINDOW = timedelta(days=2)
-
-
+SEARCH_COOLDOWN_TIME_WINDOW = timedelta(hours=12)
 MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
 
 
@@ -38,11 +37,13 @@ def load_all_municipalities():
     return county_to_municipalities
 
 def load_all_metadata():
-    for file_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
-        municipality = os.path.basename(file_path).split("_metadata.json")[0]
-        
-        with open(file_path, "r") as file:
-            municipality_to_zpids[municipality].update(json.load(file)['zpids'])
+    for search_results_metadata_file_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
+        municipality = os.path.basename(search_results_metadata_file_path).split("_metadata.json")[0]
+        with open(search_results_metadata_file_path, "r") as search_results_metadta_file:
+            search_results_metadata = json.load(search_results_metadta_file)
+            if not is_last_checked_string_within_search_cooldown(search_results_metadata.get('last_checked'), SEARCH_COOLDOWN_TIME_WINDOW):
+                # If we have checked these search results recently, add it to the known zpids.
+                municipality_to_zpids[municipality].update(search_results_metadata['zpids'])
 
 county_to_municipalities = load_all_municipalities()
 municipality_to_zpids = defaultdict(set)
@@ -55,26 +56,21 @@ def should_process_municipality(municipality):
     search_results_metadata_path = f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json'
     if not os.path.exists(search_results_metadata_path):
         return True
-    search_results_metadta = load_json(search_results_metadata_path)
-    last_checked_str = search_results_metadta.get('last_checked')
-    if not last_checked_str:
-        return True
-    last_checked = datetime.fromisoformat(last_checked_str)
-    if datetime.now() - last_checked < SEARCH_COOLDOWN_TIME_WINDOW:
-        return False
-    return True
+    search_results_metadata = load_json(search_results_metadata_path)
+    return not is_last_checked_string_within_search_cooldown(search_results_metadata.get('last_checked'), SEARCH_COOLDOWN_TIME_WINDOW)
 
 def maybe_save_current_search_results(municipality, search_results):
     municipality_path = f"{SEARCH_LISTINGS_DATA_PATH}/{municipality}"
     # We save even if new_search_results is empty to ensure the metadata exists to skip over this municipality.
-    current_datetime = datetime.now()
     ensure_directory_exists(municipality_path)
-    save_json(search_results, f'{municipality_path}/listings_{current_datetime.strftime("%Y-%m-%d_%H-%M")}.json')
-    municipality_to_zpids[municipality].update([new_search_result['zpid'] for new_search_result in search_results])
+    save_json(search_results, f'{municipality_path}/listings_{datetime.now().strftime("%Y-%m-%d_%H-%M")}.json')
+    search_results_zpids = [new_search_result['zpid'] for new_search_result in search_results]
+    municipality_to_zpids[municipality].update(search_results_zpids)
 
     search_metadata = {
         'zpids': list(municipality_to_zpids[municipality]),
-        'last_checked': current_datetime.isoformat()
+        'tracked_zpids': list(search_results_zpids),
+        'last_checked': datetime.now().isoformat()
     }
     save_json(search_metadata, f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json')
 
@@ -94,7 +90,7 @@ def scrape_listings():
         scrape_listings_in_municipality(municipality_ind, municipality)
 
 def scrape_listings_in_municipality(municipality_ind, municipality):
-    # Check whether this municipality was processed within the municipality cooldown window.
+    # Check whether this municipality was processed within the municipality cooldown window.=
     if not should_process_municipality(municipality):
         return
     
@@ -104,7 +100,7 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
     # Make an initial request on the municipality Zillow page, we use this to grab region bounds for filtering homes outside the municipality.
     with get_selenium_driver("about:blank") as driver:
         driver.get(base_url)
-        random_delay(1, 2)
+        random_delay(1, 5)
         search_page_state_data = get_search_page_state_from_driver(driver)
         if not search_page_state_data:
             # Sometimes a municipality either DNE or has no homes, in which case we exit.
@@ -145,8 +141,10 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
                 """
 
             driver.execute_script(js_code)
-            data, start_time = None, time.time()
+            random_delay(1, 5)
+
             # Wait for data to asynchronously update for a maximum of 10 seconds.
+            data, start_time = None, time.time()
             while not data and time.time() < start_time + 10:
                 data = driver.execute_script("return window.fetchData;")
                 time.sleep(0.1)
@@ -154,14 +152,10 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
             if not data:
                 return
             current_search_results = [search_result for search_result in data['cat1']['searchResults']['listResults'] if search_result['zpid'] not in MASTER_ZPID_SET]
-            if not current_search_results:
-                return
             search_results.extend(current_search_results)
             MASTER_ZPID_SET.update([search_result['zpid'] for search_result in current_search_results])
-            random_delay(1, 2)
 
     maybe_save_current_search_results(municipality, search_results)
-    random_delay(1, 2)
 
 if __name__ == '__main__':
     should_filter_results, force_visit_all_listings = False, True

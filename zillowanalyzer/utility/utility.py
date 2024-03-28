@@ -8,6 +8,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from dateutil.parser import parse
 from enum import Enum, auto
+from datetime import datetime
 
 
 # Get the directory of the current script
@@ -72,6 +73,13 @@ def parse_dates(date_str):
     except ValueError:
         # Return Not-a-Time for unparseable formats.
         return pd.NaT
+
+def is_last_checked_string_within_search_cooldown(last_checked_str, cooldown_window):
+    if not last_checked_str:
+        # If the meatadata does not hve a last_checked string, its not within the search cooldown.
+        return False
+    last_checked = datetime.fromisoformat(last_checked_str)
+    return datetime.now() - last_checked < cooldown_window
 
 
 ############################

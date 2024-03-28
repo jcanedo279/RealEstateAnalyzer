@@ -2,7 +2,7 @@ import os
 import json
 import csv
 from enum import Enum
-from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH
+from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
 
 
 SEARCH_LISTINGS_CSV_FILE_PATH = os.path.join(DATA_PATH, 'search_listings.csv')
@@ -15,13 +15,17 @@ SORT_ORDER = SortOrder.SORT_ORDER_DESCENDING
 MAX_HOME_PRICE = 500000
 
 
-def process_listings(directory):
+def process_listings(search_listings_path, search_listings_metadata_path):
     results = []
 
-    # Iterate through all files in the directory
-    for filename in os.listdir(directory):
+    with open(search_listings_metadata_path, 'r') as search_listings_metadata_file:
+        search_listings_metadata = json.load(search_listings_metadata_file)
+        tracked_zpids_set = set(search_listings_metadata['tracked_zpids']) if 'tracked_zpids' in search_listings_metadata else {}
+
+    # Iterate through all files in the search_listings_path
+    for filename in os.listdir(search_listings_path):
         if filename.endswith(".json") and filename.startswith("listings_"):
-            file_path = os.path.join(directory, filename)
+            file_path = os.path.join(search_listings_path, filename)
 
             # Read each JSON file
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -33,6 +37,7 @@ def process_listings(directory):
                     listing_price = listing.get("unformattedPrice", 0)
                     Zestimate = listing.get("hdpData", {}).get("homeInfo", {}).get("zestimate", 0)
                     rentZestimate = listing.get("hdpData", {}).get("homeInfo", {}).get("rentZestimate", 0)
+                    zpid = listing.get("zpid")
                     zip_code = int(listing.get("hdpData", {}).get("homeInfo", {}).get("zipcode", "00000"))
                     home_type = listing.get("hdpData", {}).get("homeInfo", {}).get("homeType", "NO_HOME_TYPE_PROVIDED")
                     area = listing.get("area", 0)
@@ -47,36 +52,39 @@ def process_listings(directory):
                     rentZestimate_to_price_ratio = rentZestimate / listing_price if listing_price != 0 else 0
                     rentZestimate_to_Zestimate_ratio = rentZestimate / Zestimate if Zestimate != 0 else 0
                     results.append({
-                        "zpid": listing.get("zpid"),
+                        "zpid": zpid,
                         "address": listing.get("address", "NO_ADDRESS_PROVIDED"),
                         "home_type": home_type,
                         "zip_code": zip_code,
                         "url": detailUrl,
+                        "listing_price": listing_price,
+                        "restimate": rentZestimate,
+                        "is_tracked": zpid in tracked_zpids_set,
                         "rentZestimate_to_price_ratio": rentZestimate_to_price_ratio,
                         "rentZestimate_to_Zestimate_ratio": rentZestimate_to_Zestimate_ratio
                     })
     return results
 
-def process_all_municipalities(root_directory):
+def process_all_municipalities():
     all_results = []
 
     # Iterate through each subdirectory in the root directory
-    for municipality_folder in os.listdir(root_directory):
-        folder_path = os.path.join(root_directory, municipality_folder)
+    for municipality_folder in os.listdir(SEARCH_LISTINGS_DATA_PATH):
+        search_listings_path = os.path.join(SEARCH_LISTINGS_DATA_PATH, municipality_folder)
+        search_listings_metadata_path = os.path.join(SEARCH_LISTINGS_METADATA_PATH, f'{municipality_folder}_metadata.json')
 
         # Check if it's a directory
-        if os.path.isdir(folder_path):
-            print(f"Processing listings in {folder_path}...")
-            results = process_listings(folder_path)
+        if os.path.isdir(search_listings_path):
+            print(f"Processing listings in {search_listings_path}...")
+            results = process_listings(search_listings_path, search_listings_metadata_path)
             all_results.extend(results)
 
     reverse_sort = True if SORT_ORDER == SortOrder.SORT_ORDER_DESCENDING else False
     sorted_results = sorted(all_results, key=lambda x: x['rentZestimate_to_price_ratio'], reverse=reverse_sort)
 
     # Save all results to a new file
-    csv_file_path = os.path.join(DATA_PATH, 'search_listings.csv')
     with open(SEARCH_LISTINGS_CSV_FILE_PATH, 'w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
+        fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'listing_price', 'restimate', 'is_tracked', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -84,4 +92,4 @@ def process_all_municipalities(root_directory):
             writer.writerow(result)
 
 
-process_all_municipalities(SEARCH_LISTINGS_DATA_PATH)
+process_all_municipalities()

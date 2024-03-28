@@ -40,10 +40,31 @@ class ZillowChromeDriver(uc.Chrome):
         # If a Captcha is detected, stop scraping.
         try:
             while self.find_element(By.ID, 'px-captcha-wrapper'):
-                print(f"I need halp on profile: {PROJECT_CONFIG['profile_number']} :<")
+                print(f"I need halp, I've been detected :<")
                 time.sleep(20)
         except:
             pass
+
+class ChromeProfileManager():
+    min_profile_number = PROJECT_CONFIG['min_profile_number']
+    max_profile_number = PROJECT_CONFIG['max_profile_number']
+    def __init__(self):
+        # We start with a random profile so that we do not become more identifiable. Starting to request from the same profile is temporarily detectable.
+        self.current_profile_number = rd.randint(PROJECT_CONFIG['min_profile_number'], PROJECT_CONFIG['max_profile_number'])
+
+
+    def next_profile_number(self):
+        self.current_profile_number = self.min_profile_number + (self.current_profile_number - self.min_profile_number + 1) % (self.max_profile_number - self.min_profile_number + 1)
+        return self.current_profile_number
+
+PROFILE_CACHE_FILES = ['Cookies', 'Cookies-journal', 'History', 'History-journal', 'Visited Links', 'Web Data', 'Web Data-journal']
+chromeProfileManager = ChromeProfileManager()
+def clean_profile_data():
+    for profile_number in range(chromeProfileManager.min_profile_number, chromeProfileManager.max_profile_number+1):
+        for cache_file in PROFILE_CACHE_FILES:
+            profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
+            if os.path.exists(profile_cache_path):
+                os.remove(profile_cache_path)
 
 def get_chrome_options(headless=False, incognito=False):
     options = uc.ChromeOptions()
@@ -55,7 +76,7 @@ def get_chrome_options(headless=False, incognito=False):
     if incognito:
         options.add_argument("--incognito")
     elif local_path_exists:
-        profile_number = rd.randint(PROJECT_CONFIG['min_profile_number'], PROJECT_CONFIG['max_profile_number'])
+        profile_number = chromeProfileManager.next_profile_number()
         # We update the PROJECT_CONFIG with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
         PROJECT_CONFIG['profile_number'] = profile_number
         profile_directory = f"Profile {profile_number}"
@@ -69,10 +90,10 @@ def get_chrome_options(headless=False, incognito=False):
 
 @contextmanager
 def get_selenium_driver(url, headless=False, incognito=False):
-    # proxy_wrapper = proxy_manager.get_proxy_wrapper()
     options = get_chrome_options(headless=headless, incognito=incognito)
+    if chromeProfileManager.current_profile_number == chromeProfileManager.min_profile_number:
+        clean_profile_data()
     driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
-    # driver = ZillowChromeDriver(options=options)
     driver.get(url)
     try:
         yield driver
