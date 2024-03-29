@@ -4,9 +4,17 @@
 
 /* Custom styles */
 
+:root {
+    --main-blue: #0073e7;
+}
+
 body, nav {
     margin: 0;
     padding: 0;
+}
+
+.main-color {
+    background-color: var(--main-blue) !important;
 }
 
 .fullscreen-div {

@@ -55,7 +55,7 @@ document.getElementById("submitBtn").onclick = function() {
                 const row = document.createElement('tr');
                 Object.entries(item).forEach(([key, value]) => {
                     const td = document.createElement('td');
-                    if (key === 'image_url' && value) {
+                    if (key === 'Image' && value) {
                         const imgLink = document.createElement('a');
                         imgLink.href = item['property_url']; // Use the property URL
                         imgLink.target = "_blank"; // Open in a new tab

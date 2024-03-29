@@ -141,8 +141,8 @@ def real_estate_metrics_property_processing_pipeline():
             continue
         zip_code = property_info.get('zipcode', 0)
 
-        rent_estimate = property_info.get('rentZestimate', 0)
-        rent_estimate = 0 if not rent_estimate else rent_estimate
+        restimate = property_info.get('rentZestimate', 0)
+        restimate = 0 if not restimate else restimate
         purchase_price = property_info.get('price', 1)
         if not purchase_price:
             purchase_price = 1
@@ -186,8 +186,8 @@ def real_estate_metrics_property_processing_pipeline():
             'street_address': property_info.get('streetAddress', 'No Property Address Located'),
             'zip_code': zip_code,
             'purchase_price': purchase_price,
-            'restimate': rent_estimate,
-            'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
+            'restimate': restimate,
+            'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * restimate) if restimate != 0 else 'inf',
             'year_built': year_built,
             'bedrooms': bedrooms, 'bathrooms': bathrooms,
             'page_view_count': page_view_count, 'favorite_count': favorite_count,
@@ -203,11 +203,11 @@ def real_estate_metrics_property_processing_pipeline():
         }
 
         for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
-            down_payment_literal = f" {down_payment_percentage * 100}% Down" if down_payment_percentage != 1 else ""
+            down_payment_literal = f"_{int(down_payment_percentage * 100)}%_down" if down_payment_percentage != 1 else ""
             total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, monthly_hoa, property_info)
-            monthly_rental_income = rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)
-            breakeven_purchase_price = purchase_price_with_cash_flow_percentage(property_info, purchase_price, rent_estimate, monthly_hoa, down_payment_percentage, mortgage_rate)
-            target_purchase_price = purchase_price_with_cash_flow_percentage(property_info, purchase_price, rent_estimate, monthly_hoa, down_payment_percentage, mortgage_rate, cash_flow_rate=0.05)
+            monthly_rental_income = restimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)
+            breakeven_purchase_price = min(purchase_price, purchase_price_with_cash_flow_percentage(property_info, purchase_price, restimate, monthly_hoa, down_payment_percentage, mortgage_rate))
+            target_purchase_price = min(purchase_price, purchase_price_with_cash_flow_percentage(property_info, purchase_price, restimate, monthly_hoa, down_payment_percentage, mortgage_rate, cash_flow_rate=0.05))
             metrics.update({
                 f'breakeven_price{down_payment_literal}' : breakeven_purchase_price,
                 f'is_breaven_price_offending{down_payment_literal}' : abs(purchase_price - breakeven_purchase_price) > 0.2 * purchase_price,
@@ -223,7 +223,7 @@ def real_estate_metrics_property_processing_pipeline():
         results.append(metrics)
 
     # Sort the list of dictionaries for the current zip code by 'adj_CoC' with some percentage down, in descending order
-    sorted_metrics = sorted(results, key=lambda x: x['adj_CoC 5.0% Down'], reverse=True)
+    sorted_metrics = sorted(results, key=lambda x: x['adj_CoC_5%_down'], reverse=True)
 
     # Open CSV file for writing
     csv_columns = results[0].keys()
