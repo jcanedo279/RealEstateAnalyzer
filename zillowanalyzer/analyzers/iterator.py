@@ -38,7 +38,6 @@ def property_details_iterator():
 
 def get_property_info_from_property_details(property_details):
     property_data = property_details['props']['pageProps']['componentProps']
-    property_data = property_data['gdpClientCache'] if 'gdpClientCache' in property_data else property_data['gdp']
     if 'gdp' in property_data:
         property_data = property_data['gdp']
     elif 'gdpClientCache' in property_data:

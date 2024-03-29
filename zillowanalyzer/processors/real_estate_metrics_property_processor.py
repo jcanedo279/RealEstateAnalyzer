@@ -61,22 +61,17 @@ def calculate_fees(purchase_price, down_payment):
     total_fees = origination_fee + lenders_title_insurance_fee + owners_title_insurance_fee + state_and_stamps_tax + intangible_tax
     return total_fees
 
-def calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_details, loan_term_years=30):
-    # Calculate the down payment amount and financed amount
-    down_payment_amount = purchase_price * down_payment_percentage
-    loan_amount = purchase_price - down_payment_amount
-    
-    # Monthly mortgage payment calculation
+def calculate_monthly_mortgage_rate(mortgage_rate, loan_term_years=30):
     monthly_interest_rate = mortgage_rate / MONTHS_IN_YEAR / 100
     n_payments = loan_term_years * MONTHS_IN_YEAR
-    monthly_mortgage_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** n_payments) * (1-PRINCIPAL_AND_INTEREST_DEDUCTION) / ((1 + monthly_interest_rate) ** n_payments - 1)
-    
-    # Calculate monthly tax payments.
-    tax_rate = property_details.get('propertyTaxRate', 0)
+    return (monthly_interest_rate * (1 + monthly_interest_rate) ** n_payments) * (1-PRINCIPAL_AND_INTEREST_DEDUCTION) / ((1 + monthly_interest_rate) ** n_payments - 1)
+
+def calculate_monthly_property_tax_rate(property_info):
+    tax_rate = property_info.get('propertyTaxRate', 0)
     if tax_rate:
         tax_rate *= 0.01
     if not tax_rate:
-        tax_history = property_details['taxHistory']
+        tax_history = property_info['taxHistory']
         total_tax_rate = 0
         for record in tax_history:
             tax_paid, taxed_property_value = record['taxPaid'], record['value']
@@ -85,17 +80,36 @@ def calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_ra
             tax_rate = tax_paid / taxed_property_value
             total_tax_rate += tax_rate
     tax_rate = 0.02 if not tax_rate else tax_rate
-    monthly_property_tax = tax_rate * purchase_price / MONTHS_IN_YEAR
+    return tax_rate  / MONTHS_IN_YEAR
+
+def calculate_monthly_homeowners_insurance_rate(property_info, purchase_price):
+    annual_homeowners_insurance = property_info.get('annualHomeownersInsurance', 0)
+    return AVERAGE_HOME_INSURANCE_RATE / MONTHS_IN_YEAR if not annual_homeowners_insurance else annual_homeowners_insurance / (MONTHS_IN_YEAR * purchase_price)
+
+def purchase_price_with_cash_flow_percentage(property_info, purchase_price, rent_estimate, monthly_hoa, down_payment_percentage, mortgage_rate, cash_flow_rate=0):
+    cost_rate = MONTHLY_MAINTENANCE_RATE + (DOWN_PAYMENT_TO_ANNUAL_PMI_RATE[down_payment_percentage] / MONTHS_IN_YEAR) * (1 - down_payment_percentage) + calculate_monthly_mortgage_rate(mortgage_rate) + calculate_monthly_property_tax_rate(property_info) + calculate_monthly_homeowners_insurance_rate(property_info, purchase_price)
+    return (rent_estimate * (1 - VACANCY_RATE) - monthly_hoa) / (cost_rate + (cash_flow_rate / MONTHS_IN_YEAR))
+
+
+def calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, monthly_hoa, property_info):
+    # Calculate the down payment amount and financed amount
+    down_payment_amount = purchase_price * down_payment_percentage
+    loan_amount = purchase_price - down_payment_amount
+    
+    # Monthly mortgage payment calculation
+    monthly_mortgage_payment = loan_amount * calculate_monthly_mortgage_rate(mortgage_rate)
+    
+    # Calculate monthly tax payments.
+    monthly_property_tax = purchase_price * calculate_monthly_property_tax_rate(property_info)
 
     # Calculate montly homeowners insurance (not mortage insurance).
-    annual_homeowners_insurance = property_details.get('annualHomeownersInsurance', 0)
-    monthly_homeowners_insurance = AVERAGE_HOME_INSURANCE_RATE * purchase_price / MONTHS_IN_YEAR if not annual_homeowners_insurance else annual_homeowners_insurance / MONTHS_IN_YEAR
+    monthly_homeowners_insurance = calculate_monthly_homeowners_insurance_rate(property_info, purchase_price) * purchase_price
 
     # Calculate montly private mortgage insurance.
     monthly_pmi = purchase_price * DOWN_PAYMENT_TO_ANNUAL_PMI_RATE[down_payment_percentage] / MONTHS_IN_YEAR
 
     # Total monthly costs
-    total_monthly_costs = monthly_mortgage_payment + monthly_pmi + monthly_property_tax + monthly_homeowners_insurance + hoa_fee
+    total_monthly_costs = monthly_mortgage_payment + monthly_pmi + monthly_property_tax + monthly_homeowners_insurance + monthly_hoa
 
     # Prepaids are typically paid upfront and not included in monthly costs but affect total cash invested.
     prepaid_real_estate_tax_escrow = monthly_property_tax * CURRENT_MONTH
@@ -163,10 +177,9 @@ def real_estate_metrics_property_processing_pipeline():
         days_on_zillow = time_on_zillow.split()[0]
         if time_on_zillow.split()[1] in {"day", "hours"}:
             days_on_zillow = 1
-        hoa_fee = property_info.get("monthlyHoaFee", 0)
-        if not hoa_fee:
-            hoa_fee = 0
-
+        monthly_hoa = property_info.get("monthlyHoaFee", 0)
+        if not monthly_hoa:
+            monthly_hoa = 0
 
         metrics = {
             'zpid' : property_info.get('zpid', 0),
@@ -185,27 +198,29 @@ def real_estate_metrics_property_processing_pipeline():
             'home_type': home_type,
             'mortgage_rate': mortgage_rate,
             'annual_homeowners_insurance': annual_homeowners_insurance,
-            'hoa_fee': hoa_fee,
+            'monthly_hoa': monthly_hoa,
             'city': property_info.get('city', '')
         }
 
         for down_payment_percentage in DOWN_PAYMENT_PERCENTAGES:
             down_payment_literal = f" {down_payment_percentage * 100}% Down" if down_payment_percentage != 1 else ""
-            total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, hoa_fee, property_info)
+            total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, monthly_hoa, property_info)
             monthly_rental_income = rent_estimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)
+            breakeven_purchase_price = purchase_price_with_cash_flow_percentage(property_info, purchase_price, rent_estimate, monthly_hoa, down_payment_percentage, mortgage_rate)
+            target_purchase_price = purchase_price_with_cash_flow_percentage(property_info, purchase_price, rent_estimate, monthly_hoa, down_payment_percentage, mortgage_rate, cash_flow_rate=0.05)
             metrics.update({
-                f'break_even_ratio{down_payment_literal}' : (total_monthly_costs * 12 + annual_debt_service) / (MONTHS_IN_YEAR * rent_estimate) if rent_estimate != 0 else 'inf',
-                f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / total_cash_invested,
-                f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / (total_cash_invested - total_prepaid_costs),
+                f'breakeven_price{down_payment_literal}' : breakeven_purchase_price,
+                f'is_breaven_price_offending{down_payment_literal}' : abs(purchase_price - breakeven_purchase_price) > 0.2 * purchase_price,
+                f'snp_equivalent_price{down_payment_literal}' : target_purchase_price,
+                f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / total_cash_invested,
+                f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / (total_cash_invested - total_prepaid_costs),
                 f'adj_CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / total_cash_invested,
                 f'adj_CoC{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / (total_cash_invested - total_prepaid_costs),
                 f'rental_income{down_payment_literal}' : monthly_rental_income,
-                f'cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (rent_estimate - total_monthly_costs) / purchase_price,
+                f'cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / purchase_price,
                 f'adj_cap_rate{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / purchase_price,
             })
         results.append(metrics)
-
-    print(len(results))
 
     # Sort the list of dictionaries for the current zip code by 'adj_CoC' with some percentage down, in descending order
     sorted_metrics = sorted(results, key=lambda x: x['adj_CoC 5.0% Down'], reverse=True)

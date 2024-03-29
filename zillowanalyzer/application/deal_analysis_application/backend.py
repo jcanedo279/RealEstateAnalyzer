@@ -12,7 +12,7 @@ from zillowanalyzer.analyzers.iterator import get_property_info_from_property_de
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
-combined_df = load_data()
+combined_df = load_data().round(2)
 
 region_to_zip_codes = {
     'LAKELAND_AREA' : {33859,33863,33831,33813,33846,33884,33812,33880,33839,33811,33877,33807,33885,33566,33838,33840,33803,33563,33564,33882,33883,33888,33804,33802,33815,33801,33806,33851,33881,33844,33823,33850,33805,33565,33845,33810,33809,33868},
@@ -79,7 +79,7 @@ def search():
     filtered_df.rename(columns={'index': 'zpid'}, inplace=True)
 
     if number_properties:
-        target_cols = ['image_url', 'zpid', 'city', 'purchase_price', 'restimate', 'adj_CoC 5.0% Down', 'rental_income 5.0% Down', 'year_built', 'home_type', 'bedrooms', 'bathrooms']
+        target_cols = ['image_url', 'zpid', 'city', 'purchase_price', 'breakeven_price 5.0% Down', 'snp_equivalent_price 5.0% Down', 'is_breaven_price_offending 5.0% Down', 'restimate', 'adj_CoC 5.0% Down', 'rental_income 5.0% Down', 'year_built', 'home_type', 'bedrooms', 'bathrooms']
         ordered_cols = target_cols + [col for col in filtered_df.columns if col not in set(target_cols)]
         ordered_data = filtered_df[ordered_cols].to_json(orient="records")
     else:

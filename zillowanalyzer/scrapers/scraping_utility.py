@@ -77,8 +77,6 @@ def get_chrome_options(headless=False, incognito=False):
         options.add_argument("--incognito")
     elif local_path_exists:
         profile_number = chromeProfileManager.next_profile_number()
-        # We update the PROJECT_CONFIG with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
-        PROJECT_CONFIG['profile_number'] = profile_number
         profile_directory = f"Profile {profile_number}"
         options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
         options.add_argument(f"--profile-directory={profile_directory}")

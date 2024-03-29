@@ -55,6 +55,8 @@ def load_and_aggregate_features():
     all_features = {}
     for property_details in property_details_iterator():
         property_info = get_property_info_from_property_details(property_details)
+        if not property_info:
+            continue
         aggregate_features_from_json(property_info, all_features)
     return pd.DataFrame.from_dict(all_features, orient='index').fillna(0)
 

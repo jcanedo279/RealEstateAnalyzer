@@ -100,7 +100,7 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
     # Make an initial request on the municipality Zillow page, we use this to grab region bounds for filtering homes outside the municipality.
     with get_selenium_driver("about:blank") as driver:
         driver.get(base_url)
-        random_delay(1, 5)
+        random_delay(3, 5)
         search_page_state_data = get_search_page_state_from_driver(driver)
         if not search_page_state_data:
             # Sometimes a municipality either DNE or has no homes, in which case we exit.
@@ -141,7 +141,7 @@ def scrape_listings_in_municipality(municipality_ind, municipality):
                 """
 
             driver.execute_script(js_code)
-            random_delay(1, 5)
+            random_delay(2, 4)
 
             # Wait for data to asynchronously update for a maximum of 10 seconds.
             data, start_time = None, time.time()

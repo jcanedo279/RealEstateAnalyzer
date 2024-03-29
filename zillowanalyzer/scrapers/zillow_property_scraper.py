@@ -68,8 +68,7 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
     with get_selenium_driver("about:blank") as driver:
         for search_result_ind, search_result in enumerate(property_data):
             zip_code, zpid = search_result['zip_code'], search_result['zpid']
-            property_url = '/'.join(search_result['url'].replace('homedetails', 'homes').split('/')[:-2]).replace('zpid', 'rb')
-            print(property_url)
+            property_url = search_result['url']
 
             num_search_results_digits = len(str(batch_size))
             num_batches_digits = len(str(num_batches))
