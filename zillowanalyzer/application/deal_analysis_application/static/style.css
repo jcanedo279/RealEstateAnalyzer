@@ -41,3 +41,8 @@ body, nav {
 .table-bordered td:not(:last-child) {
     border-right: 1px solid #e0e0e0; /* Change the color as needed */
 }
+
+.navigation-buttons {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}

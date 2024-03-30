@@ -1,4 +1,29 @@
+// Initialize currentPage globally
+let page = 1;
+let total_pages = 0
+
+
 document.getElementById("submitBtn").onclick = function() {
+    // Reset the search state (current page and total number of pages).
+    page = 1;
+    total_pages = 0;
+    fetchExploreData();
+};
+
+document.getElementById("prevPageBtn").onclick = function() {
+    if(page > 1) {
+        page--;
+        fetchExploreData();
+    }
+};
+document.getElementById("nextPageBtn").onclick = function() {
+    if(page < total_pages) {
+        page++;
+        fetchExploreData();
+    }
+};
+
+function fetchExploreData() {
     const formData = {
         region: document.getElementById("region").value,
         home_type: document.getElementById("home_type").value,
@@ -7,7 +32,8 @@ document.getElementById("submitBtn").onclick = function() {
         city: document.getElementById("city").value,
         is_waterfront: document.getElementById("is_waterfront").checked,
         is_cashflowing: document.getElementById("is_cashflowing").checked,
-        num_deals: document.getElementById("num_deals").value,
+        num_properties_per_page: document.getElementById("num_properties_per_page").value,
+        current_page: page,
     };
 
     fetch('/explore', {
@@ -20,9 +46,13 @@ document.getElementById("submitBtn").onclick = function() {
     .then(response => response.json())
     .then(data => {
         const resultsDiv = document.getElementById('resultsTable');
-        resultsDiv.innerHTML = ''; // Clear previous results
+        // Clear previous results.
+        resultsDiv.innerHTML = '';
+        // Get the total pages fromt he server.
+        total_pages = data.total_pages;
+        console.info(data)
 
-        // Display total properties count or a no properties found message
+        // Display total properties count or a no properties found message.
         if (data.properties && data.properties.length > 0) {
             const totalCountDiv = document.createElement('div');
             totalCountDiv.textContent = `Total Properties: ${data.total_properties}`;
@@ -82,6 +112,15 @@ document.getElementById("submitBtn").onclick = function() {
             const noPropertiesDiv = document.createElement('div');
             noPropertiesDiv.textContent = 'No properties found that match the criteria.';
             resultsDiv.appendChild(noPropertiesDiv);
+        }
+
+        // Conditionally display the navigation buttons.
+        if (total_pages > 1) {
+            // Show navigation buttons.
+            document.getElementById('navigationButtons').style.display = 'block';
+        } else {
+            // Optionally hide navigation buttons if no properties found.
+            document.getElementById('navigationButtons').style.display = 'none';
         }
     })
     .catch((error) => {
