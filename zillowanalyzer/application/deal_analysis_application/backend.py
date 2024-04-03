@@ -148,7 +148,6 @@ def search():
     properties_df = properties_df_from_search_request_data(request_data)
 
     response_data = properties_response_from_properties_df(properties_df, num_properties_per_page=num_properties_per_page, page=page)
-    print("data is: ", page, num_properties_per_page, response_data['total_pages'])
     response_json = json.dumps(response_data)
     return Response(response_json, mimetype='application/json')
 

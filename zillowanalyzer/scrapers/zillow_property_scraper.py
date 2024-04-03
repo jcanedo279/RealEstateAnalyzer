@@ -9,23 +9,12 @@ from datetime import datetime, timedelta
 
 from zillowanalyzer.scrapers.scraping_utility import retry_request, get_selenium_driver, extract_zestimate_history_from_driver, extract_property_details_from_driver
 from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, PROPERTY_DETAILS_PATH
-from zillowanalyzer.utility.utility import save_json, random_delay, ensure_directory_exists, is_last_checked_string_within_search_cooldown
+from zillowanalyzer.utility.utility import save_json, random_delay, ensure_directory_exists, is_within_cooldown_period, batch_generator
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
 
 
 PROPERTY_COOLDOWN_TIME_WINDOW = timedelta(days=2)
 
-
-def batch_generator(data, batch_size):
-    """A generator to yield batches of data."""
-    batch = []
-    for item in data:
-        batch.append(item)
-        if len(batch) == batch_size:
-            yield batch
-            batch = []
-    if batch:
-        yield batch
 
 def should_extract_property_details_from_search_results_safe(search_result):
     zip_code, zpid = search_result['zip_code'], search_result['zpid']
@@ -49,8 +38,8 @@ def should_extract_property_details_from_search_results(search_result):
             property_info = get_property_info_from_property_details(property_details)
             if not property_info:
                 return True
-            is_search_result_tracked = bool(search_result['is_tracked'])
-            is_property_within_cooldown = is_last_checked_string_within_search_cooldown(property_details.get('last_checked'), PROPERTY_COOLDOWN_TIME_WINDOW)
+            is_search_result_tracked = bool(search_result['is_active'])
+            is_property_within_cooldown = is_within_cooldown_period(property_details.get('last_checked'), PROPERTY_COOLDOWN_TIME_WINDOW)
             is_price_outside_threshold = abs(property_info['price'] - int(search_result['listing_price'])) >= 0.05 * property_info['price']
             restimate = property_info.get('rentZestimate', 0)
             if not restimate:
@@ -95,31 +84,19 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
 # Roughly 5 seconds per response -> ~ 14 hours for 10,000 requests.
 def extract_property_details_from_search_results(batch_size=5):
     csv_file_path = os.path.join(DATA_PATH, 'search_listings.csv')
-
-    reader_data = []
+    
+    # Load and filter data.
+    filtered_data = []
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
-        reader_data = [row for row in reader]
-    # rd.shuffle(reader_data)
+        filtered_data = [row for row in reader if should_extract_property_details_from_search_results(row)]
+    
+    # Calculate batches.
+    total_filtered_rows = len(filtered_data)
+    num_batches = math.ceil(total_filtered_rows / batch_size)
 
-    total_rows = sum(1 for _ in open(csv_file_path)) - 1
-    num_batches = math.ceil(total_rows / batch_size)
-
-    reader_gen = (row for row in reader_data)
-    for batch_ind, batch in enumerate(batch_generator(reader_gen, batch_size)):
-        # Loop through the batch and make sure that the properties have not already been processed.
-        property_data = []
-        for search_result in batch:
-            if not should_extract_property_details_from_search_results(search_result):
-                continue
-            # zip_code, zpid = search_result['zip_code'], search_result['zpid']
-            # property_path = f'{PROPERTY_DETAILS_PATH}/{zip_code}/{zpid}_property_details.json'
-            # if os.path.exists(property_path):
-            #     continue
-            property_data.append(search_result)
-        if not property_data:
-            continue
-        extract_property_details_from_batch(property_data, batch_ind, batch_size, num_batches)
-
+    # Generate and process batches.
+    for batch_ind, batch in enumerate(batch_generator(filtered_data, batch_size)):
+        extract_property_details_from_batch(batch, batch_ind, batch_size, num_batches)
 
 extract_property_details_from_search_results()

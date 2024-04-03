@@ -20,7 +20,7 @@ def process_listings(search_listings_path, search_listings_metadata_path):
 
     with open(search_listings_metadata_path, 'r') as search_listings_metadata_file:
         search_listings_metadata = json.load(search_listings_metadata_file)
-        tracked_zpids_set = set(search_listings_metadata['tracked_zpids']) if 'tracked_zpids' in search_listings_metadata else {}
+        active_zpids_set = set(search_listings_metadata.get('active_zpids', {}))
 
     # Iterate through all files in the search_listings_path
     for filename in os.listdir(search_listings_path):
@@ -59,7 +59,7 @@ def process_listings(search_listings_path, search_listings_metadata_path):
                         "url": detailUrl,
                         "listing_price": listing_price,
                         "restimate": rentZestimate,
-                        "is_tracked": zpid in tracked_zpids_set,
+                        "is_active": zpid in active_zpids_set,
                         "rentZestimate_to_price_ratio": rentZestimate_to_price_ratio,
                         "rentZestimate_to_Zestimate_ratio": rentZestimate_to_Zestimate_ratio
                     })
@@ -84,7 +84,7 @@ def process_all_municipalities():
 
     # Save all results to a new file
     with open(SEARCH_LISTINGS_CSV_FILE_PATH, 'w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'listing_price', 'restimate', 'is_tracked', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
+        fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'listing_price', 'restimate', 'is_active', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()

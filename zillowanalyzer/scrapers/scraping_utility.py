@@ -1,7 +1,9 @@
 import os
+import shutil
 import time
 import json
 import re
+import glob
 import random as rd
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
@@ -13,10 +15,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
+from collections import defaultdict
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-from zillowanalyzer.utility.utility import PROJECT_CONFIG, random_delay, parse_dates
+from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, random_delay, parse_dates
 
 
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
@@ -25,6 +28,8 @@ CHROME_BINARY_EXECUTABLE_PATH = "zillowanalyzer/ChromeAssets/Google Chrome for T
 CHROME_USER_DATA_DIR = "/Users/jorgecanedo/Library/Application Support/Google/Chrome for Testing"
 local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
 
+MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
+
 
 def get_fake_headers_list(scrapeops_api_key):
   response = requests.get(f'http://headers.scrapeops.io/v1/browser-headers?api_key={scrapeops_api_key}')
@@ -32,16 +37,19 @@ def get_fake_headers_list(scrapeops_api_key):
   return json_response.get('result', [])
 
 class ZillowChromeDriver(uc.Chrome):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, ignore_detection=False, **kwargs):
+        self.ignore_detection = ignore_detection
         super().__init__(*args, **kwargs)
     
     def get(self, url):
         super().get(url)
+        if self.ignore_detection:
+            return
         # If a Captcha is detected, stop scraping.
         try:
             while self.find_element(By.ID, 'px-captcha-wrapper'):
-                print(f"I need halp, I've been detected :<")
-                time.sleep(20)
+                time.sleep(10)
+                print('trying again')
         except:
             pass
 
@@ -57,26 +65,28 @@ class ChromeProfileManager():
         self.current_profile_number = self.min_profile_number + (self.current_profile_number - self.min_profile_number + 1) % (self.max_profile_number - self.min_profile_number + 1)
         return self.current_profile_number
 
-PROFILE_CACHE_FILES = ['Cookies', 'Cookies-journal', 'History', 'History-journal', 'Visited Links', 'Web Data', 'Web Data-journal']
+PROFILE_CACHE_FILES = ['Cookies', 'Cookies-journal', 'History', 'History-journal', 'Visited Links', 'Web Data', 'Web Data-journal', 'Local Storage', 'Session Storage', 'Sessions', 'IndexedDB', 'GPUCache']
 chromeProfileManager = ChromeProfileManager()
-def clean_profile_data():
-    for profile_number in range(chromeProfileManager.min_profile_number, chromeProfileManager.max_profile_number+1):
-        for cache_file in PROFILE_CACHE_FILES:
-            profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
-            if os.path.exists(profile_cache_path):
+def clean_profile_data(profile_number):
+    for cache_file in PROFILE_CACHE_FILES:
+        profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
+        if os.path.exists(profile_cache_path):
+            if os.path.isfile(profile_cache_path):
                 os.remove(profile_cache_path)
+            elif os.path.isdir(profile_cache_path):
+                shutil.rmtree(profile_cache_path)
 
-def get_chrome_options(headless=False, incognito=False):
+def get_chrome_options(headless=False):
     options = uc.ChromeOptions()
     if headless:
         options.add_argument("--headless")
         # The following options help mitigate the detectability of headless browsers.
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-setuid-sandbox")
-    if incognito:
-        options.add_argument("--incognito")
-    elif local_path_exists:
+    if local_path_exists:
         profile_number = chromeProfileManager.next_profile_number()
+        # profile_number = rd.randint(chromeProfileManager.min_profile_number, chromeProfileManager.max_profile_number)
+        PROJECT_CONFIG['profile_number'] = profile_number
         profile_directory = f"Profile {profile_number}"
         options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
         options.add_argument(f"--profile-directory={profile_directory}")
@@ -87,11 +97,10 @@ def get_chrome_options(headless=False, incognito=False):
     return options
 
 @contextmanager
-def get_selenium_driver(url, headless=False, incognito=False):
-    options = get_chrome_options(headless=headless, incognito=incognito)
-    if chromeProfileManager.current_profile_number == chromeProfileManager.min_profile_number:
-        clean_profile_data()
-    driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
+def get_selenium_driver(url, headless=False, ignore_detection=False):
+    options = get_chrome_options(headless=headless)
+    clean_profile_data(PROJECT_CONFIG['profile_number'])
+    driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection)
     driver.get(url)
     try:
         yield driver
@@ -264,6 +273,39 @@ def move_to_and_click(element, driver, and_hold=False):
     else:
         actions.move_to_element(element).pause(rd.uniform(0.1, 0.5)).click().perform()
 
+
+def extract_metadata(metadata_path):
+    municipality = os.path.basename(metadata_path).split("_metadata.json")[0]
+    with open(metadata_path, "r") as file:
+        metadata = json.load(file)
+    return municipality, metadata
+
+def load_search_metadata():
+    municipality_to_zpids = defaultdict(set)
+    for metadata_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
+        municipality = os.path.basename(metadata_path).split("_metadata.json")[0]
+        with open(metadata_path, "r") as file:
+            metadata = json.load(file)
+            municipality_to_zpids[municipality].update(metadata.get('zpids', []))
+    return municipality_to_zpids
+
+def load_search_municipalities():
+    # A dictionary to hold the mapping of counties to their municipalities
+    county_to_municipalities = defaultdict(list)
+
+    with open(MUNICIPALITIES_DATA_PATH, 'r') as file:
+        for line in file:
+            # Using regex to split the line by tabs or multiple spaces
+            fields = re.split(r'\t+', line.strip())
+            
+            # Adjust the index based on the actual structure if needed
+            municipality = fields[1].strip()
+            county = fields[2].strip()
+
+            # Remove the † symbol if present
+            municipality_cleaned = municipality.replace("†", "").replace("-", " ")
+            county_to_municipalities[county].append(municipality_cleaned)
+    return county_to_municipalities
 
 def what_is_my_ip():
     what_is_my_ip_url = "http://httpbin.org/ip"

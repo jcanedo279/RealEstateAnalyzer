@@ -8,7 +8,7 @@
 354	Micanopy	Alachua	648	1.0 sq mi	2.7 km2	Mayor–commission	Town	1837
 387	LaCrosse	Alachua	316	4.6 sq mi	12.0 km2	Mayor–council	Town	1957
 190	Macclenny†	Baker	7,304	4.9 sq mi	12.6 km2	Commission–manager	City	1939
-372-T	Glen St. Mary	Baker	463	0.46 sq mi	1.2 km2	Mayor–council	Town	1957
+372-T	Glen Saint Mary	Baker	463	0.46 sq mi	1.2 km2	Mayor–council	Town	1957
 87	Panama City†	Bay	32,939	35.1 sq mi	90.9 km2	Commission–manager	City	1909
 120	Lynn Haven	Bay	18,695	10.5 sq mi	27.1 km2	Commission–manager	City	1913
 123	Panama City Beach	Bay	18,094	19.3 sq mi	50.0 km2	Council–manager	City	1977
@@ -107,7 +107,7 @@
 288	Trenton†	Gilchrist	2,015	3.4 sq mi	8.8 km2	Commission–manager	City	1911
 365	Bell	Gilchrist	518	1.6 sq mi	4.2 km2	Council–manager	Town	1903
 307	Moore Haven†	Glades	1,566	1.1 sq mi	2.8 km2	Council–manager	City	1917
-248	Port St. Joe†	Gulf	3,357	9.4 sq mi	24.3 km2	Commission–manager	City	1913
+248	Pt Saint Joe†	Gulf	3,357	9.4 sq mi	24.3 km2	Commission–manager	City	1913
 287	Wewahitchka	Gulf	2,074	6.7 sq mi	17.3 km2	Commission–manager	City	1959
 242	Jasper†	Hamilton	3,621	2.4 sq mi	6.3 km2	Council–manager	City	1858
 345	Jennings	Hamilton	749	2.7 sq mi	6.9 km2	Council–manager	Town	1900
@@ -167,7 +167,7 @@
 82	Estero	Lee	36,939	24.4 sq mi	63.1 km2	Council-manager	Village	2015
 202	Sanibel	Lee	6,382	16.2 sq mi	41.9 km2	Council–manager	City	1974
 215	Fort Myers Beach	Lee	5,582	2.8 sq mi	7.2 km2	Council–manager	Town	1995
-8	Tallahassee †	Leon	196,169	100.9 sq mi	261.4 km2	Commission–manager	City	1825
+8	Tallahassee†	Leon	196,169	100.9 sq mi	261.4 km2	Commission–manager	City	1825
 261	Williston	Levy	2,976	6.8 sq mi	17.7 km2	Council–manager	City	1929
 279	Chiefland	Levy	2,316	6.8 sq mi	17.5 km2	Commission–manager	City	1913
 313	Inglis	Levy	1,476	3.4 sq mi	8.8 km2	Mayor–commission	Town	1956
@@ -189,11 +189,11 @@
 43	Ocala†	Marion	63,591	47.3 sq mi	122.4 km2	Council–manager	City	1869
 217	Belleview	Marion	5,413	3.9 sq mi	10.1 km2	Mayor–commission	City	1885
 295	Dunnellon	Marion	1,928	8.8 sq mi	22.8 km2	Council–manager	City	1891
-372-T	McIntosh	Marion	463	0.71 sq mi	1.8 km2	Council–manager	Town	1913
+372-T	Mc Intosh	Marion	463	0.71 sq mi	1.8 km2	Council–manager	Town	1913
 376	Reddick	Marion	449	1.3 sq mi	3.3 km2	Mayor–council	Town	1925
 124	Stuart†	Martin	17,425	7.0 sq mi	18.3 km2	Commission–manager	City	1914
 201	Indiantown	Martin	6,560	14.2 sq mi	36.7 km2	Mayor–council	Village	2017
-289	Sewall's Point	Martin	1,991	1.2 sq mi	3.1 km2	Commission–manager	Town	1957
+289	Sewalls Point	Martin	1,991	1.2 sq mi	3.1 km2	Commission–manager	Town	1957
 341	Jupiter Island	Martin	804	2.7 sq mi	7.0 km2	Commission–manager	Town	1953
 388-T	Ocean Breeze	Martin	301	0.17 sq mi	0.43 km2	Council–manager	Town	1960
 2	Miami†	Miami-Dade	442,241	36.0 sq mi	93.2 km2	Mayor–commission	City	1896
@@ -262,7 +262,7 @@
 409	Bay Lake	Orange	29	21.5 sq mi	55.7 km2	Council–manager	City	1967
 410	Lake Buena Vista	Orange	24	3.0 sq mi	7.8 km2	Council–manager	City	1967
 35	Kissimmee†	Osceola	79,226	21.5 sq mi	55.7 km2	Council–manager	City	1883
-50	St. Cloud	Osceola	58,964	25.5 sq mi	65.9 km2	Council–manager	City	1911
+50	Saint Cloud	Osceola	58,964	25.5 sq mi	65.9 km2	Council–manager	City	1911
 17	West Palm Beach†	Palm Beach	117,415	53.8 sq mi	139.4 km2	Mayor–commission	City	1894
 23	Boca Raton	Palm Beach	97,422	29.2 sq mi	75.6 km2	Council–manager	City	1925
 34	Boynton Beach	Palm Beach	80,380	16.2 sq mi	41.8 km2	Commission–manager	City	1907
@@ -306,9 +306,9 @@
 128	New Port Richey	Pasco	16,728	4.5 sq mi	11.8 km2	Council–manager	City	1924
 191	Dade City†	Pasco	7,275	6.2 sq mi	16.0 km2	Commission–manager	City	1889
 255	Port Richey	Pasco	3,052	2.2 sq mi	5.7 km2	Council–manager	City	1925
-275	St. Leo	Pasco	2,362	1.1 sq mi	2.9 km2	Mayor–commission	Town	1891
+275	De Leon Springs	Pasco	2,362	1.1 sq mi	2.9 km2	Mayor–commission	Town	1891
 321	San Antonio	Pasco	1,297	1.4 sq mi	3.5 km2	Mayor–commission	City	1891
-5	St. Petersburg	Pinellas	258,308	61.8 sq mi	160.1 km2	Mayor–commission	City	1903
+5	Saint Petersburg	Pinellas	258,308	61.8 sq mi	160.1 km2	Mayor–commission	City	1903
 18	Clearwater†	Pinellas	117,292	26.1 sq mi	67.6 km2	Council–manager	City	1891
 32	Largo	Pinellas	82,485	18.5 sq mi	48.0 km2	Commission–manager	City	1905
 58	Pinellas Park	Pinellas	53,093	16.1 sq mi	41.7 km2	Council–manager	City	1915
@@ -318,7 +318,7 @@
 126	Safety Harbor	Pinellas	17,072	4.9 sq mi	12.8 km2	Commission–manager	City	1917
 141	Oldsmar	Pinellas	14,898	8.9 sq mi	23.2 km2	Council–manager	City	1936
 158	Gulfport	Pinellas	11,783	2.8 sq mi	7.2 km2	Council–manager	City	1910
-179	St. Pete Beach	Pinellas	8,879	2.1 sq mi	5.5 km2	Commission–manager	City	1957
+179	St Pete Beach	Pinellas	8,879	2.1 sq mi	5.5 km2	Commission–manager	City	1957
 200	Treasure Island	Pinellas	6,584	1.5 sq mi	4.0 km2	Commission–manager	City	1955
 218	South Pasadena	Pinellas	5,353	0.61 sq mi	1.6 km2	Mayor–commission	City	1955
 224	Kenneth City	Pinellas	5,047	0.71 sq mi	1.8 km2	Council-manager	Town	1957
@@ -367,11 +367,10 @@
 92	Casselberry	Seminole	28,794	7.0 sq mi	18.0 km2	Commission–manager	City	1940
 127	Lake Mary	Seminole	16,798	9.1 sq mi	23.5 km2	Commission–manager	City	1973
 140	Longwood	Seminole	15,087	5.5 sq mi	14.2 km2	Mayor–commission	City	1875
-143	St. Augustine†	St. Johns	14,329	9.5 sq mi	24.7 km2	Commission–manager	City	1822
-197	St. Augustine Beach	St. Johns	6,803	2.1 sq mi	5.5 km2	Commission–manager	City	1959
-7	Port St. Lucie	St. Lucie	204,851	119.2 sq mi	308.8 km2	Council–manager	City	1961
+143	St Augustine†	St. Johns	14,329	9.5 sq mi	24.7 km2	Commission–manager	City	1822
+197	St Augustine Beach	St. Johns	6,803	2.1 sq mi	5.5 km2	Commission–manager	City	1959
+7	Port St Lucie	St. Lucie	204,851	119.2 sq mi	308.8 km2	Council–manager	City	1961
 62	Fort Pierce†	St. Lucie	47,297	23.8 sq mi	61.6 km2	Commission–manager	City	1901
-358	St. Lucie Village	St. Lucie	613	0.90 sq mi	2.3 km2	Mayor–council	Town	1961
 137	Wildwood	Sumter	15,730	56.3 sq mi	145.8 km2	Commission–manager	City	1877
 256	Bushnell†	Sumter	3,047	12.4 sq mi	32.2 km2	Council–manager	City	1911
 338	Center Hill	Sumter	846	6.1 sq mi	15.8 km2	Mayor–council	City	1925
@@ -400,7 +399,7 @@
 291-T	Oak Hill	Volusia	1,986	6.7 sq mi	17.4 km2	Mayor–commission	City	1927
 308	Pierson	Volusia	1,542	10.2 sq mi	26.4 km2	Mayor–council	Town	1926
 378	Sopchoppy	Wakulla	426	1.7 sq mi	4.3 km2	Mayor–council	City	1955
-390	St. Marks	Wakulla	274	2.0 sq mi	5.1 km2	Commission–manager	City	1963
+390	Saint Marks	Wakulla	274	2.0 sq mi	5.1 km2	Commission–manager	City	1963
 211	DeFuniak Springs†	Walton	5,919	14.0 sq mi	36.1 km2	Council–manager	City	1901
 212	Freeport	Walton	5,861	18.9 sq mi	49.1 km2	Mayor–council	City	1963
 361	Paxton	Walton	556	3.7 sq mi	9.6 km2	Mayor–council	Town	1952

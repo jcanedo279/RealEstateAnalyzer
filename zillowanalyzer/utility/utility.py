@@ -46,6 +46,33 @@ def random_delay(min_delay=1, max_delay=3):
     """Wait for a random time between min_delay and max_delay seconds."""
     time.sleep(rd.uniform(min_delay, max_delay))
 
+def batch_generator(data, batch_size):
+    """A generator to yield batches of data."""
+    batch = []
+    for item in data:
+        batch.append(item)
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+def backoff_strategy(attempt, max_attempts=20):
+    """
+    Implements an exponential backoff strategy.
+    :param attempt: Current attempt number.
+    :param max_attempts: Maximum number of attempts before giving up.
+    :return: True if should continue, False otherwise.
+    """
+    if attempt > max_attempts:
+        print("Reached maximum attempt limit. Skipping...")
+        return False
+    
+    wait_time = min(2 ** attempt, 120)  # Exponential backoff with a maximum wait
+    print(f"Backoff activated: Waiting for {wait_time} seconds before retrying...")
+    time.sleep(wait_time)
+    return True
+
 
 #############################
 ## PARSING UTILITY METHODS ##
@@ -74,7 +101,7 @@ def parse_dates(date_str):
         # Return Not-a-Time for unparseable formats.
         return pd.NaT
 
-def is_last_checked_string_within_search_cooldown(last_checked_str, cooldown_window):
+def is_within_cooldown_period(last_checked_str, cooldown_window):
     if not last_checked_str:
         # If the meatadata does not hve a last_checked string, its not within the search cooldown.
         return False
