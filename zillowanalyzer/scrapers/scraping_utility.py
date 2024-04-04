@@ -47,9 +47,13 @@ class ZillowChromeDriver(uc.Chrome):
             return
         # If a Captcha is detected, stop scraping.
         try:
-            while self.find_element(By.ID, 'px-captcha-wrapper'):
-                time.sleep(10)
-                print('trying again')
+            attempt = 1
+            while self.find_element(By.CSS_SELECTOR, 'meta[name="description"][content="px-captcha"]'):
+                if attempt == 1:
+                    print('\n')
+                print("Pls halp I've been stopped 🥺👉🏼👈🏼...", end='\r')
+                time.sleep(20)
+                attempt += 1
         except:
             pass
 
@@ -61,22 +65,26 @@ class ChromeProfileManager():
         self.current_profile_number = rd.randint(PROJECT_CONFIG['min_profile_number'], PROJECT_CONFIG['max_profile_number'])
 
 
-    def next_profile_number(self):
-        self.current_profile_number = self.min_profile_number + (self.current_profile_number - self.min_profile_number + 1) % (self.max_profile_number - self.min_profile_number + 1)
+    def next_profile_number(self, random_profile=False):
+        if random_profile:
+            self.current_profile_number = rd.randint(self.min_profile_number, self.max_profile_number)
+        else:
+            self.current_profile_number = self.min_profile_number + (self.current_profile_number - self.min_profile_number + 1) % (self.max_profile_number - self.min_profile_number + 1)
         return self.current_profile_number
 
 PROFILE_CACHE_FILES = ['Cookies', 'Cookies-journal', 'History', 'History-journal', 'Visited Links', 'Web Data', 'Web Data-journal', 'Local Storage', 'Session Storage', 'Sessions', 'IndexedDB', 'GPUCache']
 chromeProfileManager = ChromeProfileManager()
-def clean_profile_data(profile_number):
-    for cache_file in PROFILE_CACHE_FILES:
-        profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
-        if os.path.exists(profile_cache_path):
-            if os.path.isfile(profile_cache_path):
-                os.remove(profile_cache_path)
-            elif os.path.isdir(profile_cache_path):
-                shutil.rmtree(profile_cache_path)
+def clean_profile_data():
+    for profile_number in range(chromeProfileManager.min_profile_number, chromeProfileManager.max_profile_number+1):
+        for cache_file in PROFILE_CACHE_FILES:
+            profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
+            if os.path.exists(profile_cache_path):
+                if os.path.isfile(profile_cache_path):
+                    os.remove(profile_cache_path)
+                elif os.path.isdir(profile_cache_path):
+                    shutil.rmtree(profile_cache_path)
 
-def get_chrome_options(headless=False):
+def get_chrome_options(headless=False, random_profile=False):
     options = uc.ChromeOptions()
     if headless:
         options.add_argument("--headless")
@@ -84,8 +92,8 @@ def get_chrome_options(headless=False):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-setuid-sandbox")
     if local_path_exists:
-        profile_number = chromeProfileManager.next_profile_number()
-        # profile_number = rd.randint(chromeProfileManager.min_profile_number, chromeProfileManager.max_profile_number)
+        profile_number = chromeProfileManager.next_profile_number(random_profile=random_profile)
+        # We update the scrape_config with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
         PROJECT_CONFIG['profile_number'] = profile_number
         profile_directory = f"Profile {profile_number}"
         options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
@@ -97,10 +105,11 @@ def get_chrome_options(headless=False):
     return options
 
 @contextmanager
-def get_selenium_driver(url, headless=False, ignore_detection=False):
-    options = get_chrome_options(headless=headless)
-    clean_profile_data(PROJECT_CONFIG['profile_number'])
-    driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection)
+def get_selenium_driver(url, headless=False, ignore_detection=False, clean_data=True, random_profile=False):
+    if clean_data and PROJECT_CONFIG['profile_number'] == chromeProfileManager.min_profile_number:
+        clean_profile_data()
+    options = get_chrome_options(headless=headless, random_profile=random_profile)
+    driver = ZillowChromeDriver(options=options, ignore_detection=ignore_detection, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
     driver.get(url)
     try:
         yield driver
@@ -170,7 +179,7 @@ def extract_property_details_from_driver(driver, delay):
     return json_data
 
 
-def extract_zestimate_history_from_driver(driver, delay):
+def extract_zestimate_history_from_driver(driver):
     try:
         container = driver.find_element(By.ID, "ds-home-values")
     except NoSuchElementException:

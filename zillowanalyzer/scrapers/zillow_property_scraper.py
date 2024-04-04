@@ -2,26 +2,47 @@ import os
 import math
 import csv
 import json
-import time
 import random as rd
-
 from datetime import datetime, timedelta
 
-from zillowanalyzer.scrapers.scraping_utility import retry_request, get_selenium_driver, extract_zestimate_history_from_driver, extract_property_details_from_driver
-from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, PROPERTY_DETAILS_PATH
-from zillowanalyzer.utility.utility import save_json, random_delay, ensure_directory_exists, is_within_cooldown_period, batch_generator
+from zillowanalyzer.scrapers.scraping_utility import (
+    retry_request, get_selenium_driver,
+    extract_zestimate_history_from_driver, extract_property_details_from_driver
+)
+from zillowanalyzer.utility.utility import (
+    PROJECT_CONFIG, DATA_PATH, PROPERTY_DETAILS_PATH,
+    save_json, random_delay, ensure_directory_exists, batch_generator, is_within_cooldown_period
+)
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
 
 
 PROPERTY_COOLDOWN_TIME_WINDOW = timedelta(days=2)
 
 
-def should_extract_property_details_from_search_results_safe(search_result):
+def should_extract_property_details(search_result):
+    """
+    Determines if the property details should be extracted based on various criteria.
+    """
     zip_code, zpid = search_result['zip_code'], search_result['zpid']
-    property_path = f'{PROPERTY_DETAILS_PATH}/{zip_code}/{zpid}_property_details.json'
+    property_path = os.path.join(PROPERTY_DETAILS_PATH, zip_code, f'{zpid}_property_details.json')
+
+    # 
+    if not zip_code or not zpid:
+        return True
+
+    # Early return if the file does not exist or is empty.
     if not os.path.exists(property_path) or os.path.getsize(property_path) == 0:
         return True
-    return False
+    
+    with open(property_path, 'r') as file:
+        property_details = json.load(file)
+
+    # Various conditions to decide if re-scraping is necessary.
+    needs_update = (
+        'props' not in property_details or
+        property_details.get('last_checked', datetime.min) < datetime.now() - PROPERTY_COOLDOWN_TIME_WINDOW
+    )
+    return needs_update
 
 def should_extract_property_details_from_search_results(search_result):
     zip_code, zpid = search_result['zip_code'], search_result['zpid']
@@ -52,26 +73,22 @@ def should_extract_property_details_from_search_results(search_result):
     return True
 
 @retry_request(PROJECT_CONFIG)
-def extract_property_details_from_batch(property_data, batch_ind, batch_size, num_batches):
+def extract_property_details_from_batch(batch, batch_ind, num_batches):
     # Start a driver context to scrape the unprocessed properties.
     with get_selenium_driver("about:blank") as driver:
-        for search_result_ind, search_result in enumerate(property_data):
+        for search_result_ind, search_result in enumerate(batch):
             zip_code, zpid = search_result['zip_code'], search_result['zpid']
             property_url = search_result['url']
 
-            num_search_results_digits = len(str(batch_size))
-            num_batches_digits = len(str(num_batches))
-            formatted_search_result_ind = f"{search_result_ind+1:0{num_search_results_digits}d}"
-            formatted_batch_ind = f"{batch_ind+1:0{num_batches_digits}d}"
-            print(f'Scraping property: {zpid} in zip_code: {zip_code} number: [{formatted_search_result_ind} / {batch_size}] in batch: [{formatted_batch_ind} / {num_batches}]', end='         \r')
+            print(f"Scraping property: {zpid} in zip_code: {zip_code} number: [{search_result_ind+1} / {len(batch)}] in batch: [{batch_ind+1} / {num_batches}] using profile: {PROJECT_CONFIG['profile_number']}", end='         \r')
 
             property_path = f'{PROPERTY_DETAILS_PATH}/{zip_code}/{zpid}_property_details.json'
             ensure_directory_exists('/'.join(property_path.split('/')[:-1]))
             
             # Navigate to the property's page and parse the HTML content.
             driver.get(property_url)
-            zestimate_history = extract_zestimate_history_from_driver(driver, 2)
-            response = extract_property_details_from_driver(driver, 1)
+            zestimate_history = extract_zestimate_history_from_driver(driver)
+            response = extract_property_details_from_driver(driver, 2)
             if not response:
                 save_json({}, property_path)
                 continue
@@ -79,7 +96,7 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
             response['last_checked'] = datetime.now().isoformat()
 
             save_json(response, property_path)
-            random_delay(2, 4)
+            random_delay(3, 5)
 
 # Roughly 5 seconds per response -> ~ 14 hours for 10,000 requests.
 def extract_property_details_from_search_results(batch_size=5):
@@ -88,8 +105,9 @@ def extract_property_details_from_search_results(batch_size=5):
     # Load and filter data.
     filtered_data = []
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        filtered_data = [row for row in reader if should_extract_property_details_from_search_results(row)]
+        search_results = csv.DictReader(csvfile)
+        filtered_data = [search_result for search_result in search_results if should_extract_property_details_from_search_results_safe(search_result)]
+    rd.shuffle(filtered_data)
     
     # Calculate batches.
     total_filtered_rows = len(filtered_data)
@@ -97,6 +115,10 @@ def extract_property_details_from_search_results(batch_size=5):
 
     # Generate and process batches.
     for batch_ind, batch in enumerate(batch_generator(filtered_data, batch_size)):
-        extract_property_details_from_batch(batch, batch_ind, batch_size, num_batches)
+        search_results = [search_result for search_result in batch if should_extract_property_details_from_search_results_safe(search_result)]
+        if not search_results:
+            continue
+        extract_property_details_from_batch(search_results, batch_ind, num_batches)
 
-extract_property_details_from_search_results()
+if __name__ == '__main__':
+    extract_property_details_from_search_results()
