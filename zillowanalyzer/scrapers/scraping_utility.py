@@ -25,7 +25,7 @@ from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LIS
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
 CHROME_BINARY_EXECUTABLE_PATH = "zillowanalyzer/ChromeAssets/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 # Use chrome://version/ to locate the user_data_dir path.
-CHROME_USER_DATA_DIR = "/Users/jorgecanedo/Library/Application Support/Google/Chrome for Testing"
+CHROME_USER_DATA_DIR = "/Users/loganle/Library/Application Support/Google/Chrome for Testing"
 local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
 
 MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'

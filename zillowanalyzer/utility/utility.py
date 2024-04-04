@@ -192,8 +192,8 @@ class ProjectConfigManager:
 
 load_dotenv()
 SCRAPEOPS_API_KEY = os.environ.get('SCRAPE_OPS_API_KEY')
-if not SCRAPEOPS_API_KEY:
-    sys.exit("A SCRAPEOPS_API_KEY is required to generate plausible headers when scraping :<")
+# if not SCRAPEOPS_API_KEY:
+#     sys.exit("A SCRAPEOPS_API_KEY is required to generate plausible headers when scraping :<")
 
 
 #######################
