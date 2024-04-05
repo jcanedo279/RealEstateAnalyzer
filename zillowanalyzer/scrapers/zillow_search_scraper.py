@@ -16,7 +16,9 @@ from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, load_s
 ###########
 
 def should_process_municipality(municipality):
-    """Determines if a municipality should be processed based on cooldown period."""
+    """
+        Determines if a municipality should be processed based on cooldown period.
+    """
     metadata_path = f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json'
     if not os.path.exists(metadata_path):
         return True  # Process if no metadata exists
@@ -47,7 +49,9 @@ municipality_to_query_state_data = {
 #####################
 
 def scrape_listings(batch_size=10):
-    """Main function to orchestrate the scraping process in batches."""
+    """
+        Main function to orchestrate the scraping process in batches.
+    """
     municipality_to_query_state_data_items = rd.sample(
         list(municipality_to_query_state_data.items()), 
         len(municipality_to_query_state_data)
@@ -67,7 +71,9 @@ def scrape_listings(batch_size=10):
 
 
 def scrape_municipality(driver, user_agent, cookie_string, municipality, municipality_ind, query_state_data):
-    """Scrapes listings for a single municipality."""
+    """
+        Scrapes listings for a single municipality.
+    """
     search_results = []
     page = 1
     total_pages = 1
@@ -91,7 +97,9 @@ def scrape_municipality(driver, user_agent, cookie_string, municipality, municip
     maybe_save_current_search_results(municipality, search_results)
 
 def scrape_listings_in_municipality_for_page(driver, user_agent, cookie_string, query_state_data, page):
-    """Fetches listings for a specific page within a municipality's search results."""
+    """
+        Fetches listings for a specific page within a municipality's search results.
+    """
     query_state_data["pagination"] = {"currentPage": page}
     js_code = f"""
     (async () => {{
@@ -133,7 +141,9 @@ def scrape_listings_in_municipality_for_page(driver, user_agent, cookie_string, 
 #######################
 
 def process_search_results(municipality, search_results, search_data):
-    """Processes search results, filtering and updating global sets."""
+    """
+        Processes search results, filtering and updating global sets.
+    """
     current_search_results = [search_result for search_result in search_data['cat1']['searchResults']['listResults']]
     current_search_zpids = tuple(search_result['zpid'] for search_result in current_search_results)
     # We should back off if we have seen this ordered tuple of zpids (likely from faked server data).
@@ -151,7 +161,9 @@ def process_search_results(municipality, search_results, search_data):
     return True
 
 def maybe_save_current_search_results(municipality, search_results):
-    """Saves search results and updates metadata for a municipality."""
+    """
+        Saves search results and updates metadata for a municipality.
+    """
     search_results_zpids = [new_search_result['zpid'] for new_search_result in search_results]
     municipality_to_zpids[municipality].update(search_results_zpids)
 
@@ -173,7 +185,9 @@ def maybe_save_current_search_results(municipality, search_results):
 #################
 
 def initialize_driver_session_for_municipality(driver, municipality):
-    """Initializes a web session for the given municipality."""
+    """
+        Initializes a web session for the given municipality.
+    """
     base_url = f"https://www.zillow.com/homes/{municipality}-fl/"
     driver.get(base_url)
     user_agent = driver.execute_script("return navigator.userAgent;")

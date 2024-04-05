@@ -1,12 +1,10 @@
 import os
-import re
 import json
-import random as rd
-from collections import defaultdict
 from bs4 import BeautifulSoup
 
-from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, PROJECT_CONFIG
-from zillowanalyzer.utility.utility import ensure_directory_exists, load_json, save_json, random_delay, is_within_cooldown_period, batch_generator
+from zillowanalyzer.utility.utility import (
+    DATA_PATH, load_json, save_json, random_delay
+)
 from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, load_search_municipalities
 
 MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
@@ -39,12 +37,12 @@ def scrape_municipalities_data(all_municipalities):
     municipality_query_state_data = get_municipality_query_state_data()
     for municipality_ind, municipality in enumerate(all_municipalities):
         if municipality not in municipality_query_state_data:
-            query_state_data = scrape_municipality_data(municipality_ind, municipality)
+            query_state_data = scrape_municipality_data(municipality)
             if query_state_data:
                 update_query_state_data(municipality, query_state_data)
                 print(f'Gathering query state data for municipality: {municipality} # [{municipality_ind+1} | {len(all_municipalities)}]')
 
-def scrape_municipality_data(municipality_ind, municipality):
+def scrape_municipality_data(municipality):
     base_url = f"https://www.zillow.com/homes/{municipality}-fl/"
     with get_selenium_driver("about:blank") as driver:
         driver.get(base_url)

@@ -9,17 +9,14 @@ from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
 from functools import wraps
 from contextlib import contextmanager
-import requests
-from selenium.common.exceptions import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import pandas as pd
 from collections import defaultdict
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, random_delay, parse_dates
+from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, random_delay
 
 
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
@@ -30,11 +27,6 @@ local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
 
 MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
 
-
-def get_fake_headers_list(scrapeops_api_key):
-  response = requests.get(f'http://headers.scrapeops.io/v1/browser-headers?api_key={scrapeops_api_key}')
-  json_response = response.json()
-  return json_response.get('result', [])
 
 class ZillowChromeDriver(uc.Chrome):
     def __init__(self, *args, ignore_detection=False, **kwargs):
@@ -47,13 +39,9 @@ class ZillowChromeDriver(uc.Chrome):
             return
         # If a Captcha is detected, stop scraping.
         try:
-            attempt = 1
-            while self.find_element(By.CSS_SELECTOR, 'meta[name="description"][content="px-captcha"]'):
-                if attempt == 1:
-                    print('\n')
-                print("Pls halp I've been stopped 🥺👉🏼👈🏼...", end='\r')
-                time.sleep(20)
-                attempt += 1
+            while self.find_element(By.ID, 'px-captcha-wrapper'):
+                time.sleep(10)
+                print('trying again')
         except:
             pass
 
@@ -62,8 +50,7 @@ class ChromeProfileManager():
     max_profile_number = PROJECT_CONFIG['max_profile_number']
     def __init__(self):
         # We start with a random profile so that we do not become more identifiable. Starting to request from the same profile is temporarily detectable.
-        self.current_profile_number = rd.randint(PROJECT_CONFIG['min_profile_number'], PROJECT_CONFIG['max_profile_number'])
-
+        self.current_profile_number = self.next_profile_number(random_profile=True)
 
     def next_profile_number(self, random_profile=False):
         if random_profile:
@@ -74,15 +61,14 @@ class ChromeProfileManager():
 
 PROFILE_CACHE_FILES = ['Cookies', 'Cookies-journal', 'History', 'History-journal', 'Visited Links', 'Web Data', 'Web Data-journal', 'Local Storage', 'Session Storage', 'Sessions', 'IndexedDB', 'GPUCache']
 chromeProfileManager = ChromeProfileManager()
-def clean_profile_data():
-    for profile_number in range(chromeProfileManager.min_profile_number, chromeProfileManager.max_profile_number+1):
-        for cache_file in PROFILE_CACHE_FILES:
-            profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
-            if os.path.exists(profile_cache_path):
-                if os.path.isfile(profile_cache_path):
-                    os.remove(profile_cache_path)
-                elif os.path.isdir(profile_cache_path):
-                    shutil.rmtree(profile_cache_path)
+def clean_profile_data(profile_number):
+    for cache_file in PROFILE_CACHE_FILES:
+        profile_cache_path = os.path.join(CHROME_USER_DATA_DIR, f"Profile {profile_number}", cache_file)
+        if os.path.exists(profile_cache_path):
+            if os.path.isfile(profile_cache_path):
+                os.remove(profile_cache_path)
+            elif os.path.isdir(profile_cache_path):
+                shutil.rmtree(profile_cache_path)
 
 def get_chrome_options(headless=False, random_profile=False):
     options = uc.ChromeOptions()
@@ -93,7 +79,6 @@ def get_chrome_options(headless=False, random_profile=False):
         options.add_argument("--disable-setuid-sandbox")
     if local_path_exists:
         profile_number = chromeProfileManager.next_profile_number(random_profile=random_profile)
-        # We update the scrape_config with the current profile_number since we can't retrieve it from the driver. This helps with memoizing the chache actions.
         PROJECT_CONFIG['profile_number'] = profile_number
         profile_directory = f"Profile {profile_number}"
         options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
@@ -105,11 +90,11 @@ def get_chrome_options(headless=False, random_profile=False):
     return options
 
 @contextmanager
-def get_selenium_driver(url, headless=False, ignore_detection=False, clean_data=True, random_profile=False):
-    if clean_data and PROJECT_CONFIG['profile_number'] == chromeProfileManager.min_profile_number:
-        clean_profile_data()
+def get_selenium_driver(url, headless=False, ignore_detection=False, random_profile=False, clean_profile=False):
     options = get_chrome_options(headless=headless, random_profile=random_profile)
-    driver = ZillowChromeDriver(options=options, ignore_detection=ignore_detection, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH)
+    if clean_profile:
+        clean_profile_data(PROJECT_CONFIG['profile_number'])
+    driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection)
     driver.get(url)
     try:
         yield driver
@@ -134,109 +119,12 @@ def retry_request(project_config):
     return decorator
 
 
-def extract_search_page_state_from_driver(driver, delay):
-    random_delay(delay, 2*delay)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    script_tag = soup.find('script', string=re.compile('regionSelection'))
-    if script_tag:
-        script_content = script_tag.string
-        return json.loads(script_content)['props']['pageProps']['searchPageState']
-
-def extract_region_data_from_driver(driver, delay):
-    return extract_search_page_state_from_driver(driver, delay)['queryState']
-
 @retry_request(PROJECT_CONFIG)
 def extract_cookies_from_driver(driver, delay):
     random_delay(delay, 2*delay)
     cookies = driver.get_cookies()
     session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
     return "; ".join([f"{name}={value}" for name, value in session_cookies.items()])
-
-@retry_request(PROJECT_CONFIG)
-def extract_property_details_from_driver(driver, delay):
-    random_delay(delay, 2*delay)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-    # Find the input or script tag
-    script_tag = soup.find('script', {'id': '__NEXT_DATA__'})
-
-    # Extract JSON from the appropriate tag
-    if script_tag:
-        json_data = json.loads(script_tag.string)
-    else:
-        return None
-    
-    # Check and parse 'gdpClientCache'
-    gdp_client_cache = json_data['props']['pageProps']['componentProps'].get('gdpClientCache')
-    if isinstance(gdp_client_cache, str):
-        json_data['props']['pageProps']['componentProps']['gdpClientCache'] = json.loads(gdp_client_cache)
-
-    # Check and parse 'topnav'
-    topnav = json_data['props']['pageProps']['pageFrameProps']['pageFrameData'].get('topnav')
-    if isinstance(topnav, str):
-        json_data['props']['pageProps']['pageFrameProps']['pageFrameData']['topnav'] = json.loads(topnav)
-
-    return json_data
-
-
-def extract_zestimate_history_from_driver(driver):
-    try:
-        container = driver.find_element(By.ID, "ds-home-values")
-    except NoSuchElementException:
-        # There is no Zestimate history for this home (likely its off market).
-        return []
-
-    table_view_button = None
-    # We check if the zestimate history button is either directly in our text or in a child's text.
-    try:
-        table_view_button = container.find_element(By.XPATH, "//button[.//text()[contains(., 'Table view')] or contains(., 'Table view')]")
-    except:
-        pass
-    # If the button to expand the table is not visible, we need to expand the Zestiamte section first.
-    if not table_view_button or not table_view_button.is_displayed():
-        try:
-            show_more_button = container.find_element(By.XPATH, ".//button[contains(., 'Show more')]")
-            offscreen_click(show_more_button, driver)
-            table_view_button = container.find_element(By.XPATH, ".//button[contains(text(), 'Table view')]")
-        except NoSuchElementException:
-            pass
-    # If no data is available in the Zestimate, early return to avoid suspicious behavior.
-    try:
-        empty_zestimate_history_element = driver.find_element(By.XPATH, "//strong[contains(text(), 'No data available at this time.')]")
-        if empty_zestimate_history_element.is_displayed():
-            return []
-    except NoSuchElementException:
-        pass
-    offscreen_click(table_view_button, driver)
-    
-    # Wait for the element to be loaded.
-    zestimate_history_selector = '//table[@data-testid="zestimate-history"]'
-    try:
-        table_element = driver.find_element(By.XPATH, zestimate_history_selector)
-    except NoSuchElementException:
-        return []
-    # Now, you can either directly extract the text, or further navigate to rows and cells as needed
-    table_html = table_element.get_attribute('outerHTML')
-    
-    soup = BeautifulSoup(table_html, 'html.parser')
-    table = soup.find('table', {'data-testid': 'zestimate-history'})
-
-    zestimate_history = []
-    for row in table.find('tbody').find_all('tr'):
-        cells = row.find_all('td')
-        date, price = cells[0].text, cells[1].text
-        zestimate_history.append({
-            "Date": date,
-            "Price": price
-        })
-    if zestimate_history == []:
-        return zestimate_history
-    
-    zestimate_history_df = pd.DataFrame(zestimate_history)
-    zestimate_history_df["Price"] = zestimate_history_df["Price"].str.replace(r'[^\d.]+', '', regex=True).astype(float) * 1000
-    zestimate_history_df["Date"] = zestimate_history_df["Date"].apply(parse_dates)
-    zestimate_history_df["Date"] = zestimate_history_df["Date"].apply(lambda x: x.strftime('%Y-%m-%dT%H:%M:%S'))
-    return zestimate_history_df.to_dict('records')
 
 
 def is_element_in_viewport(driver, element):
@@ -282,12 +170,6 @@ def move_to_and_click(element, driver, and_hold=False):
     else:
         actions.move_to_element(element).pause(rd.uniform(0.1, 0.5)).click().perform()
 
-
-def extract_metadata(metadata_path):
-    municipality = os.path.basename(metadata_path).split("_metadata.json")[0]
-    with open(metadata_path, "r") as file:
-        metadata = json.load(file)
-    return municipality, metadata
 
 def load_search_metadata():
     municipality_to_zpids = defaultdict(set)
