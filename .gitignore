@@ -162,3 +162,6 @@ zillowanalyzer/ChromeAssets/Google Chrome for Testing.app
 
 Zillow-ViT/
 zillowanalyzer/Data/cleaned/
+
+zillowanalyzer/ChromeAssets/*
+!zillowanalyzer/ChromeAssets/.gitkeep

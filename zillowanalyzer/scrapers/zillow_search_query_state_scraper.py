@@ -7,7 +7,7 @@ from zillowanalyzer.utility.utility import (
 )
 from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, load_search_municipalities
 
-MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
+MUNICIPALITIES_DATA_PATH = os.path.join(DATA_PATH, 'florida_municipalities_data.txt')
 QUERY_STATE_DATA_PATH = os.path.join(DATA_PATH, 'query_state_data.json')
 
 

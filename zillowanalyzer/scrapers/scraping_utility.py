@@ -20,12 +20,14 @@ from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LIS
 
 
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
-CHROME_BINARY_EXECUTABLE_PATH = "zillowanalyzer/ChromeAssets/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+CHROME_BINARY_EXECUTABLE_PATH = os.environ.get('CHROME_BINARY_EXECUTABLE_PATH')
+print(CHROME_BINARY_EXECUTABLE_PATH)
 # Use chrome://version/ to locate the user_data_dir path.
-CHROME_USER_DATA_DIR = "/Users/jorgecanedo/Library/Application Support/Google/Chrome for Testing"
+CHROME_USER_DATA_DIR = os.environ.get('CHROME_USER_DATA_DIR')
+print(CHROME_USER_DATA_DIR)
 local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
 
-MUNICIPALITIES_DATA_PATH = f'{DATA_PATH}/florida_municipalities_data.txt'
+MUNICIPALITIES_DATA_PATH = os.path.join(DATA_PATH, 'florida_municipalities_data.txt')
 
 
 class ZillowChromeDriver(uc.Chrome):
@@ -48,6 +50,7 @@ class ZillowChromeDriver(uc.Chrome):
 class ChromeProfileManager():
     min_profile_number = PROJECT_CONFIG['min_profile_number']
     max_profile_number = PROJECT_CONFIG['max_profile_number']
+    print(min_profile_number, max_profile_number)
     def __init__(self):
         # We start with a random profile so that we do not become more identifiable. Starting to request from the same profile is temporarily detectable.
         self.current_profile_number = self.next_profile_number(random_profile=True)
@@ -75,7 +78,6 @@ def get_chrome_options(headless=False, random_profile=False):
     if headless:
         options.add_argument("--headless")
         # The following options help mitigate the detectability of headless browsers.
-        options.add_argument("--no-sandbox")
         options.add_argument("--disable-setuid-sandbox")
     if local_path_exists:
         profile_number = chromeProfileManager.next_profile_number(random_profile=random_profile)
@@ -91,15 +93,21 @@ def get_chrome_options(headless=False, random_profile=False):
 
 @contextmanager
 def get_selenium_driver(url, headless=False, ignore_detection=False, random_profile=False, clean_profile=False):
-    options = get_chrome_options(headless=headless, random_profile=random_profile)
-    if clean_profile:
-        clean_profile_data(PROJECT_CONFIG['profile_number'])
-    driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection)
-    driver.get(url)
+    driver = None
     try:
+        options = get_chrome_options(headless=headless, random_profile=random_profile)
+        if clean_profile:
+            clean_profile_data(PROJECT_CONFIG['profile_number'])
+        driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection, no_sandbox=headless)
+        driver.get(url)
         yield driver
+    except Exception as e:
+        print(f"An error occurred in the driver context: {e}")
+        raise
     finally:
-        driver.quit()
+        if driver:
+            print('whats going on?')
+            driver.quit()
 
 def retry_request(project_config):
     max_attempts = project_config['max_reconnect_retries']
@@ -201,6 +209,7 @@ def load_search_municipalities():
 def what_is_my_ip():
     what_is_my_ip_url = "http://httpbin.org/ip"
     with get_selenium_driver(what_is_my_ip_url) as driver:
+        time.sleep(1)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         try:
             pre_tag_content = soup.find('pre').text

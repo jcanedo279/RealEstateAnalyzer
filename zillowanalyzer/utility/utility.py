@@ -1,10 +1,10 @@
 import os
-import sys
 import time
 import json
 import configparser
 import random as rd
 import pandas as pd
+from pathlib import Path
 from dotenv import load_dotenv
 from dateutil.parser import parse
 from enum import Enum, auto
@@ -12,12 +12,13 @@ from datetime import datetime
 
 
 # Get the directory of the current script
-SCRIPT_PATH = os.path.realpath(__file__)
-ZILLOW_ANALYZER_PATH = '/'.join( SCRIPT_PATH.split('/')[:-2] )
+SCRIPT_PATH = Path(__file__).resolve()
+ZILLOW_ANALYZER_PATH = SCRIPT_PATH.parents[1]
+ZILLOW_ANALYZER_PATH_STR = str(ZILLOW_ANALYZER_PATH)
 
 def get_abs_path(rel_path):
-    return os.path.join(ZILLOW_ANALYZER_PATH, rel_path)
-CONFIG_PATH = get_abs_path('utility/project_config.cfg')
+    return os.path.join(ZILLOW_ANALYZER_PATH_STR, rel_path)
+CONFIG_PATH = get_abs_path(os.path.join('utility', 'project_config.cfg'))
 
 
 ###############################
@@ -190,10 +191,7 @@ class ProjectConfigManager:
 ## LOAD ENVIRONMENT VARIABLES ##
 ################################
 
-load_dotenv()
-SCRAPEOPS_API_KEY = os.environ.get('SCRAPE_OPS_API_KEY')
-if not SCRAPEOPS_API_KEY:
-    sys.exit("A SCRAPEOPS_API_KEY is required to generate plausible headers when scraping :<")
+load_dotenv(override=True)
 
 
 #######################
@@ -204,12 +202,12 @@ PROJECT_CONFIG = ProjectConfigManager()
 
 DATA_PATH = get_abs_path('Data')
 
-VISUAL_DATA_PATH = get_abs_path('Data/VisualData')
-SEARCH_LISTINGS_DATA_PATH = get_abs_path('Data/SearchResults')
-SEARCH_LISTINGS_METADATA_PATH = get_abs_path('Data/SearchResultsMetadata')
-PROPERTY_DETAILS_PATH = get_abs_path('Data/PropertyDetails')
-SEARCH_RESULTS_PROCESSED_PATH = get_abs_path('Data/search_listings.csv')
+VISUAL_DATA_PATH = os.path.join(DATA_PATH, 'VisualData')
+SEARCH_LISTINGS_DATA_PATH = os.path.join(DATA_PATH, 'SearchResults')
+SEARCH_LISTINGS_METADATA_PATH = os.path.join(DATA_PATH, 'SearchResultsMetadata')
+PROPERTY_DETAILS_PATH = os.path.join(DATA_PATH, 'PropertyDetails')
+SEARCH_RESULTS_PROCESSED_PATH = os.path.join(DATA_PATH, 'search_listings.csv')
 
-ALPHA_BETA_DATA_PATH = get_abs_path('Data/PropertyData/alpha_beta_data.csv')
-REAL_ESTATE_METRICS_DATA_PATH = get_abs_path('Data/PropertyData/real_estate_metrics_data.csv')
-HOME_FEATURES_DATAFRAME_PATH = get_abs_path('Data/PropertyData/home_features_df.parquet')
+ALPHA_BETA_DATA_PATH = os.path.join(PROPERTY_DETAILS_PATH, 'alpha_beta_data.csv')
+REAL_ESTATE_METRICS_DATA_PATH = os.path.join(PROPERTY_DETAILS_PATH, 'real_estate_metrics_data.csv')
+HOME_FEATURES_DATAFRAME_PATH = os.path.join(PROPERTY_DETAILS_PATH, 'home_features_df.parquet')
