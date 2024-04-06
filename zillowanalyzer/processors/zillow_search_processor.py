@@ -5,8 +5,6 @@ from enum import Enum
 from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
 
 
-SEARCH_LISTINGS_CSV_FILE_PATH = os.path.join(DATA_PATH, 'search_listings.csv')
-
 class SortOrder(Enum):
     SORT_ORDER_ASCENDING = 1
     SORT_ORDER_DESCENDING = 2
@@ -83,7 +81,7 @@ def process_all_municipalities():
     sorted_results = sorted(all_results, key=lambda x: x['rentZestimate_to_price_ratio'], reverse=reverse_sort)
 
     # Save all results to a new file
-    with open(SEARCH_LISTINGS_CSV_FILE_PATH, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(SEARCH_RESULTS_PROCESSED_PATH, 'w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['zpid', 'address', 'home_type', 'zip_code', 'url', 'listing_price', 'restimate', 'is_active', 'rentZestimate_to_price_ratio', 'rentZestimate_to_Zestimate_ratio']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 

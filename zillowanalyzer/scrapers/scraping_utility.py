@@ -106,7 +106,6 @@ def get_selenium_driver(url, headless=False, ignore_detection=False, random_prof
         raise
     finally:
         if driver:
-            print('whats going on?')
             driver.quit()
 
 def retry_request(project_config):

@@ -162,6 +162,7 @@ zillowanalyzer/ChromeAssets/Google Chrome for Testing.app
 
 Zillow-ViT/
 zillowanalyzer/Data/cleaned/
+zillowanalyzer/Data/PropertyDetailsCache.zip
 
 zillowanalyzer/ChromeAssets/*
 !zillowanalyzer/ChromeAssets/.gitkeep

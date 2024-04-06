@@ -13,7 +13,7 @@ from zillowanalyzer.scrapers.scraping_utility import (
     retry_request, get_selenium_driver, offscreen_click
 )
 from zillowanalyzer.utility.utility import (
-    PROJECT_CONFIG, DATA_PATH, PROPERTY_DETAILS_PATH,
+    PROJECT_CONFIG, SEARCH_RESULTS_PROCESSED_PATH, PROPERTY_DETAILS_PATH,
     save_json, random_delay, ensure_directory_exists, is_within_cooldown_period, batch_generator, parse_dates
 )
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
@@ -70,11 +70,10 @@ def extract_property_details_from_search_results(batch_size=5):
     """
         Main function to initiate the property details extraction process.
     """
-    csv_file_path = os.path.join(DATA_PATH, 'search_listings.csv')
     
     # Load and filter data.
     search_results = []
-    with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
+    with open(SEARCH_RESULTS_PROCESSED_PATH, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         search_results = [search_result for search_result in reader if should_extract_property_details(search_result)]
 
