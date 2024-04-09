@@ -105,7 +105,7 @@ def visualize_hierarchical_clusters(df_scaled, method='ward'):
     linkage_matrix = linkage(df_scaled, method=method)
     desired_clusters = 5  # Example: aiming for 5 clusters
     cluster_labels = fcluster(linkage_matrix, t=desired_clusters, criterion='maxclust')
-    generate_and_save_dendrogram(linkage_matrix, 'Dendrogram for dataset', f'{CLUSTER_VISUAL_DATA_PATH}/hierarchical_cluster.png')
+    generate_and_save_dendrogram(linkage_matrix, 'Dendrogram for dataset', os.path.join(CLUSTER_VISUAL_DATA_PATH, "hierarchical_cluster.png"))
     return cluster_labels
 
 def visualize_hiearchical_clusters_by_clustering_labels(tsne_results, umap_results, number_clusters=5, method='ward'):
@@ -114,8 +114,8 @@ def visualize_hiearchical_clusters_by_clustering_labels(tsne_results, umap_resul
     linkage_umap = linkage(umap_results, method=method)
 
     # Generate and save dendrograms
-    generate_and_save_dendrogram(linkage_tsne, 'Dendrogram for t-SNE Results', f'{CLUSTER_VISUAL_DATA_PATH}/dendrogram_tsne.png', number_clusters=number_clusters)
-    generate_and_save_dendrogram(linkage_umap, 'Dendrogram for UMAP Results', f'{CLUSTER_VISUAL_DATA_PATH}/dendrogram_umap.png', number_clusters=number_clusters)
+    generate_and_save_dendrogram(linkage_tsne, 'Dendrogram for t-SNE Results', os.path.join(CLUSTER_VISUAL_DATA_PATH, "dendrogram_tsne.png"), number_clusters=number_clusters)
+    generate_and_save_dendrogram(linkage_umap, 'Dendrogram for UMAP Results', os.path.join(CLUSTER_VISUAL_DATA_PATH, "dendrogram_umap.png"), number_clusters=number_clusters)
 
     # Generate cluster labels
     hierarchical_labels_tsne = fcluster(linkage_tsne, t=number_clusters, criterion='maxclust')
@@ -127,7 +127,7 @@ def visualize_hiearchical_clusters_by_clustering_labels(tsne_results, umap_resul
     plot_scatter(umap_results, hierarchical_labels_umap, "UMAP with Hierarchical Clustering Labels", axes[1], is_outlier=False)
 
     plt.tight_layout()
-    plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_by_hierarchical_labels.png')
+    plt.savefig(os.path.join(CLUSTER_VISUAL_DATA_PATH, "2D_clusters_by_hierarchical_labels.png"))
 
 def visualize_cluster_density_heatmaps(tsne_results, umap_results):
     """
@@ -151,7 +151,7 @@ def visualize_cluster_density_heatmaps(tsne_results, umap_results):
         ax.set_ylabel(f'{title} dimension 2')
 
     plt.tight_layout()
-    plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_density_heatmaps.png')
+    plt.savefig(os.path.join(CLUSTER_VISUAL_DATA_PATH, "2D_clusters_density_heatmaps.png"))
 
 def visualize_clusters_by_input_features(tsne_results, umap_results, df):
     num_subplots = len(df.columns)
@@ -187,7 +187,7 @@ def visualize_clusters_by_input_features(tsne_results, umap_results, df):
         plot_scatter(sorted_umap_results, bin_labels_formatted, f'UMAP colored by {feature}', axes[i, 1])
 
     plt.tight_layout()
-    plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_by_input_features.png')
+    plt.savefig(os.path.join(CLUSTER_VISUAL_DATA_PATH, "2D_clusters_by_input_features.png"))
 
 def visualize_clusters_by_adjusted_clustering_labels(tsne_results, umap_results, clustering_labels_tsne, clustering_labels_umap):
     methods = list(clustering_labels_tsne.keys())
@@ -204,4 +204,4 @@ def visualize_clusters_by_adjusted_clustering_labels(tsne_results, umap_results,
         plot_scatter(umap_results, labels_umap, f'UMAP with adjusted {method} labels', axes[i, 1])
 
     plt.tight_layout()
-    plt.savefig(f'{CLUSTER_VISUAL_DATA_PATH}/2D_clusters_by_adjusted_clustering_labels.png')
+    plt.savefig(os.path.join(CLUSTER_VISUAL_DATA_PATH, "2D_clusters_by_adjusted_clustering_labels.png"))

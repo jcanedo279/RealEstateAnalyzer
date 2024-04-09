@@ -133,7 +133,6 @@ class ProjectConfigManager:
     def load_config(self):
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
-        print("Current working directory:", os.getcwd())
         for section in config.sections():
             for key, value in config.items(section):
                 if key == 'sort_listing_by':

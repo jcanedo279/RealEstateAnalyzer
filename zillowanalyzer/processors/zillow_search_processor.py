@@ -2,7 +2,7 @@ import os
 import json
 import csv
 from enum import Enum
-from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
+from zillowanalyzer.utility.utility import SEARCH_LISTINGS_DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, SEARCH_RESULTS_PROCESSED_PATH
 
 
 class SortOrder(Enum):

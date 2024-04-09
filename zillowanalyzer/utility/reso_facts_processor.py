@@ -1,7 +1,6 @@
 import glob
 import os
 import json
-import random as rd
 from collections import defaultdict
 
 from zillowanalyzer.utility.utility import PROPERTY_DETAILS_PATH, DATA_PATH, save_json
@@ -76,5 +75,5 @@ for key, option in options_dict.items():
     options_dict[key] = list(option)
 
 # Example of printing the collected options for each parameter
-save_json(options_dict, f'{DATA_PATH}/Examples/all_reso_facts.json')
+save_json(options_dict, os.path.join(DATA_PATH, "Examples", "all_reso_facts.json"))
 

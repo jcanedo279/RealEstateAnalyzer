@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from datetime import datetime, timedelta
 
 from zillowanalyzer.scrapers.scraping_utility import (
-    retry_request, get_selenium_driver, offscreen_click
+    retry_request, get_selenium_driver, kill_chrome_leaks, offscreen_click
 )
 from zillowanalyzer.utility.utility import (
     PROJECT_CONFIG, SEARCH_RESULTS_PROCESSED_PATH, PROPERTY_DETAILS_PATH,
@@ -19,23 +19,26 @@ from zillowanalyzer.utility.utility import (
 from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
 
 
-PROPERTY_COOLDOWN_TIME_WINDOW = timedelta(days=2)
+PROPERTY_COOLDOWN_TIME_WINDOW = timedelta(hours=36)
 
 
-def should_extract_property_details(search_result):
+def should_extract_property_details(search_result, search_result_ind, search_results_len):
     """
         Determines if the property details should be extracted based on various criteria.
     """
     zip_code, zpid = search_result['zip_code'], search_result['zpid']
+    print(f"Pre-processing property: {zpid} in zip_code: {zip_code} number: [{search_result_ind+1} / {search_results_len}]", end="         \r")
     property_path = os.path.join(PROPERTY_DETAILS_PATH, zip_code, f'{zpid}_property_details.json')
 
     if not zip_code or not zpid:
         # If no zip_code or zpid were found in the search_results, this property is corrupted -> don't pull.
         return False
 
-    if not os.path.exists(property_path) or os.path.getsize(property_path) == 0:
-        # Re-Extract if the existing property_details is corrupted.
+    if not os.path.exists(property_path):
         return True
+    if  os.path.getsize(property_path) == 0:
+        # We sometimes save empty results if we can't extract property_details from the driver, don't re-try to extract.
+        return False
     
     with open(property_path, 'r') as file:
         property_details = json.load(file)
@@ -74,8 +77,8 @@ def extract_property_details_from_search_results(batch_size=5):
     # Load and filter data.
     search_results = []
     with open(SEARCH_RESULTS_PROCESSED_PATH, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        search_results = [search_result for search_result in reader if should_extract_property_details(search_result)]
+        reader = list(csv.DictReader(csvfile))
+        search_results = [search_result for search_result_ind, search_result in enumerate(reader) if should_extract_property_details(search_result, search_result_ind, len(reader))]
 
     # Generate and process batches.
     num_batches = math.ceil(len(search_results) / batch_size)
@@ -89,12 +92,12 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
         Processes and saves property details for a batch of search results.
     """
     with get_selenium_driver("about:blank") as driver:
-        for search_result_ind, search_result in enumerate(property_data):
+        for batch_result_ind, search_result in enumerate(property_data):
             zip_code, zpid = search_result['zip_code'], search_result['zpid']
-            print(f'Scraping property: {zpid} in zip_code: {zip_code} number: [{search_result_ind} / {batch_size}] in batch: [{batch_ind} / {num_batches}]', end='         \r')
+            print(f'Scraping property: {zpid} in zip_code: {zip_code} number: [{batch_result_ind+1} / {batch_size}] in batch: [{batch_ind+1} / {num_batches}]', end='         \r')
 
-            property_path = f'{PROPERTY_DETAILS_PATH}/{zip_code}/{zpid}_property_details.json'
-            ensure_directory_exists('/'.join(property_path.split('/')[:-1]))
+            property_path = os.path.join(PROPERTY_DETAILS_PATH, str(zip_code), f"{zpid}_property_details.json")
+            ensure_directory_exists(os.path.dirname(property_path))
             
             # Navigate to the property's page and parse the HTML content.
             response = extract_property_details_from_driver(driver, search_result['url'], 1)
@@ -106,6 +109,7 @@ def extract_property_details_from_batch(property_data, batch_ind, batch_size, nu
 
             save_json(response, property_path)
             random_delay(2, 4)
+    kill_chrome_leaks()
 
 
 @retry_request(PROJECT_CONFIG)
@@ -161,7 +165,7 @@ def extract_zestimate_history_from_driver(driver):
             offscreen_click(show_more_button, driver)
             table_view_button = container.find_element(By.XPATH, ".//button[contains(text(), 'Table view')]")
         except NoSuchElementException:
-            pass
+            return []
     # If no data is available in the Zestimate, early return to avoid suspicious behavior.
     try:
         empty_zestimate_history_element = driver.find_element(By.XPATH, "//strong[contains(text(), 'No data available at this time.')]")

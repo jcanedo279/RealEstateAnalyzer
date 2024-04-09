@@ -190,8 +190,10 @@ def home_features_processing_pipeline():
     # Save to Parquet (efficient and preserves data types well)
     home_features_df.to_parquet(HOME_FEATURES_DATAFRAME_PATH)
 
-    visualize_pairwise_correlation(home_features_df, path=f"{VISUAL_DATA_PATH}/correlatory/home_features_pairwise_correlation.png", title="Home Features vs. Price Correlation (SHAP)")
-    visualize_pairwise_distribution(home_features_df, path=f"{VISUAL_DATA_PATH}/correlatory/home_features_pairwise_distribution.png", title="Home Features vs. Price Distribution (SHAP)")
+    pairwise_correlation_path = os.path.join(VISUAL_DATA_PATH, "correlatory", "home_features_pairwise_correlation.png")
+    pairwise_distribution_path = os.path.join(VISUAL_DATA_PATH, "correlatory", "home_features_pairwise_distribution.png")
+    visualize_pairwise_correlation(home_features_df, path=pairwise_correlation_path, title="Home Features vs. Price Correlation (SHAP)")
+    visualize_pairwise_distribution(home_features_df, path=pairwise_distribution_path, title="Home Features vs. Price Distribution (SHAP)")
 
 
 def main():

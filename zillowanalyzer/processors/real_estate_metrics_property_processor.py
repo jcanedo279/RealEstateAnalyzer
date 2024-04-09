@@ -2,7 +2,7 @@ import os
 import csv
 from datetime import datetime
 
-from zillowanalyzer.utility.utility import PROPERTY_DETAILS_PATH, REAL_ESTATE_METRICS_DATA_PATH
+from zillowanalyzer.utility.utility import REAL_ESTATE_METRICS_DATA_PATH
 from zillowanalyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 
 

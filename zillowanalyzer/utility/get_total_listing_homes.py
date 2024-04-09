@@ -2,11 +2,11 @@ import os
 import json
 from glob import glob
 
-from zillowanalyzer.utility.utility import DATA_PATH
+from zillowanalyzer.utility.utility import DATA_PATH, SEARCH_LISTINGS_METADATA_PATH
 
 # Assuming the base directory for listing data files
-base_directory = 'zillowanalyzer/Data/SearchResultsMetadata/'
-listing_files = glob(base_directory + '**/*.json', recursive=True)
+listings_path = os.path.join(SEARCH_LISTINGS_METADATA_PATH, '**', '*.json')
+listing_files = glob(listings_path, recursive=True)
 
 unique_zpids = set()
 overflowing_municipalities = set()
@@ -28,5 +28,5 @@ print(total_unique_zpids)
 
 sorted_municipality_to_num_zpids = {k: v for k, v in sorted(municipality_to_num_zpids.items(), key=lambda item: item[1]) if v > 770}
 print(sorted_municipality_to_num_zpids)
-with open(f'{DATA_PATH}/florida_municipalities_overflowing.txt', 'w') as f:
+with open(os.path.join(DATA_PATH, "florida_municipalities_overflowing.txt"), 'w') as f:
     f.write( '\n'.join(sorted_municipality_to_num_zpids.keys()) )

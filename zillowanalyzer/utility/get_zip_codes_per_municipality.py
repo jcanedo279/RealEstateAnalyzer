@@ -1,4 +1,4 @@
-import sys
+import os
 import requests
 import urllib
 import json
@@ -46,4 +46,4 @@ for municipality_ind, municipality in enumerate(municipalities):
 
     municipality_to_zip_codes[municipality] = zip_codes
 
-save_json(municipality_to_zip_codes, f'{DATA_PATH}/florida_overflowing_municipalities_to_zip_codes.json')
+save_json(municipality_to_zip_codes, os.path.join(DATA_PATH, "florida_overflowing_municipalities_to_zip_codes.txt"))

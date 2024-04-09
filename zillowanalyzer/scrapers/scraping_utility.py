@@ -4,6 +4,8 @@ import time
 import json
 import re
 import glob
+import platform
+import subprocess
 import random as rd
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
@@ -21,10 +23,8 @@ from zillowanalyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LIS
 
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
 CHROME_BINARY_EXECUTABLE_PATH = os.environ.get('CHROME_BINARY_EXECUTABLE_PATH')
-print(CHROME_BINARY_EXECUTABLE_PATH)
 # Use chrome://version/ to locate the user_data_dir path.
 CHROME_USER_DATA_DIR = os.environ.get('CHROME_USER_DATA_DIR')
-print(CHROME_USER_DATA_DIR)
 local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
 
 MUNICIPALITIES_DATA_PATH = os.path.join(DATA_PATH, 'florida_municipalities_data.txt')
@@ -41,16 +41,19 @@ class ZillowChromeDriver(uc.Chrome):
             return
         # If a Captcha is detected, stop scraping.
         try:
+            is_first_attempt = True
             while self.find_element(By.ID, 'px-captcha-wrapper'):
+                if is_first_attempt:
+                    print('\n')
+                print("Pls halp, I've been bad 🥺👉👈", end='\r')
                 time.sleep(10)
-                print('trying again')
+                is_first_attempt = False
         except:
             pass
 
 class ChromeProfileManager():
     min_profile_number = PROJECT_CONFIG['min_profile_number']
     max_profile_number = PROJECT_CONFIG['max_profile_number']
-    print(min_profile_number, max_profile_number)
     def __init__(self):
         # We start with a random profile so that we do not become more identifiable. Starting to request from the same profile is temporarily detectable.
         self.current_profile_number = self.next_profile_number(random_profile=True)
@@ -72,6 +75,28 @@ def clean_profile_data(profile_number):
                 os.remove(profile_cache_path)
             elif os.path.isdir(profile_cache_path):
                 shutil.rmtree(profile_cache_path)
+
+def kill_chrome_leaks(kill_unix_leaks=False):
+    if platform.system() == "Windows":
+        try:
+            subprocess.run(
+                ["taskkill", "/f", "/im", "chrome_for_testing.exe"],
+                check=True,
+                stdout=subprocess.DEVNULL,  # Suppress standard output
+                stderr=subprocess.DEVNULL   # Suppress errors
+            )
+        except subprocess.CalledProcessError as e:
+            pass
+    elif kill_unix_leaks:
+        try:
+            subprocess.run(
+                ["pkill", "-f", "chrome_for_testing"],
+                check=True,
+                stdout=subprocess.DEVNULL,  # Suppress standard output
+                stderr=subprocess.DEVNULL   # Suppress errors
+            )
+        except subprocess.CalledProcessError as e:
+            pass
 
 def get_chrome_options(headless=False, random_profile=False):
     options = uc.ChromeOptions()
@@ -98,7 +123,7 @@ def get_selenium_driver(url, headless=False, ignore_detection=False, random_prof
         options = get_chrome_options(headless=headless, random_profile=random_profile)
         if clean_profile:
             clean_profile_data(PROJECT_CONFIG['profile_number'])
-        driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection, no_sandbox=headless)
+        driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection, no_sandbox=False, use_subprocess=False)
         driver.get(url)
         yield driver
     except Exception as e:
@@ -223,3 +248,4 @@ def what_is_my_ip():
 
 if __name__ == '__main__':
     print(what_is_my_ip())
+    kill_chrome_leaks()

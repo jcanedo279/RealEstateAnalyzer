@@ -8,7 +8,7 @@ from zillowanalyzer.utility.utility import (
     DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, SEARCH_LISTINGS_DATA_PATH,
     ensure_directory_exists, load_json, random_delay, is_within_cooldown_period, save_json, batch_generator, backoff_strategy
 )
-from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, load_search_metadata
+from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, kill_chrome_leaks, load_search_metadata
 
 
 ###########
@@ -19,7 +19,7 @@ def should_process_municipality(municipality):
     """
         Determines if a municipality should be processed based on cooldown period.
     """
-    metadata_path = f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json'
+    metadata_path = os.path.join(SEARCH_LISTINGS_METADATA_PATH, f"{municipality}_metadata.json")
     if not os.path.exists(metadata_path):
         return True  # Process if no metadata exists
     metadata = load_json(metadata_path)
@@ -27,7 +27,7 @@ def should_process_municipality(municipality):
 
 
 # Global configuration.
-COOLDOWN_PERIOD = timedelta(hours=3)
+COOLDOWN_PERIOD = timedelta(hours=36)
 QUERY_STATE_DATA_PATH = os.path.join(DATA_PATH, 'query_state_data.json')
 municipality_to_seen_zpid_tuple = set()
 
@@ -68,6 +68,7 @@ def scrape_listings(batch_size=10):
             for municipality, query_state_data in batch:
                 scrape_municipality(driver, user_agent, cookie_string, municipality, municipality_ind, query_state_data)
                 municipality_ind += 1
+        kill_chrome_leaks()
 
 
 def scrape_municipality(driver, user_agent, cookie_string, municipality, municipality_ind, query_state_data):
@@ -172,12 +173,12 @@ def maybe_save_current_search_results(municipality, search_results):
         'active_zpids': list(search_results_zpids),
         'last_checked': datetime.now().isoformat()
     }
-    save_json(search_metadata, f'{SEARCH_LISTINGS_METADATA_PATH}/{municipality}_metadata.json')
+    save_json(search_metadata, os.path.join(SEARCH_LISTINGS_METADATA_PATH, f"{municipality}_metadata.json"))
 
-    municipality_path = f"{SEARCH_LISTINGS_DATA_PATH}/{municipality}"
+    municipality_path = os.path.join(SEARCH_LISTINGS_DATA_PATH, municipality)
     # We save even if new_search_results is empty to ensure the metadata exists to skip over this municipality.
     ensure_directory_exists(municipality_path)
-    save_json(search_results, f'{municipality_path}/listings_{datetime.now().strftime("%Y-%m-%d_%H-%M")}.json')
+    save_json(search_results, os.path.join(municipality_path, f"listings_{datetime.now().strftime("%Y-%m-%d_%H-%M")}.json"))
 
 
 #################
