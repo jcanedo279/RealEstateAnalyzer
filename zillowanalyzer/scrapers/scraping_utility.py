@@ -28,6 +28,7 @@ CHROME_USER_DATA_DIR = os.environ.get('CHROME_USER_DATA_DIR')
 local_path_exists = os.path.exists(CHROME_USER_DATA_DIR)
 
 MUNICIPALITIES_DATA_PATH = os.path.join(DATA_PATH, 'florida_municipalities_data.txt')
+ZIP_CODES_DATA_PATH = os.path.join(DATA_PATH, 'florida_zip_codes.txt')
 
 
 class ZillowChromeDriver(uc.Chrome):
@@ -123,7 +124,7 @@ def get_selenium_driver(url, headless=False, ignore_detection=False, random_prof
         options = get_chrome_options(headless=headless, random_profile=random_profile)
         if clean_profile:
             clean_profile_data(PROJECT_CONFIG['profile_number'])
-        driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection, no_sandbox=False, use_subprocess=False)
+        driver = ZillowChromeDriver(options=options, browser_executable_path=CHROME_BINARY_EXECUTABLE_PATH, ignore_detection=ignore_detection)
         driver.get(url)
         yield driver
     except Exception as e:
@@ -212,6 +213,15 @@ def load_search_metadata():
             municipality_to_zpids[municipality].update(metadata.get('zpids', []))
     return municipality_to_zpids
 
+def load_search_zip_codes():
+    zip_code_to_zpids = defaultdict(set)
+    for metadata_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
+        zip_code = os.path.basename(metadata_path).split("_metadata.json")[0]
+        with open(metadata_path, "r") as file:
+            metadata = json.load(file)
+            zip_code_to_zpids[zip_code].update(metadata.get('zpids', []))
+    return zip_code_to_zpids
+
 def load_search_municipalities():
     # A dictionary to hold the mapping of counties to their municipalities
     county_to_municipalities = defaultdict(list)
@@ -229,6 +239,13 @@ def load_search_municipalities():
             municipality_cleaned = municipality.replace("†", "").replace("-", " ")
             county_to_municipalities[county].append(municipality_cleaned)
     return county_to_municipalities
+
+def load_search_zip_codes():
+    with open(ZIP_CODES_DATA_PATH, 'r') as file:
+        content = file.read()
+        zip_codes = content.split(',')
+    return [int(num) for num in zip_codes if num.isdigit()]
+
 
 def what_is_my_ip():
     what_is_my_ip_url = "http://httpbin.org/ip"

@@ -3,20 +3,19 @@ import json
 from bs4 import BeautifulSoup
 
 from zillowanalyzer.utility.utility import (
-    DATA_PATH, load_json, save_json, random_delay
+    DATA_PATH, load_json, save_json, random_delay, PROJECT_CONFIG
 )
-from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, load_search_municipalities
+from zillowanalyzer.scrapers.scraping_utility import get_selenium_driver, load_search_zip_codes, retry_request
 
-MUNICIPALITIES_DATA_PATH = os.path.join(DATA_PATH, 'florida_municipalities_data.txt')
+
 QUERY_STATE_DATA_PATH = os.path.join(DATA_PATH, 'query_state_data.json')
 
-
-def get_municipality_query_state_data():
+def get_zip_code_query_state_data():
     if os.path.exists(QUERY_STATE_DATA_PATH):
         return load_json(QUERY_STATE_DATA_PATH)
     return {}
 
-municipality_query_state_data = get_municipality_query_state_data()
+zip_code_query_state_data = get_zip_code_query_state_data()
 
 def get_search_page_state_from_driver(driver):
     # Parse page source code.
@@ -28,22 +27,23 @@ def get_search_page_state_from_driver(driver):
     data = json.loads(script_tag.string)
     return data['props']['pageProps']['searchPageState']
 
-def update_query_state_data(municipality, query_state_data):
-    existing_data = get_municipality_query_state_data()
-    existing_data[municipality] = query_state_data
+def update_query_state_data(zip_code, query_state_data):
+    existing_data = get_zip_code_query_state_data()
+    existing_data[zip_code] = query_state_data
     save_json(existing_data, QUERY_STATE_DATA_PATH)
 
-def scrape_municipalities_data(all_municipalities):
-    municipality_query_state_data = get_municipality_query_state_data()
-    for municipality_ind, municipality in enumerate(all_municipalities):
-        if municipality not in municipality_query_state_data:
-            query_state_data = scrape_municipality_data(municipality)
+def scrape_zip_codes_data(zip_codes):
+    zip_code_query_state_data = get_zip_code_query_state_data()
+    for zip_code_ind, zip_code in enumerate(zip_codes):
+        if zip_code not in zip_code_query_state_data:
+            query_state_data = scrape_zip_code_data(zip_code)
             if query_state_data:
-                update_query_state_data(municipality, query_state_data)
-                print(f'Gathering query state data for municipality: {municipality} # [{municipality_ind+1} | {len(all_municipalities)}]')
+                update_query_state_data(zip_code, query_state_data)
+                print(f'Gathering query state data for zip code: {zip_code} # [{zip_code_ind+1} | {len(zip_codes)}]')
 
-def scrape_municipality_data(municipality):
-    base_url = f"https://www.zillow.com/homes/{municipality}-fl/"
+@retry_request(PROJECT_CONFIG)
+def scrape_zip_code_data(zip_code):
+    base_url = f"https://www.zillow.com/homes/{zip_code}_rb/"
     with get_selenium_driver("about:blank") as driver:
         driver.get(base_url)
         random_delay(2, 4)
@@ -55,6 +55,5 @@ def scrape_municipality_data(municipality):
         return query_state_data
 
 if __name__ == '__main__':
-    county_to_municipalities = load_search_municipalities()
-    all_municipalities = [municipality for county in county_to_municipalities.keys() for municipality in county_to_municipalities[county] if municipality not in municipality_query_state_data]
-    scrape_municipalities_data(all_municipalities)
+    zip_codes = [zip_code for zip_code in load_search_zip_codes() if str(zip_code) not in zip_code_query_state_data]
+    scrape_zip_codes_data(zip_codes)

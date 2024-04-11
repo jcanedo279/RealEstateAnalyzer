@@ -15,10 +15,9 @@ def format_payload(city, state="FL"):
 url = "https://tools.usps.com/tools/app/ziplookup/zipByCityState"
 
 municipalities = []
-with open(f'{DATA_PATH}/florida_municipalities_overflowing.txt', 'r') as munici_file:
+with open(os.path.join(DATA_PATH, "florida_municipalities_overflowing.txt"), 'r') as munici_file:
     municipalities = [municipality.strip() for municipality in munici_file.readlines()]
-
-with get_selenium_driver("https://tools.usps.com/zip-code-lookup.htm") as driver:
+with get_selenium_driver("about:blank", ignore_detection=True) as driver:
     cookie_string = '; '.join([f'{cookie["name"]}={cookie["value"]}' for cookie in driver.get_cookies()])
     user_agent = driver.execute_script("return navigator.userAgent;")
 

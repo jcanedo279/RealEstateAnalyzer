@@ -63,13 +63,13 @@ def process_listings(search_listings_path, search_listings_metadata_path):
                     })
     return results
 
-def process_all_municipalities():
+def process_all_zip_codes():
     all_results = []
 
     # Iterate through each subdirectory in the root directory
-    for municipality_folder in os.listdir(SEARCH_LISTINGS_DATA_PATH):
-        search_listings_path = os.path.join(SEARCH_LISTINGS_DATA_PATH, municipality_folder)
-        search_listings_metadata_path = os.path.join(SEARCH_LISTINGS_METADATA_PATH, f'{municipality_folder}_metadata.json')
+    for zip_code_folder in os.listdir(SEARCH_LISTINGS_DATA_PATH):
+        search_listings_path = os.path.join(SEARCH_LISTINGS_DATA_PATH, zip_code_folder)
+        search_listings_metadata_path = os.path.join(SEARCH_LISTINGS_METADATA_PATH, f'{zip_code_folder}_metadata.json')
 
         # Check if it's a directory
         if os.path.isdir(search_listings_path):
@@ -90,4 +90,5 @@ def process_all_municipalities():
             writer.writerow(result)
 
 
-process_all_municipalities()
+if __name__ == '__main__':
+    process_all_zip_codes()

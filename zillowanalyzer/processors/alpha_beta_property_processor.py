@@ -41,7 +41,7 @@ def calculate_monthly_mortgage_payment(loan_amount, annual_interest_rate, loan_t
 def calculate_alpha_beta_for_property(zestimate_history, index_data, rf_data):
     # Extract and convert time series from json to a Pandas DF.
     if len(zestimate_history) <= 3:
-        return -1
+        return
     zestimate_history_df = pd.DataFrame(zestimate_history)
     # Convert dates from UTC in ms to datetime objects.
     # zestimate_history_df['x'] = pd.to_datetime(zestimate_history_df['x'], unit='ms')
