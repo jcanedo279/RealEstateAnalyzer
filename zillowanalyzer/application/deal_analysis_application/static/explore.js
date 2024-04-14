@@ -91,12 +91,21 @@ function fetchExploreData() {
 
         // Display total properties count or a no properties found message.
         if (data.properties && data.properties.length > 0) {
+            const existingCount = document.getElementById('totalCountDiv');
+            if (existingCount) {
+                existingCount.remove(); // Remove the existing count before adding a new one to avoid duplicates
+            }
+
             const totalCountDiv = document.createElement('div');
-            totalCountDiv.textContent = `Total Properties: ${data.total_properties}`;
-            totalCountDiv.style.fontSize = '24px';
-            totalCountDiv.style.fontWeight = 'bold';
-            totalCountDiv.style.marginTop = '20px';
-            resultsDiv.appendChild(totalCountDiv);
+            totalCountDiv.id = 'totalCountDiv'; // Ensure it can be uniquely identified
+            totalCountDiv.className = 'total-count'; // This class will be styled in CSS
+
+            // Adding more structure to the content
+            totalCountDiv.innerHTML = `
+                <i class="fas fa-home"></i> 
+                <span>Total Properties: ${data.total_properties}</span>
+            `;
+            resultsDiv.appendChild(totalCountDiv);            
 
             // Create a table
             const table = document.createElement('table');
@@ -157,10 +166,10 @@ function fetchExploreData() {
         // Conditionally display the navigation buttons.
         if (total_pages > 1) {
             // Show navigation buttons.
-            document.getElementById('navigationButtons').style.display = 'block';
+            document.getElementById('navigationButtons').style.visibility = 'visible';
         } else {
             // Optionally hide navigation buttons if no properties found.
-            document.getElementById('navigationButtons').style.display = 'none';
+            document.getElementById('navigationButtons').style.visibility = 'hidden';
         }
     })
     .catch((error) => {

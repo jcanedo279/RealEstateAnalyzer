@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container content-top-spacing">
+<div class="container">
     <!-- Property Search Form -->
     <form id="propertyForm">
 
@@ -95,14 +95,18 @@
 </div>
 
 <!-- Results Navigation and Page Indicator -->
-<div class="container">
-    <div id="navigationButtons" class="navigation-buttons" style="display: none;">
-        <button id="prevPageBtn" class="btn waves-effect main-color navigation-button">Previous</button>
+<div class="navigation-wrapper">
+    <div id="navigationButtons" class="navigation-buttons container" style="visibility: hidden;">
+        <span class="pagination-container">
+            <button id="prevPageBtn" class="btn waves-effect main-color navigation-button">Previous</button>
+        </span>
 
         <!-- Page Indicator -->
         <span id="pageIndicator" class="pagination-container">Page 1</span>
 
-        <button id="nextPageBtn" class="btn waves-effect main-color navigation-button">Next</button>
+        <span class="pagination-container">
+            <button id="nextPageBtn" class="btn waves-effect main-color navigation-button">Next</button>
+        </span>
     </div>
 </div>
 

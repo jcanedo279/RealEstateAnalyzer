@@ -1,29 +1,106 @@
-.container {
-    margin: auto;
-    padding: 20px;
-    width: auto; /* Adjusts to the content width */
-    max-width: 100%; /* Prevents it from extending beyond the viewport width */
-    overflow-x: auto; /* Allows horizontal scrolling */
+.spacer {
+    height: 20px;
 }
 
-h1, h2 {
+/* Home page content list items */
+.custom-li {
+    padding-left: 2rem; /* Space for the icon, adjust as necessary */
+    margin-bottom: 0.75rem;
+    list-style: none; /* Removes default list styling */
+}
+
+.custom-li .fa-li {
+    position: absolute;
     color: var(--main-blue);
+    left: 0;
+}
+
+.custom-li i {
+    margin-right: 10px; /* Space between the icon and the text */
+}
+
+li .fa-text {
+    color: var(--text-color)
+}
+
+.fa-ul {
+    position: relative;
+    padding-left: 2.5rem; /* Space for the icon, adjust if needed */
+}
+
+/* Hero section with background image */
+.hero-section {
+    height: 75vh;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: start;
+    border-radius: var(--border-radius);
+}
+
+/* Hero content styles */
+.hero-content {
+    width: calc(100% - 40px);
+    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    padding: 1rem;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--default-shadow);
 }
 
 .flow-text {
+    color: var(--text-color); /* Color for the text */
     font-size: 18px;
     margin-bottom: 20px;
 }
 
-/* Additional styles for unordered lists */
-ul {
-    list-style-type: disc; /* Ensure bullets are shown */
-    margin-left: 20px; /* Provide some indentation for the list */
-    margin-bottom: 20px; /* Space after the list */
+.text-align-center {
+    text-align: center;
 }
 
-li {
-    margin-bottom: 10px; /* Space between list items */
+.margin-right {
+    margin-right: 10px;
 }
 
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .hero-section {
+        height: 50vh;
+        /* Adjust the padding and other properties as needed */
+    }
 
+    .hero-content {
+        padding: 0.5rem;
+        /* Adjust text sizes and other properties as needed */
+    }
+
+    /* Other responsive adjustments */
+}
+
+.modal {
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none; /* Hidden by default */
+    z-index: 1000; /* Make sure it's on top */
+}
+
+.modal-content {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 10px 20px;
+    text-align: right;
+}
+
+.modal-close {
+    background-color: var(--main-blue);
+}

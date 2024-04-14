@@ -238,6 +238,15 @@ def direct_search():
     else:
         return jsonify({"error": "Property ID not found"})
 
+@app.route('/report', methods=['POST'])
+def report():
+    request_data = request.get_json()
+    user_email = request_data.get('user_email', '')
+    issue_description = request_data.get('issue_description', '')
+
+    app.logger.info(f"{user_email} has filed an issue: {issue_description}.")
+    
+    return jsonify({"success": "Issue reported successfully"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
