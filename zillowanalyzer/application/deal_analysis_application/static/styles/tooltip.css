@@ -1,0 +1,23 @@
+.global-tooltip {
+    display: none;
+    position: fixed;
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.tooltip-header {
+    font-weight: bold;
+    background: #d9dbdc;
+    text-align: center;
+    padding: 5px;
+}
+
+.tooltip-body {
+    font-size: 14px;
+    line-height: 1.4;
+}

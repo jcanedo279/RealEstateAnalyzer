@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 
+{% block page_specific_styles %}
+<link href="{{ url_for('static', filename='styles/forms.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/tooltip.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/table.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 <!-- Property Search Form -->
-<div class="container">
+<div class="container content-top-spacing">
     <form id="propertyForm">
         <div class="input-field form-element">
             <input id="property_id" type="text" name="property_id" required>
@@ -16,8 +22,11 @@
 </div>
 
 <!-- Results will be displayed here -->
-<div class="fullscreen-div-padding" id="resultsTable"></div>
+<div class="scrolling-content">
+    <div class="fullscreen-div-padding" id="resultsTable"></div>
+</div>
 
 <!-- External JavaScript -->
+<script src="{{ url_for('static', filename='tooltipUtil.js') }}" defer></script>
 <script src="{{ url_for('static', filename='search.js') }}"></script>
 {% endblock %}

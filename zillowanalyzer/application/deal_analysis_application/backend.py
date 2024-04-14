@@ -18,55 +18,126 @@ BACKEND_PROPERTIES_DF = load_data().round(2)
 region_path = os.path.join(ZILLOW_ANALYZER_PATH, "application", "deal_analysis_application", "data", "regions.json")
 REGION_TO_ZIP_CODE = {region: set(zip_codes) for region, zip_codes in load_json(region_path).items()}
 
-TARGET_COLUMNS = ['Image', 'City', 'Rental Income (5% Down)', 'Rent Estimate', 'Price', 'Breakeven Price (5% Down)', 'S&P Competative Price (5% Down)', 'Is Breakeven Price Offending', 'Adjusted Cash on Cash (5% Down)', 'Year Built', 'Home Type', 'Bedrooms', 'Bathrooms']
+TARGET_COLUMNS = ['Image', 'City', 'Rental Income (5% Down)', 'Rent Estimate', 'Price', 'Breakeven Price (5% Down)', 'Competative Price (5% Down)', 'Is Breakeven Price Offending', 'Adjusted CoC (5% Down)', 'Year Built', 'Home Type', 'Bedrooms', 'Bathrooms']
 BACKEND_COL_NAME_TO_FRONTEND_COL_NAME = {
-    "zpid": "Property ID",
-    "city": "City",
-    "purchase_price": "Price",
-    "restimate": "Rent Estimate",
-    "year_built": "Year Built",
-    "home_type": "Home Type",
-    "bedrooms": "Bedrooms",
-    "bathrooms": "Bathrooms",
-    "zip_code": "Zip Code",
-    "gross_rent_multiplier": "Gross Rent Multiplier",
-    "page_view_count": "Times Viewed",
-    "favorite_count": "Favorite Count",
-    "days_on_zillow": "Days on Zillow",
-    "property_tax_rate": "Tax Rate (%)",
-    "living_area": "Living Area (sq ft)",
-    "lot_size": "Lot Size (sq ft)",
-    "mortgage_rate": "Mortgage Rate (%)",
-    "annual_homeowners_insurance": "Annual Insurance",
-    "monthly_hoa": "HOA Fee (Monthly)",
-    "home_features_score": "Home Features Score",
-    "is_waterfront": "Waterfront",
-    # Down payment based keys.
-    "adj_CoC_5%_down": "Adjusted Cash on Cash (5% Down)",
-    "adj_CoC": "Adjusted Cash on Cash",
-    "rental_income_5%_down": "Rental Income (5% Down)",
-    "rental_income": "Rental Income",
-    "Beta_5%_down": "Beta (5% Down)",
-    "Beta": "Beta",
-    "Alpha_5%_down": "Alpha (5% Down)",
-    "Alpha": "Alpha",
-    "breakeven_price_5%_down": "Breakeven Price (5% Down)",
-    "breakeven_price": "Breakeven Price",
-    "is_breaven_price_offending_5%_down": "Is Breakeven Price Offending (5% Down)",
-    "is_breaven_price_offending": "Is Breakeven Price Offending",
-    "snp_equivalent_price_5%_down": "S&P Competative Price (5% Down)",
-    "snp_equivalent_price": "S&P Competative Price",
-    "CoC_no_prepaids_5%_down": "Cash on Cash w/o Prepaids (5% Down)",
-    "CoC_no_prepaids": "Cash on Cash w/o Prepaids",
-    "CoC_5%_down": "Cash on Cash (5% Down)",
-    "CoC": "Cash on Cash",
-    "adj_CoC_no_prepaids_5%_down": "Adjusted CoC w/o Prepaids (5% Down)",
-    "adj_CoC_no_prepaids": "Adjusted CoC w/o Prepaids",
-    "cap_rate_5%_down": "Cap Rate (5% Down)",
-    "cap_rate": "Cap Rate",
-    "adj_cap_rate_5%_down": "Adjusted Cap Rate (5% Down)",
-    "adj_cap_rate": "Adjusted Cap Rate",
+    "zpid": {
+        "name": "Property ID"},
+    "city": {
+        "name": "City"},
+    "purchase_price": {
+        "name": "Price"},
+    "restimate": {
+        "name": "Rent Estimate",
+        "description": "Projected montly rental."},
+    "year_built": {
+        "name": "Year Built"},
+    "home_type": {
+        "name": "Home Type",
+        "description": "The listed housing type (i.e. SingleFamily or TownHouse)."},
+    "bedrooms": {
+        "name": "Bedrooms"},
+    "bathrooms": {
+        "name": "Bathrooms"},
+    "zip_code": {
+        "name": "Zip Code"},
+    "gross_rent_multiplier": {
+        "name": "Gross Rent Multiplier",
+        "description:": "The ratio (PurchasePrice)/(RentEstimate). A lower ratio is typically better for the buyer as it indicates that the home's rental is high relative to its price."},
+    "page_view_count": {
+        "name": "Times Viewed"},
+    "favorite_count": {
+        "name": "Favorite Count"},
+    "days_on_zillow": {
+        "name": "Days on Zillow"},
+    "property_tax_rate": {
+        "name": "Tax Rate (%)",
+        "description": "The historical annual percentage of the home's price which is charged as property taxes."},
+    "living_area": {
+        "name": "Living Area (sq ft)",
+        "description": "The size of the home's living area in square feet."},
+    "lot_size": {
+        "name": "Lot Size (sq ft)",
+        "description": "The size of the home's lot in square feet."},
+    "mortgage_rate": {
+        "name": "Mortgage Rate",
+        "description": "The projected APR for a mortgage on this property."},
+    "homeowners_insurance": {
+        "name": "Home Insurance",
+        "description": "The monthly homeowners insurance which is charged historically on an annual basis."},
+    "monthly_hoa": {
+        "name": "HOA Fee",
+        "description": "The historical monthly HOA fee which is collected by the neighborhood."},
+    "home_features_score": {
+        "name": "Home Features Score",
+        "description": "A generated score in the interval [0,1], which represents how many 'important' features a home has, and is exponentially correlated with its price."},
+    "is_waterfront": {
+        "name": "Waterfront",
+        "description": "Whether a home is a waterfront property or not."},
 }
+BACKEND_COL_NAME_TO_DYNAMIC_FRONTEND_COL_NAME = {
+    # Down payment based keys.
+    "adj_CoC": {
+        "name": "Adjusted CoC",
+        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested, adjusted for average vacancy and maintenance rates. Annualized for comparison."},
+    "rental_income": {
+        "name": "Rental Income",
+        "description": "The monthly rental income, the projected rental estimate minus all expenses (i.e. mortage, HOA, insurance, taxes, etc...)."},
+    "Beta": {
+        "name": "Beta",
+        "description": "Beta is a measure of the property's price volatility compared to the broader market, using the property's alpha (see column) and the rolling risk free return (3 month treasury). A beta above 1 means the price is more volatile than the market, a beta of 1 means the price changes with the market, a beta between 0 and 1 means its less volatile than the market, a beta of 0 means the price does not change with the market (such as cash), finally a negative beta indicates an inverse relation to the market."},
+    "Alpha": {
+        "name": "Alpha",
+        "description": "Alpha is the active return on an investment compared to the broader market. A positive alpha indicates that a property has increased in value more than the market average, often due to factors like location, improvements, or market dynamics. A negative alpha suggests it has underperformed the market benchmark."},
+    "breakeven_price": {
+        "name": "Breakeven Price",
+        "description": "The purchase price at which the rental income  is zero, if the breakeven price is above the asking price this is just the listing price. Adjusted for the "},
+    "is_breaven_price_offending": {
+        "name": "Is Breakeven Price Offending",
+        "description": "Whether the breakeven price is an offending offer (less than 80% of the listing price)."},
+    "snp_equivalent_price": {
+        "name": "Competative Price",
+        "description": "The purchase price at which the annualized rental income is comporable to half the historical SnP 500 returns."},
+    "CoC_no_prepaids": {
+        "name": "CoC w/o Prepaids",
+        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested (without prepaids). Annualized for comparison."},
+    "CoC": {
+        "name": "CoC",
+        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested. Annualized for comparison."},
+    "adj_CoC_no_prepaids": {
+        "name": "Adjusted CoC w/o Prepaids",
+        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested (without prepaids), adjusted for average vacancy and maintenance rates. Annualized for comparison."},
+    "cap_rate": {
+        "name": "Cap Rate",
+        "description": "The rental income as a fraction of the purchase price."},
+    "adj_cap_rate":  {
+        "name": "Adjusted Cap Rate",
+        "description": "The rental income as a fraction of the purchase price. The rental income being adjusted for vacancy and maintenance rates."},
+}
+
+# Function to construct a dictionary to map from the input names ot the descriptive ones.
+def create_rename_dict():
+    rename_dict = {}
+    for old_name, props in BACKEND_COL_NAME_TO_FRONTEND_COL_NAME.items():
+        rename_dict[old_name] = props['name']
+    
+    for old_name, props in BACKEND_COL_NAME_TO_DYNAMIC_FRONTEND_COL_NAME.items():
+        rename_dict[old_name] = props['name']
+        rename_dict[f"{old_name}_5%_down"] = f"{props['name']} (5% Down)"
+    
+    return rename_dict
+
+def create_description_dict():
+    description_dict = {}
+    for props in BACKEND_COL_NAME_TO_FRONTEND_COL_NAME.values():
+        if 'description' in props:
+            description_dict[props['name']] = props['description']
+    
+    for props in BACKEND_COL_NAME_TO_DYNAMIC_FRONTEND_COL_NAME.values():
+        if 'description' in props:
+            description_dict[props['name']] = props['description']
+            description_dict[f"{props['name']} (5% Down)"] = f"Given a 5% down payment... {props['description']}"
+    
+    return description_dict
 
 def properties_df_from_search_request_data(request_data):
     region = request_data.get('region')
@@ -120,7 +191,7 @@ def properties_response_from_properties_df(properties_df, num_properties_per_pag
             properties_df.loc[zpid, 'property_url'] = None
 
     # Add the zpid as a column.
-    properties_df.rename(columns=BACKEND_COL_NAME_TO_FRONTEND_COL_NAME, inplace=True)
+    properties_df.rename(columns=create_rename_dict(), inplace=True)
 
     if num_properties_found:
         ordered_cols = TARGET_COLUMNS + [col for col in properties_df.columns if col not in set(TARGET_COLUMNS)]
@@ -129,6 +200,7 @@ def properties_response_from_properties_df(properties_df, num_properties_per_pag
         ordered_properties_data = '{}'
     return {
         "properties": json.loads(ordered_properties_data),
+        "descriptions": create_description_dict(),
         "total_properties": num_properties_found,
         "total_pages": total_pages,
     }

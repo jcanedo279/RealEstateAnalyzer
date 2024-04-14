@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
+{% block page_specific_styles %}
+<link href="{{ url_for('static', filename='styles/forms.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/tooltip.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/table.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container content-top-spacing">
     <!-- Property Search Form -->
     <form id="propertyForm">
 
@@ -84,14 +90,23 @@
 </div>
 
 <!-- Results Table -->
-<div class="fullscreen-div-padding" id="resultsTable"></div>
-
-<!-- Results Navigation Buttons (Initially Hidden) -->
-<div class="navigation-buttons" style="display: none;" id="navigationButtons">
-    <button class="btn waves-effect main-color" id="prevPageBtn" style="margin-right: 10px;">Previous</button>
-    <button class="btn waves-effect main-color" id="nextPageBtn">Next</button>
+<div class="scrolling-content">
+    <div class="fullscreen-div-padding" id="resultsTable"></div>
 </div>
 
 <!-- External JavaScript -->
+<script src="{{ url_for('static', filename='tooltipUtil.js') }}" defer></script>
 <script src="{{ url_for('static', filename='explore.js') }}"></script>
+
+<!-- Results Navigation and Page Indicator -->
+<div class="container">
+    <div id="navigationButtons" class="navigation-buttons" style="display: none;">
+        <button id="prevPageBtn" class="btn waves-effect main-color navigation-button">Previous</button>
+
+        <!-- Page Indicator -->
+        <span id="pageIndicator" class="pagination-container">Page 1</span>
+
+        <button id="nextPageBtn" class="btn waves-effect main-color navigation-button">Next</button>
+    </div>
+</div>
 {% endblock %}

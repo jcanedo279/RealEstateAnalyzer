@@ -1,0 +1,15 @@
+.input-field {
+    margin-bottom: 20px;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: center; /* Horizontally center the buttons */
+    align-items: center;
+    margin: 20px 0; /* Add top and bottom margin for spacing */
+    width: auto;
+}
+
+.table-bordered td:not(:last-child) {
+    border-right: 1px solid #e0e0e0;
+}

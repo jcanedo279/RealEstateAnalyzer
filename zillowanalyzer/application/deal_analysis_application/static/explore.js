@@ -3,23 +3,61 @@ let page = 1;
 let total_pages = 0
 
 
+function updatePageIndicator() {
+    const pageIndicator = document.getElementById('pageIndicator');
+    pageIndicator.textContent = `Page ${page}`;
+
+    // Disable previous button if on the first page
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    if (page <= 1) {
+        prevPageBtn.classList.add('disabled');
+        prevPageBtn.setAttribute('disabled', 'disabled');
+    } else {
+        prevPageBtn.classList.remove('disabled');
+        prevPageBtn.removeAttribute('disabled');
+    }
+
+    // Disable next button if on the last page
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    if (page >= total_pages) {
+        nextPageBtn.classList.add('disabled');
+        nextPageBtn.setAttribute('disabled', 'disabled');
+    } else {
+        nextPageBtn.classList.remove('disabled');
+        nextPageBtn.removeAttribute('disabled');
+    }
+}
+
+// Update the page indicator and button states immediately after setting the new page value
+function setPage(newPage) {
+    page = newPage;
+    updatePageIndicator();
+    fetchExploreData();
+}
+
 document.getElementById("submitBtn").onclick = function() {
     // Reset the search state (current page and total number of pages).
-    page = 1;
     total_pages = 0;
-    fetchExploreData();
+    setPage(1);
 };
+
+document.getElementById('baseBody').addEventListener('keypress', function(event) {
+    // Check if the Enter key was pressed
+    if (event.key === 'Enter' || event.keyCode === 13) {
+        event.preventDefault();
+        total_pages = 0;
+        setPage(1);
+    }
+});
 
 document.getElementById("prevPageBtn").onclick = function() {
     if(page > 1) {
-        page--;
-        fetchExploreData();
+        setPage(page - 1);
     }
 };
 document.getElementById("nextPageBtn").onclick = function() {
     if(page < total_pages) {
-        page++;
-        fetchExploreData();
+        setPage(page + 1);
     }
 };
 
@@ -50,7 +88,6 @@ function fetchExploreData() {
         resultsDiv.innerHTML = '';
         // Get the total pages fromt he server.
         total_pages = data.total_pages;
-        console.info(data)
 
         // Display total properties count or a no properties found message.
         if (data.properties && data.properties.length > 0) {
@@ -58,13 +95,12 @@ function fetchExploreData() {
             totalCountDiv.textContent = `Total Properties: ${data.total_properties}`;
             totalCountDiv.style.fontSize = '24px';
             totalCountDiv.style.fontWeight = 'bold';
-            totalCountDiv.style.marginBottom = '20px';
             totalCountDiv.style.marginTop = '20px';
             resultsDiv.appendChild(totalCountDiv);
 
             // Create a table
             const table = document.createElement('table');
-            table.className = 'striped responsive-table table-bordered';
+            table.className = 'striped responsive-table table-bordered table-striped';
 
             // Create header row
             const thead = document.createElement('thead');
@@ -107,6 +143,10 @@ function fetchExploreData() {
 
             // Append table to the div
             resultsDiv.appendChild(table);
+            // Append a column-based tooltip to the table.
+            tooltipUtility.attachColumnTooltip(document.querySelector('.striped'), data.descriptions);
+
+            updatePageIndicator();
         } else {
             // Display a message indicating no properties were found
             const noPropertiesDiv = document.createElement('div');

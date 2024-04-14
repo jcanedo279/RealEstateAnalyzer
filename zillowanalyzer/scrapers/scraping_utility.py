@@ -203,17 +203,7 @@ def move_to_and_click(element, driver, and_hold=False):
     else:
         actions.move_to_element(element).pause(rd.uniform(0.1, 0.5)).click().perform()
 
-
 def load_search_metadata():
-    municipality_to_zpids = defaultdict(set)
-    for metadata_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
-        municipality = os.path.basename(metadata_path).split("_metadata.json")[0]
-        with open(metadata_path, "r") as file:
-            metadata = json.load(file)
-            municipality_to_zpids[municipality].update(metadata.get('zpids', []))
-    return municipality_to_zpids
-
-def load_search_zip_codes():
     zip_code_to_zpids = defaultdict(set)
     for metadata_path in glob.glob(os.path.join(SEARCH_LISTINGS_METADATA_PATH, "*_metadata.json")):
         zip_code = os.path.basename(metadata_path).split("_metadata.json")[0]
@@ -221,24 +211,6 @@ def load_search_zip_codes():
             metadata = json.load(file)
             zip_code_to_zpids[zip_code].update(metadata.get('zpids', []))
     return zip_code_to_zpids
-
-def load_search_municipalities():
-    # A dictionary to hold the mapping of counties to their municipalities
-    county_to_municipalities = defaultdict(list)
-
-    with open(MUNICIPALITIES_DATA_PATH, 'r') as file:
-        for line in file:
-            # Using regex to split the line by tabs or multiple spaces
-            fields = re.split(r'\t+', line.strip())
-            
-            # Adjust the index based on the actual structure if needed
-            municipality = fields[1].strip()
-            county = fields[2].strip()
-
-            # Remove the † symbol if present
-            municipality_cleaned = municipality.replace("†", "").replace("-", " ")
-            county_to_municipalities[county].append(municipality_cleaned)
-    return county_to_municipalities
 
 def load_search_zip_codes():
     with open(ZIP_CODES_DATA_PATH, 'r') as file:

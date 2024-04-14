@@ -1,4 +1,16 @@
+document.getElementById('baseBody').addEventListener('keypress', function(event) {
+    // Check if the Enter key was pressed
+    if (event.key === 'Enter' || event.keyCode === 13) {
+        event.preventDefault();
+        fetchSearchData()
+    }
+});
+
 document.getElementById("submitBtn").onclick = function() {
+    fetchSearchData()
+};
+
+function fetchSearchData() {
     const formData = {
         property_id: document.getElementById("property_id").value,
     };
@@ -18,7 +30,7 @@ document.getElementById("submitBtn").onclick = function() {
         if (data.properties && data.properties.length > 0) {
             // Create a table
             const table = document.createElement('table');
-            table.className = 'striped responsive-table table-bordered';
+            table.className = 'striped responsive-table table-bordered table-striped';
 
             // Create header row
             const thead = document.createElement('thead');
@@ -61,6 +73,8 @@ document.getElementById("submitBtn").onclick = function() {
 
             // Append table to the div
             resultsDiv.appendChild(table);
+            // Append a column-based tooltip to the table.
+            tooltipUtility.attachColumnTooltip(document.querySelector('.striped'), data.descriptions);
         } else {
             const notFoundDiv = document.createElement('div');
             notFoundDiv.textContent = `No Properties Found :<`;
@@ -74,4 +88,4 @@ document.getElementById("submitBtn").onclick = function() {
     .catch((error) => {
         console.error('Error:', error);
     });
-};
+}

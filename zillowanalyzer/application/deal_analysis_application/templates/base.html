@@ -5,9 +5,10 @@
     <title>Listings Market Analyzer Home</title>
     <!-- External CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet">
+    {% block page_specific_styles %}{% endblock %}
 </head>
-<body>
+<body id="baseBody">
     <!-- Page navigation sidebar goes here -->
     <nav>
         <div class="nav-wrapper main-color">
@@ -21,11 +22,7 @@
         <li><a href="/search">Property Search</a></li>
     </ul>
 
-    <!-- Page specific content goes here -->
-    <div class="content-top-spacing">
-        {% block content %}
-        {% endblock %}
-    </div>
+    {% block content %}{% endblock %}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
