@@ -94,10 +94,6 @@
     <div class="fullscreen-div-padding" id="resultsTable"></div>
 </div>
 
-<!-- External JavaScript -->
-<script src="{{ url_for('static', filename='tooltipUtil.js') }}" defer></script>
-<script src="{{ url_for('static', filename='explore.js') }}"></script>
-
 <!-- Results Navigation and Page Indicator -->
 <div class="container">
     <div id="navigationButtons" class="navigation-buttons" style="display: none;">
@@ -109,4 +105,8 @@
         <button id="nextPageBtn" class="btn waves-effect main-color navigation-button">Next</button>
     </div>
 </div>
+
+<!-- External JavaScript -->
+<script src="{{ url_for('static', filename='tooltipUtil.js') }}" defer></script>
+<script src="{{ url_for('static', filename='explore.js') }}"></script>
 {% endblock %}
