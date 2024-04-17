@@ -1,5 +1,18 @@
-.input-field {
-    margin-bottom: 20px;
+.form-element {
+    margin-bottom: 20px; /* This increases the space between form elements */
+    /* Other styles */
+}
+
+/* If you're using a spacer div, you might want to adjust or remove it, as the CSS margin will handle spacing */
+.form-element-spacer {
+    height: 10px;
+}
+
+/* Adjust the form container width if necessary to prevent too much horizontal stretch */
+.form-container {
+    width: 50%; /* This is just an example, adjust as needed */
+    max-width: 500px; /* Prevents the form from getting too wide on larger screens */
+    margin: auto; /* This will center the form in its parent container */
 }
 
 .navigation-wrapper {
@@ -21,7 +34,7 @@
     margin: 0 auto; /* Center the navigation buttons if that's desired */
 }
 
-.pagination-container {
+.pagination-space {
     margin-left: 20px;
     margin-right: 20px;
 }

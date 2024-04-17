@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('select');
-    M.FormSelect.init(elems, {});
-    var elems = document.querySelectorAll('.sidenav');
-    M.Sidenav.init(elems);
-    // Initialize other components that are common across pages here
+    // Initialize the left side sidenav
+    var leftNavElems = document.querySelectorAll('.sidenav-left');
+    M.Sidenav.init(leftNavElems, { edge: 'left' });
+
+    // Initialize the right side sidenav
+    var rightNavElems = document.querySelectorAll('.sidenav-right');
+    M.Sidenav.init(rightNavElems, { edge: 'right' });
 })

@@ -1,31 +1,5 @@
 .spacer {
-    height: 20px;
-}
-
-/* Home page content list items */
-.custom-li {
-    padding-left: 2rem; /* Space for the icon, adjust as necessary */
-    margin-bottom: 0.75rem;
-    list-style: none; /* Removes default list styling */
-}
-
-.custom-li .fa-li {
-    position: absolute;
-    color: var(--main-blue);
-    left: 0;
-}
-
-.custom-li i {
-    margin-right: 10px; /* Space between the icon and the text */
-}
-
-li .fa-text {
-    color: var(--text-color)
-}
-
-.fa-ul {
-    position: relative;
-    padding-left: 2.5rem; /* Space for the icon, adjust if needed */
+    height: 10px;
 }
 
 /* Hero section with background image */

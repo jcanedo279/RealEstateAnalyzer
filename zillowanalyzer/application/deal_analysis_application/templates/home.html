@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block page_specific_styles %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link href="{{ url_for('static', filename='styles/home.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='styles/form.css') }}" rel="stylesheet">
 {% endblock %}
@@ -10,7 +9,7 @@
 <!-- Home Page -->
 <div class="container">
     <!-- Landing Section -->
-    <div class="hero-section" style="background: url('/static/images/home_scott_webb.jpg') no-repeat center center/cover;">
+    <div class="hero-section" style="background: url('/static/images/home_scott_webb.webp') no-repeat center center/cover;">
         <div class="hero-content">
             <h1 class="text-align-center">Welcome to the Listings Market Analyzer</h1>
             <p class="flow-text">
@@ -24,7 +23,7 @@
     <div class="spacer"></div>
     
     <!-- About -->
-    <div class="hero-section" style="background: url('/static/images/invest_tierra_mallorca.jpg') no-repeat center center/cover;">
+    <div class="hero-section" style="background: url('/static/images/invest_tierra_mallorca.webp') no-repeat center center/cover;">
         <div class="hero-content">
             <h2 class="text-align-center">How It Works</h2>
             <p class="flow-text">
@@ -70,7 +69,7 @@
     <div class="spacer"></div>
     
     <!-- Dive In -->
-    <div class="hero-section" style="background: url('/static/images/nightstand_benjamin_voros.jpg') no-repeat center center/cover;">
+    <div class="hero-section" style="background: url('/static/images/nightstand_benjamin_voros.webp') no-repeat center center/cover;">
         <div class="hero-content">
             <h2 class="text-align-center">Ready to Dive In?</h2>
             <p class="flow-text">
@@ -104,7 +103,7 @@
 </div>
 
 <!-- Modal Structure -->
-<div id="confirmationModal" class="modal">
+<div id="confirmationModal" class="modal" tabindex="-1">
     <div class="modal-content">
         <h4 class="text-align-center">Submission Confirmation</h4>
         <p>Your issue has been successfully reported. Thank you for your feedback!</p>

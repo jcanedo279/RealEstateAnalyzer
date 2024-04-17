@@ -13,9 +13,11 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from zillowanalyzer.utility.utility import ALPHA_BETA_DATA_PATH, REAL_ESTATE_METRICS_DATA_PATH, HOME_FEATURES_DATAFRAME_PATH
 
 
-def load_data():
+def load_data(drop_street_address = True):
     alpha_beta_df = pd.read_csv(ALPHA_BETA_DATA_PATH)
-    property_metrics_df = pd.read_csv(REAL_ESTATE_METRICS_DATA_PATH).drop(['zip_code', 'street_address'], axis=1)
+    property_metrics_df = pd.read_csv(REAL_ESTATE_METRICS_DATA_PATH).drop(['zip_code'], axis=1)
+    if drop_street_address:
+        property_metrics_df.drop(['street_address'], axis=1, inplace=True)
     combined_df = pd.merge(alpha_beta_df, property_metrics_df, on='zpid', how='inner').set_index('zpid')
 
     # Load from home features from disk.

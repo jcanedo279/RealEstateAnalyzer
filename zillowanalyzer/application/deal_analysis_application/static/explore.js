@@ -35,6 +35,11 @@ function setPage(newPage) {
     fetchExploreData();
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems, {});
+});
+
 document.getElementById("submitBtn").onclick = function() {
     // Reset the search state (current page and total number of pages).
     total_pages = 0;
@@ -102,10 +107,10 @@ function fetchExploreData() {
 
             // Adding more structure to the content
             totalCountDiv.innerHTML = `
-                <i class="fas fa-home"></i> 
+                <i class="fas fa-home"></i>
                 <span>Total Properties: ${data.total_properties}</span>
             `;
-            resultsDiv.appendChild(totalCountDiv);            
+            resultsDiv.appendChild(totalCountDiv);
 
             // Create a table
             const table = document.createElement('table');

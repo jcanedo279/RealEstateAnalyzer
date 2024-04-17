@@ -1,210 +1,90 @@
-import logging
-import math
 import os
+import logging
 import json
 
-from flask import Flask, render_template, request, Response, jsonify
+from backend_util import BACKEND_PROPERTIES_DF, properties_df_from_search_request_data, properties_response_from_properties_df
 
-from zillowanalyzer.utility.utility import get_abs_path, load_json, ZILLOW_ANALYZER_PATH
-from zillowanalyzer.analyzers.preprocessing import load_data, preprocess_dataframe, FilterMethod
-from zillowanalyzer.analyzers.iterator import get_property_info_from_property_details
+from flask import Flask, render_template, request, Response, jsonify, render_template, redirect, url_for, flash, session
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_mail import Mail, Message
+from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer
 
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 
-BACKEND_PROPERTIES_DF = load_data().round(2)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
-region_path = os.path.join(ZILLOW_ANALYZER_PATH, "application", "deal_analysis_application", "data", "regions.json")
-REGION_TO_ZIP_CODE = {region: set(zip_codes) for region, zip_codes in load_json(region_path).items()}
+app.config['MAIL_SERVER'] = os.environ.get('MAIN_SERVER')
+app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_APP_PASSWORD')
+mail = Mail(app)
 
-TARGET_COLUMNS = ['Image', 'City', 'Rental Income (5% Down)', 'Rent Estimate', 'Price', 'Breakeven Price (5% Down)', 'Competative Price (5% Down)', 'Is Breakeven Price Offending', 'Adjusted CoC (5% Down)', 'Year Built', 'Home Type', 'Bedrooms', 'Bathrooms']
-BACKEND_COL_NAME_TO_FRONTEND_COL_NAME = {
-    "zpid": {
-        "name": "Property ID"},
-    "city": {
-        "name": "City"},
-    "purchase_price": {
-        "name": "Price"},
-    "restimate": {
-        "name": "Rent Estimate",
-        "description": "Projected montly rental."},
-    "year_built": {
-        "name": "Year Built"},
-    "home_type": {
-        "name": "Home Type",
-        "description": "The listed housing type (i.e. SingleFamily or TownHouse)."},
-    "bedrooms": {
-        "name": "Bedrooms"},
-    "bathrooms": {
-        "name": "Bathrooms"},
-    "zip_code": {
-        "name": "Zip Code"},
-    "gross_rent_multiplier": {
-        "name": "Gross Rent Multiplier",
-        "description:": "The ratio (PurchasePrice)/(RentEstimate). A lower ratio is typically better for the buyer as it indicates that the home's rental is high relative to its price."},
-    "page_view_count": {
-        "name": "Times Viewed"},
-    "favorite_count": {
-        "name": "Favorite Count"},
-    "days_on_zillow": {
-        "name": "Days on Zillow"},
-    "property_tax_rate": {
-        "name": "Tax Rate (%)",
-        "description": "The historical annual percentage of the home's price which is charged as property taxes."},
-    "living_area": {
-        "name": "Living Area (sq ft)",
-        "description": "The size of the home's living area in square feet."},
-    "lot_size": {
-        "name": "Lot Size (sq ft)",
-        "description": "The size of the home's lot in square feet."},
-    "mortgage_rate": {
-        "name": "Mortgage Rate",
-        "description": "The projected APR for a mortgage on this property."},
-    "homeowners_insurance": {
-        "name": "Home Insurance",
-        "description": "The monthly homeowners insurance which is charged historically on an annual basis."},
-    "monthly_hoa": {
-        "name": "HOA Fee",
-        "description": "The historical monthly HOA fee which is collected by the neighborhood."},
-    "home_features_score": {
-        "name": "Home Features Score",
-        "description": "A generated score in the interval [0,1], which represents how many 'important' features a home has, and is exponentially correlated with its price."},
-    "is_waterfront": {
-        "name": "Waterfront",
-        "description": "Whether a home is a waterfront property or not."},
-}
-BACKEND_COL_NAME_TO_DYNAMIC_FRONTEND_COL_NAME = {
-    # Down payment based keys.
-    "adj_CoC": {
-        "name": "Adjusted CoC",
-        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested, adjusted for average vacancy and maintenance rates. Annualized for comparison."},
-    "rental_income": {
-        "name": "Rental Income",
-        "description": "The monthly rental income, the projected rental estimate minus all expenses (i.e. mortage, HOA, insurance, taxes, etc...)."},
-    "Beta": {
-        "name": "Beta",
-        "description": "Beta is a measure of the property's price volatility compared to the broader market, using the property's alpha (see column) and the rolling risk free return (3 month treasury). A beta above 1 means the price is more volatile than the market, a beta of 1 means the price changes with the market, a beta between 0 and 1 means its less volatile than the market, a beta of 0 means the price does not change with the market (such as cash), finally a negative beta indicates an inverse relation to the market."},
-    "Alpha": {
-        "name": "Alpha",
-        "description": "Alpha is the active return on an investment compared to the broader market. A positive alpha indicates that a property has increased in value more than the market average, often due to factors like location, improvements, or market dynamics. A negative alpha suggests it has underperformed the market benchmark."},
-    "breakeven_price": {
-        "name": "Breakeven Price",
-        "description": "The purchase price at which the rental income  is zero, if the breakeven price is above the asking price this is just the listing price. Adjusted for the "},
-    "is_breaven_price_offending": {
-        "name": "Is Breakeven Price Offending",
-        "description": "Whether the breakeven price is an offending offer (less than 80% of the listing price)."},
-    "snp_equivalent_price": {
-        "name": "Competative Price",
-        "description": "The purchase price at which the annualized rental income is comporable to half the historical SnP 500 returns."},
-    "CoC_no_prepaids": {
-        "name": "CoC w/o Prepaids",
-        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested (without prepaids). Annualized for comparison."},
-    "CoC": {
-        "name": "CoC",
-        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested. Annualized for comparison."},
-    "adj_CoC_no_prepaids": {
-        "name": "Adjusted CoC w/o Prepaids",
-        "description": "The annual 'cash on cash' returns, i.e. the rental income as a fraction of the cash invested (without prepaids), adjusted for average vacancy and maintenance rates. Annualized for comparison."},
-    "cap_rate": {
-        "name": "Cap Rate",
-        "description": "The rental income as a fraction of the purchase price."},
-    "adj_cap_rate":  {
-        "name": "Adjusted Cap Rate",
-        "description": "The rental income as a fraction of the purchase price. The rental income being adjusted for vacancy and maintenance rates."},
-}
 
-# Function to construct a dictionary to map from the input names ot the descriptive ones.
-def create_rename_dict():
-    rename_dict = {}
-    for old_name, props in BACKEND_COL_NAME_TO_FRONTEND_COL_NAME.items():
-        rename_dict[old_name] = props['name']
-    
-    for old_name, props in BACKEND_COL_NAME_TO_DYNAMIC_FRONTEND_COL_NAME.items():
-        rename_dict[old_name] = props['name']
-        rename_dict[f"{old_name}_5%_down"] = f"{props['name']} (5% Down)"
-    
-    return rename_dict
-
-def create_description_dict():
-    description_dict = {}
-    for props in BACKEND_COL_NAME_TO_FRONTEND_COL_NAME.values():
-        if 'description' in props:
-            description_dict[props['name']] = props['description']
-    
-    for props in BACKEND_COL_NAME_TO_DYNAMIC_FRONTEND_COL_NAME.values():
-        if 'description' in props:
-            description_dict[props['name']] = props['description']
-            description_dict[f"{props['name']} (5% Down)"] = f"Given a 5% down payment... {props['description']}"
-    
-    return description_dict
-
-def properties_df_from_search_request_data(request_data):
-    region = request_data.get('region')
-    home_type = request_data.get('home_type')
-    year_built = int(request_data.get('year_built'))
-    max_price = float(request_data.get('max_price'))
-    city = request_data.get('city')
-    is_waterfront = bool(request_data.get('is_waterfront'))
-    is_cashflowing = bool(request_data.get('is_cashflowing'))
-
-    properties_df = BACKEND_PROPERTIES_DF.copy()
-    if region != "ANY_AREA":
-        properties_df = properties_df[properties_df['zip_code'].isin(REGION_TO_ZIP_CODE[region])]
-    if home_type != "ANY":
-        properties_df = properties_df[properties_df['home_type'] == home_type]
-    if year_built:
-        properties_df = properties_df[properties_df['year_built'] >= year_built]
-    if max_price:
-        properties_df = properties_df[properties_df['purchase_price'] <= max_price]
-    if is_waterfront:
-        properties_df = properties_df[properties_df['is_waterfront'] > 0.0]
-    if is_cashflowing:
-        properties_df = properties_df[properties_df['adj_CoC_5%_down'] >= 0.0]
-    if city:
-        properties_df = properties_df[properties_df['city'] == city.title()]
-    return properties_df
-
-def properties_response_from_properties_df(properties_df, num_properties_per_page=1, page=1):
-    num_properties_found = properties_df.shape[0]
-    properties_df = properties_df.sort_values(by='adj_CoC_5%_down', ascending=False)
-    # Calculate the total number of pages of listings in the backend to send to the frontend for the back/next buttons.
-    total_pages = math.ceil(num_properties_found / num_properties_per_page)
-    # We sort by CoC before filtering.
-    start_property_index, stop_property_index = (page-1)*num_properties_per_page, page*num_properties_per_page
-    properties_df = properties_df[start_property_index:stop_property_index]
-
-    for zpid, filtered_property in properties_df.iterrows():
-        zip_code, zpid = int(filtered_property['zip_code']), int(zpid)
-        property_details_path = get_abs_path(f'Data/PropertyDetails/{zip_code}/{zpid}_property_details.json')
-        if not os.path.exists(property_details_path):
-            properties_df.drop(zpid, axis=0, inplace=True)
-        with open(property_details_path, 'r') as json_file:
-            property_details = json.load(json_file)
-        if 'props' in property_details:
-            property_info = get_property_info_from_property_details(property_details)
-            image_url = property_info['originalPhotos'][0]['mixedSources']['jpeg'][1]['url']
-            properties_df.loc[zpid, 'Image'] = image_url
-            properties_df.loc[zpid, 'property_url'] = 'https://zillow.com' + property_info['hdpUrl']
-        else:
-            properties_df.loc[zpid, 'Image'] = None
-            properties_df.loc[zpid, 'property_url'] = None
-
-    # Add the zpid as a column.
-    properties_df.rename(columns=create_rename_dict(), inplace=True)
-
-    if num_properties_found:
-        ordered_cols = TARGET_COLUMNS + [col for col in properties_df.columns if col not in set(TARGET_COLUMNS)]
-        ordered_properties_data = properties_df[ordered_cols].to_json(orient="records")
-    else:
-        ordered_properties_data = '{}'
-    return {
-        "properties": json.loads(ordered_properties_data),
-        "descriptions": create_description_dict(),
-        "total_properties": num_properties_found,
-        "total_pages": total_pages,
+# Assuming a very simple user store
+users = {
+    'test@gmail.com': {
+        'id': 1,
+        'password': generate_password_hash('password'),
+        'confirmed': False
     }
-    
+}
+
+def search_properties(query_address):
+    # Filter the DataFrame for addresses that contain the query string, case-insensitive
+    return BACKEND_PROPERTIES_DF[BACKEND_PROPERTIES_DF['street_address'].str.contains(query_address, case=False, na=False)]
+
+
+#####################
+## USER MANAGEMENT ##
+#####################
+
+class User(UserMixin):
+    def __init__(self, email):
+        self.email = email
+        self.id = users[email]['id']
+        self.confirmed = users[email]['confirmed']
+
+    def get_id(self):
+        return str(self.id)
+
+@login_manager.user_loader
+def load_user(user_id):
+    for email, user in users.items():
+        if user['id'] == int(user_id):
+            return User(email)
+    return None
+
+
+########################
+## EMAIL VERIFICATION ##
+########################
+
+def generate_confirmation_token(email):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt='email-confirm-salt')
+
+def send_confirmation_email(user_email):
+    token = generate_confirmation_token(user_email)
+    activation_url = url_for('confirm_email', token=token, _external=True)
+    html_body = render_template('email-activate.html', activation_url=activation_url, user_email=user_email)
+    text_body = render_template('email-activate.txt', activation_url=activation_url, user_email=user_email)
+    subject = "Please confirm your email"
+    message = Message(subject, sender=app.config['MAIL_USERNAME'], recipients=[user_email])
+    message.body = text_body
+    message.html = html_body
+    mail.send(message)
+
+
+################
+## APP ROUTES ##
+################
 
 @app.route('/', methods=['GET'])
 def home():
@@ -228,11 +108,13 @@ def direct_search():
     if request.method == 'GET':
         return render_template('search.html')
     request_data = request.get_json()
-    property_id = int(request_data.get('property_id', 0))
+    page = int(request_data.get('current_page'))
+    property_address = request_data.get('property_address', '')
+    property_df = search_properties(property_address)
+    # The Sanctuary at Babcock Ranch
     
-    if property_id in BACKEND_PROPERTIES_DF.index:
-        properties_df = BACKEND_PROPERTIES_DF.loc[[property_id]].copy()
-        response_data = properties_response_from_properties_df(properties_df)
+    if not property_df.empty:
+        response_data = properties_response_from_properties_df(property_df, num_properties_per_page=min(len(property_df), 10), page=page)
         response_json = json.dumps(response_data)
         return Response(response_json, mimetype='application/json')
     else:
@@ -247,6 +129,87 @@ def report():
     app.logger.info(f"{user_email} has filed an issue: {issue_description}.")
     
     return jsonify({"success": "Issue reported successfully"}), 200
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    data = request.get_json()  # Use get_json() to extract JSON data from the request
+    user_email = data.get('user_email')
+    user_password = data.get('user_password')
+    user = users.get(user_email)
+
+    app.logger.info(f"Login attempt with email: '{user_email}' and password: '{user_password}'")
+    if not user['confirmed']:
+        flash('Please verify your email.')
+    elif user_email and check_password_hash(user['password'], user_password):
+        user_obj = User(user_email)
+        login_user(user_obj)
+        app.logger.info("correct")
+        return redirect(url_for('profile'))
+    else:
+        flash('Invalid username or password.')
+
+    return jsonify({"success": "Logged in successfully"}), 200
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    elif request.method == 'POST':
+        data = request.get_json()
+        user_email = data.get('user_email')
+        user_password = data.get('user_password')
+
+        # Check if email already exists
+        if user_email in users:
+            return jsonify({"message": "Email already registered."}), 409
+
+        # Add user to the "database"
+        users[user_email] = {
+            'id': len(users) + 1,
+            'password': generate_password_hash(user_password),
+            'confirmed': False
+        }
+
+        # Send confirmation email
+        send_confirmation_email(user_email)
+        return jsonify({"message": "Please confirm your email address."}), 201
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    try:
+        email = URLSafeTimedSerializer(app.config['SECRET_KEY']).loads(token, salt='email-confirm-salt', max_age=3600)
+    except Exception as e:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return render_template('error.html', message='The confirmation link is invalid or has expired.')
+
+    user = users.get(email)
+    if not user:
+        flash('Invalid or unknown email.', 'error')
+        return render_template('error.html', message='Invalid or unknown email.')
+
+    if user['confirmed']:
+        flash('Your account has already been confirmed.', 'info')
+        return render_template('confirmation.html', message='Your account has already been confirmed.')
+
+    users[email]['confirmed'] = True
+    flash('Thank you! Your account has been confirmed.', 'success')
+    return render_template('confirmation.html', message='Your account has been confirmed. Thank you!')
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'GET':
+        return render_template('profile.html')
+    return 'Welcome to your Profile, {}'.format(current_user.email)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -29,12 +29,9 @@ const tooltipUtility = (() => {
         globalTooltip.style.visibility = 'hidden';
         globalTooltip.style.display = 'block';
 
-        // Measure dimensions immediately after rendering but before visibility
-        const tooltipWidth = globalTooltip.offsetWidth;
-
         // Check and adjust tooltip position based on the cursor's position
         if (e.clientX > window.innerWidth/2) {
-            globalTooltip.style.left = `${e.clientX - tooltipWidth - 10}px`; // Align left if it overflows the right viewport edge
+            globalTooltip.style.left = `${e.clientX - globalTooltip.offsetWidth - 10}px`; // Align left if it overflows the right viewport edge
         } else {
             globalTooltip.style.left = `${e.clientX + 15}px`; // Otherwise, position normally to the right
         }
