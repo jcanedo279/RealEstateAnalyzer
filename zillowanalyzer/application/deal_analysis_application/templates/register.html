@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block page_specific_styles %}
+<link href="{{ url_for('static', filename='styles/register.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/forms.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Register for an Account</h2>
+    <form id="registerForm">
+        <div class="form-element-spacer"></div>
+        <div class="input-field">
+            <input id="email" type="email" name="email" required>
+            <label for="email">Email:</label>
+        </div>
+        <div class="input-field">
+            <input id="password" type="password" name="password" required>
+            <label for="password">Password:</label>
+        </div>
+        <div class="input-field">
+            <input id="confirmation_password" type="password" name="confirmation_password" required>
+            <label for="confirmation_password">Confirm Password:</label>
+        </div>
+        <button id="registerBtn" class="btn waves-effect waves-light main-color" type="submit">Register</button>
+        <div id="messageContainer" class="message-container"></div>
+    </form>
+</div>
+<script src="{{ url_for('static', filename='register.js') }}"></script>
+{% endblock %}

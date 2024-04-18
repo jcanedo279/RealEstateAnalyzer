@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
+{% block page_specific_styles %}
+<link href="{{ url_for('static', filename='styles/forms.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/tooltip.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/table.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container" style="width: 50%;">
     <!-- Property Search Form -->
     <form id="propertyForm">
 
@@ -30,7 +36,7 @@
 
         <!-- Year Built Input -->
         <div class="input-field form-element">
-            <label for="year_built">Year Built After:</label>
+            <label for="year_built">Year Built:</label>
             <input type="number" id="year_built" name="year_built" value="2000">
         </div>
 
@@ -50,10 +56,10 @@
         <div class="input-field">
             <div class="switch form-element">
                 <label>
-                    Include All
+                    All
                     <input type="checkbox" id="is_waterfront">
                     <span class="lever"></span>
-                    Exclude Non-Waterfront
+                    Waterfront Only
                 </label>
             </div>
         </div>
@@ -62,13 +68,15 @@
         <div class="input-field">
             <div class="switch form-element">
                 <label>
-                    Include All
+                    All
                     <input type="checkbox" id="is_cashflowing">
                     <span class="lever"></span>
-                    Exclude Negative Cashflow
+                    Positive Cashflow Only
                 </label>
             </div>
         </div>
+
+        <div class="form-element-spacer"></div>
 
         <!-- Number of Deals Input -->
         <div class="input-field form-element">
@@ -78,20 +86,29 @@
 
         <!-- Form Submit Button -->
         <button class="btn waves-effect waves-light main-color" id="submitBtn" type="button">
-            <i class="material-icons right">Explore Properties</i>
+            <i class="material-icons center">Explore Properties</i>
         </button>
     </form>
 </div>
 
 <!-- Results Table -->
-<div class="fullscreen-div-padding" id="resultsTable"></div>
+<div class="scrolling-content">
+    <div class="fullscreen-div-padding" id="resultsTable"></div>
+</div>
 
-<!-- Results Navigation Buttons (Initially Hidden) -->
-<div class="navigation-buttons" style="display: none;" id="navigationButtons">
-    <button class="btn waves-effect main-color" id="prevPageBtn" style="margin-right: 10px;">Previous</button>
-    <button class="btn waves-effect main-color" id="nextPageBtn">Next</button>
+<!-- Results Navigation and Page Indicator -->
+<div class="navigation-wrapper">
+    <div id="navigationButtons" class="navigation-buttons container" style="visibility: hidden;">
+        <button id="prevPageBtn" class="btn waves-effect main-color navigation-button">Previous</button>
+
+        <!-- Page Indicator -->
+        <span id="pageIndicator" class="pagination-space">Page 1</span>
+
+        <button id="nextPageBtn" class="btn waves-effect main-color navigation-button">Next</button>
+    </div>
 </div>
 
 <!-- External JavaScript -->
+<script src="{{ url_for('static', filename='tooltipUtil.js') }}" defer></script>
 <script src="{{ url_for('static', filename='explore.js') }}"></script>
 {% endblock %}

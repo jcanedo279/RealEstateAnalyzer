@@ -1,0 +1,139 @@
+/* Add Materialize CSS via CDN */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
+
+
+:root {
+    --main-blue: #a5332a;
+    --text-color: #333;
+    --background-color: #f5f5f5;
+    --border-radius: 8px;
+    --default-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body, h1, h2, p, nav, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+}
+
+h1 {
+    font-size: 2rem;
+    color: var(--main-blue);
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: var(--dark-grey);
+    margin-bottom: 1rem;
+}
+
+/* Button Style */
+.btn {
+    background-color: var(--main-blue);
+    border: none;
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s;
+}
+.btn:hover {
+    background-color: darken(var(--main-blue), 10%);
+    color: var(--main-blue);
+}
+
+/* Content Container */
+.container {
+    max-width: 100%;
+    margin: 2rem auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--default-shadow);
+}
+
+/* Lists */
+ul {
+    list-style: none; /* Consider using custom icons for bullets */
+    padding-left: 0;
+    margin-bottom: 2rem;
+}
+
+/* Additional global styles */
+a {
+    color: var(--main-blue);
+    text-decoration: none; /* Optional: Removes underline from links */
+}
+
+a:hover {
+    text-decoration: underline; /* Optional: Adds underline on hover */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem; /* Smaller font size on mobile */
+    }
+
+    h2 {
+        font-size: 1.75rem; /* Smaller font size on mobile */
+    }
+
+    .container {
+        width: 95%; /* Slightly wider on mobile for screen space utilization */
+        margin: 1rem auto; /* Less vertical space on mobile */
+    }
+}
+
+/* Generic classes */
+.main-color {
+    background-color: var(--main-blue);
+}
+
+.scrolling-content {
+    margin-top: 20px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.content-top-spacing {
+    width: 100%;
+    margin-top: 50px;
+    overflow-x: auto;
+}
+
+/* Page content list items */
+.custom-li {
+    padding-left: 2rem; /* Space for the icon, adjust as necessary */
+    margin-bottom: 0.75rem;
+    list-style: none; /* Removes default list styling */
+}
+
+.custom-li .fa-li {
+    position: absolute;
+    color: var(--main-blue);
+    left: 0;
+}
+
+.sidenav i.fas {
+    color: var(--main-blue);
+}
+
+.custom-li i {
+    margin-right: 10px; /* Space between the icon and the text */
+}
+
+li .fa-text {
+    color: var(--text-color)
+}
+
+.fa-ul {
+    position: relative;
+    padding-left: 2.5rem; /* Space for the icon, adjust if needed */
+}

@@ -1,0 +1,31 @@
+/* Center align all text in the table */
+.table-bordered td,
+.table-bordered th {
+    text-align: center; /* Center-align the content */
+    vertical-align: middle; /* Center-align vertically */
+}
+
+/* Style for the table header */
+.table-bordered thead th {
+    background-color: #e0e0e0; /* A light grey background for the header */
+    color: #333; /* Optionally set the text color for the header */
+}
+
+/* Add these styles if not already present */
+.table-bordered td,
+.table-bordered th {
+    border-right: 1px solid black;
+}
+
+.table-bordered tr td:last-child,
+.table-bordered tr th:last-child {
+    border-right: none;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Light grey for odd rows */
+}
+
+.table-striped tbody tr:nth-child(even) {
+    background-color: #e9e9e9; /* Darker grey for even rows */
+}

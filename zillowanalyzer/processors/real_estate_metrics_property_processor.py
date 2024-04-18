@@ -175,7 +175,7 @@ def real_estate_metrics_property_processing_pipeline():
             mortgage_rate = mortgage_rate.get('thirtyYearFixedRate', 6)
         if not mortgage_rate:
             mortgage_rate = 6
-        annual_homeowners_insurance = property_info.get('annualHomeownersInsurance', 0)
+        homeowners_insurance = property_info.get('annualHomeownersInsurance', 0) / MONTHS_IN_YEAR
         days_on_zillow = time_on_zillow.split()[0]
         if time_on_zillow.split()[1] in {"day", "hours"}:
             days_on_zillow = 1
@@ -199,7 +199,7 @@ def real_estate_metrics_property_processing_pipeline():
             'lot_size': lot_size,
             'home_type': home_type,
             'mortgage_rate': mortgage_rate,
-            'annual_homeowners_insurance': annual_homeowners_insurance,
+            'homeowners_insurance': homeowners_insurance,
             'monthly_hoa': monthly_hoa,
             'city': property_info.get('city', '')
         }

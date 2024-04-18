@@ -1,26 +1,117 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<div class="container">
-    <!-- Home Page -->
-    <h1>Welcome to the Listings Market Analyzer</h1>
-    <p class="flow-text">Explore the insights into the real estate market with a focus on investment opportunities and property analysis. Dive deep into metrics that matter and make informed decisions.</p>
-    
-    <h2>Understanding Key Metrics</h2>
-    <p class="flow-text">Our platform provides a comprehensive analysis of listings through several critical metrics. Here’s a brief overview to help you navigate and interpret the data:</p>
+{% block page_specific_styles %}
+<link href="{{ url_for('static', filename='styles/home.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='styles/form.css') }}" rel="stylesheet">
+{% endblock %}
 
-    <ul class="collection">
-        <li class="collection-item">Adjusted Cash on Cash (CoC): Reflects the return on investment for the cash invested, adjusted for vacancy rates and maintenance costs. A higher CoC indicates a better return.</li>
-        <li class="collection-item">Rental Income: The monthly income you can expect from renting out the property, after accounting for vacancy rates and maintenance costs.</li>
-        <li class="collection-item">Breakeven Price: The purchase price at which the rental income covers all the property's monthly costs, leading to a net zero cash flow. This metric helps in assessing the financial risk and viability of an investment.</li>
-        <li class="collection-item">S&P Competitive Price: A comparative metric indicating the price at which an investment in the property would theoretically yield returns competitive with the S&P 500 index. This helps in comparing real estate investment with stock market opportunities.</li>
-        <li class="collection-item">Cap Rate: Represents the rate of return on a real estate investment property based on the income that the property is expected to generate.</li>
-        <li class="collection-item">Prepaids: Costs paid in advance at the closing of a property purchase. Examples include prepaid real estate taxes, homeowners insurance, and mortgage insurance.</li>
-        <li class="collection-item">Adjusted values: These values account for additional factors such as vacancy rates and ongoing maintenance, providing a more realistic outlook on potential returns and costs.</li>
-        <li class="collection-item">Beta and Alpha: Metrics used to compare the property's performance against the broader market. Beta measures the volatility or risk, whereas Alpha measures the excess return or value added by the investment compared to the benchmark index.</li>
-    </ul>
+{% block content %}
+<!-- Home Page -->
+<div class="container">
+    <!-- Landing Section -->
+    <div class="hero-section" style="background: url('/static/images/home_scott_webb.webp') no-repeat center center/cover;">
+        <div class="hero-content">
+            <h1 class="text-align-center">Welcome to the Listings Market Analyzer</h1>
+            <p class="flow-text">
+                Discover powerful insights into the real estate market with our advanced analysis tools.
+                <br>
+                Designed for both new investors and seasoned professionals, our platform helps you uncover investment opportunities and assess property potentials efficiently.
+            </p>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
     
-    <h2>Getting Started</h2>
-    <p class="flow-text">Use our Explore and Direct Search features to analyze specific properties or dive into market trends. Whether you’re an experienced investor or new to real estate, our tools are designed to provide you with actionable insights.</p>
+    <!-- About -->
+    <div class="hero-section" style="background: url('/static/images/invest_tierra_mallorca.webp') no-repeat center center/cover;">
+        <div class="hero-content">
+            <h2 class="text-align-center">How It Works</h2>
+            <p class="flow-text">
+                Start by using our Explore feature to sift through market trends and historical data or use our Direct Search to look up specific properties.
+                <br>
+                Here’s how you can benefit:
+                <ul class="fa-ul">
+                    <li class="custom-li">
+                        <a href="/explore">
+                            <span class="fa-li"><i class="fas fa-chart-bar"></i></span>
+                            <span class="fa-text">
+                                <strong>Explore:</strong> Analyze broader market trends to identify areas with high growth potential.
+                            </span>
+                        </a>
+                    </li>
+                    <li class="custom-li">
+                        <a href="/search">
+                            <span class="fa-li"><i class="fas fa-search"></i></span>
+                            <span class="fa-text">
+                                <strong>Direct Search:</strong> Instantly retrieve detailed information on any listed property.
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="spacer"></div>
+        
+        <div class="hero-content">
+            <h2 class="text-align-center">Why Use Our Platform?</h2>
+            <p class="flow-text">
+                Our platform simplifies the complexity of real estate data to provide you with easy-to-understand insights and actionable advice. By integrating comprehensive market data and predictive analytics, we enable you to:
+                <ul class="fa-ul">
+                    <li class="custom-li"><span class="fa-li"><i class="margin-right fas fa-chart-line"></i></span>Evaluate investment viability through intuitive visualizations and automated analysis.</li>
+                    <li class="custom-li"><span class="fa-li"><i class="margin-right fas fa-clock"></i></span>Access real-time data to stay ahead in fast-moving markets.</li>
+                    <li class="custom-li"><span class="fa-li"><i class="margin-right fas fa-balance-scale"></i></span>Compare potential investments against market benchmarks to make informed decisions.</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+    
+    <!-- Dive In -->
+    <div class="hero-section" style="background: url('/static/images/nightstand_benjamin_voros.webp') no-repeat center center/cover;">
+        <div class="hero-content">
+            <h2 class="text-align-center">Ready to Dive In?</h2>
+            <p class="flow-text">
+                Whether you're assessing a single property or exploring broader market dynamics, our platform equips you with the tools to perform detailed analyses that drive your investment decisions. Get started today to transform the way you evaluate real estate.
+            </p>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="hero-content">
+            <h2 class="text-align-center">Contact Us</h2>
+            <p class="flow-text">
+                Our features are currently in an experimental phase. If you encounter any issues, please let us know by filling out the form below.
+            </p>
+            <!-- Contact Form for Reporting Issues -->
+            <form id="issueReportForm" class="container">
+                <div class="input-field form-element">
+                    <input id="user_email" type="email" name="user_email" required>
+                    <label for="user_email">Your Email:</label>
+                </div>
+                <div class="input-field form-element">
+                    <textarea id="issue_description" class="materialize-textarea" name="issue_description" required></textarea>
+                    <label for="issue_description">Describe the Issue:</label>
+                </div>
+                <button id="reportIssueBtn" class="btn waves-effect waves-light main-color" type="submit">
+                    Report Issue
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<!-- Modal Structure -->
+<div id="confirmationModal" class="modal" tabindex="-1">
+    <div class="modal-content">
+        <h4 class="text-align-center">Submission Confirmation</h4>
+        <p>Your issue has been successfully reported. Thank you for your feedback!</p>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-close btn waves-effect waves-light">OK</button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='home.js') }}"></script>
 {% endblock %}

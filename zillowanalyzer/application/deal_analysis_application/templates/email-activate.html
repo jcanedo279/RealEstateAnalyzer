@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activate Your Account</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif; /* Using a web-safe font for better compatibility */
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f4f4f4;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            text-align: center; /* Center-aligning text for a more balanced presentation */
+        }
+        .button {
+            display: inline-block; /* Inline-block for better control over styling */
+            width: auto; /* Auto width based on content */
+            margin-top: 20px;
+            padding: 10px 25px;
+            color: #fff;
+            background-color: #007BFF;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 16px; /* Optimal font size for readability */
+        }
+        .button:hover {
+            background-color: #0056b3; /* Darker shade for hover state */
+        }
+        p {
+            margin: 1em 0;
+            font-size: 14px; /* Keeping the font size consistent for accessibility */
+        }
+        a {
+            color: #007BFF; /* Matching link color to button for consistent branding */
+            text-decoration: none; /* No underline to keep it neat */
+        }
+        a:hover {
+            text-decoration: underline; /* Underline on hover for better user interaction */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Our Service!</h1>
+        <p>Thank you for registering with us. To complete the registration process and activate your account, please click the button below.</p>
+        <a href="{{ activation_url }}" class="button" target="_blank">Activate Account</a>
+        <p>If the button above does not work, please click on the following <a href="{{ activation_url }}">link</a>.</p>
+        <p>If you did not create an account, no further action is required.</p>
+        <p>Thank you for choosing Our Service. We look forward to serving you!</p>
+    </div>
+</body>
+</html>

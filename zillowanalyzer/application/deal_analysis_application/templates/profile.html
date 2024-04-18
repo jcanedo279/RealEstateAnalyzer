@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container profile-container">
+    <h1>Your Profile</h1>
+    {% if current_user.is_authenticated %}
+    <div class="profile-header">
+        <img src="{{ current_user.profile_picture_url }}" alt="Profile Picture" class="profile-picture">
+        <h2>Welcome, {{ current_user.name }}</h2>
+        <p>{{ current_user.email }}</p>
+    </div>
+    <div class="profile-settings">
+        <h3>Account Settings</h3>
+        <a href="/change-password">Change Password</a>
+        <a href="/privacy-settings">Privacy Settings</a>
+    </div>
+    <div class="recent-activity">
+        <h3>Recent Activity</h3>
+        <ul>
+            <!-- Dynamically populate activity list -->
+            {% for activity in current_user.recent_activities %}
+            <li>{{ activity.description }} - {{ activity.date }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <p>Please log in to view this page.</p>
+    {% endif %}
+</div>
+{% endblock %}
