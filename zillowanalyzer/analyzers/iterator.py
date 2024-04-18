@@ -16,7 +16,7 @@ def print_analysis_progress(start_time, analysis_index, analysis_len):
     estimated_time_remaining = avg_time_per_property * (analysis_len - analysis_index)
     formatted_time_remaining = str(timedelta(seconds=int(estimated_time_remaining)))
     progress_percentage = 100 * (analysis_index+1) / analysis_len
-    print(f"Analysing property [{analysis_index} | {analysis_len}]. {progress_percentage:.2f}% analyzed, time remaining: ~{formatted_time_remaining}", end=' '*30 + '\r')
+    print(f"Analysing property [{analysis_index+1} | {analysis_len}]. {progress_percentage:.2f}% analyzed, time remaining: ~{formatted_time_remaining}", end=' '*30 + '\r')
 
 def property_details_iterator():
     pattern = os.path.join(PROPERTY_DETAILS_PATH, "*", "*_property_details.json")

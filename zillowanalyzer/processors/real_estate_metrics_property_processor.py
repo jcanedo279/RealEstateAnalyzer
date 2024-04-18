@@ -70,15 +70,17 @@ def calculate_monthly_property_tax_rate(property_info):
     tax_rate = property_info.get('propertyTaxRate', 0)
     if tax_rate:
         tax_rate *= 0.01
-    if not tax_rate:
+    tax_history = property_info.get('taxHistory', [])
+    if not tax_rate and tax_history:
         tax_history = property_info['taxHistory']
         total_tax_rate = 0
         for record in tax_history:
             tax_paid, taxed_property_value = record['taxPaid'], record['value']
             if not tax_paid or not taxed_property_value:
                 continue
-            tax_rate = tax_paid / taxed_property_value
-            total_tax_rate += tax_rate
+            current_tax_rate = tax_paid / taxed_property_value
+            total_tax_rate += current_tax_rate
+        tax_rate = total_tax_rate / len(tax_history)
     tax_rate = 0.02 if not tax_rate else tax_rate
     return tax_rate  / MONTHS_IN_YEAR
 
