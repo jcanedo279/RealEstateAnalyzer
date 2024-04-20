@@ -1,6 +1,5 @@
 .form-element {
     margin-bottom: 20px; /* This increases the space between form elements */
-    /* Other styles */
 }
 
 /* If you're using a spacer div, you might want to adjust or remove it, as the CSS margin will handle spacing */
@@ -44,7 +43,7 @@
 }
 
 .btn:focus {
-    background-color: var(--main-blue); /* Keep the normal background color */
+    background-color: var(--main-color); /* Keep the normal background color */
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); /* Subtle white outline */
 }
 
@@ -53,7 +52,7 @@
     font-weight: bold;
     margin-bottom: 20px;
     padding: 10px;
-    background-color: #fff;
+    background-color: var(--background-white);
     border-radius: var(--border-radius);
     box-shadow: var(--default-shadow);
     text-align: center;
@@ -61,4 +60,28 @@
     width: max-content;
     margin-left: auto;
     margin-right: auto;
+}
+
+.message-container {
+    margin-top: 20px;
+    color: #d32f2f; /* Default error color */
+    font-size: 1.2em;
+}
+
+.message-container.success {
+    color: #388e3c; /* Success color */
+}
+
+.message-container.error {
+    color: #d32f2f; /* Error color */
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.message-container.error {
+    animation: shake 1s cubic-bezier(.36,.07,.19,.97) both;
 }

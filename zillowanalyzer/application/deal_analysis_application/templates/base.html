@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Listings Market Analyzer Home</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/tab_icon.png') }}">
+    <title>Profit Prophet: Analyze. Invest. Succeed.</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo_rounded_red.png') }}">
     <!-- External CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -15,7 +15,10 @@
     <nav>
         <div class="nav-wrapper main-color">
             <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large sidenav-left"><i class="material-icons">Menu</i></a>
-            <a href="/" class="brand-logo center">Listings Market Analyzer</a>
+            <a href="/" class="brand-logo center">
+                <img src="{{ url_for('static', filename='images/logo_rounded_white.png') }}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 5px; margin-bottom: 5px;">
+                Profit Prophet
+            </a>
             <a href="#" data-target="login-slide-out" class="sidenav-trigger right show-on-large sidenav-right"><i class="material-icons">Account</i></a>
         </div>
     </nav>
@@ -32,6 +35,12 @@
             <i class="fas fa-search left"></i>
             Property Search
         </a></li>
+        {% if current_user.is_authenticated %}
+        <li><a href="/saved">
+            <i class="fas fa-heart left"></i>
+            Saved
+        </a></li>
+        {% endif %}
     </ul>
     <!-- Login Side Navigation -->
     <ul id="login-slide-out" class="sidenav sidenav-right">
@@ -55,6 +64,6 @@
     {% block content %}{% endblock %}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/base.js') }}"></script>
 </body>
 </html>

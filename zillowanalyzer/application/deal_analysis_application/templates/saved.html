@@ -7,20 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Property Search Form -->
-<div class="container">
-    <form id="propertyForm">
-        <div class="input-field form-element">
-            <input id="property_address" type="text" name="property_address" required>
-            <label for="property_address">Enter Property Address:</label>
-        </div>
-
-        <button class="btn waves-effect waves-light main-color" id="submitBtn" type="button">
-            <i class="material-icons">Search by Address</i>
-        </button>
-    </form>
-</div>
-
 <!-- Results will be displayed here -->
 <div class="scrolling-content">
     <div class="fullscreen-div-padding" id="resultsTable"></div>
@@ -39,6 +25,6 @@
 </div>
 
 <!-- External JavaScript -->
-<script src="{{ url_for('static', filename='scripts/search.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='scripts/saved.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='scripts/util/tooltipUtil.js') }}" defer></script>
 {% endblock %}

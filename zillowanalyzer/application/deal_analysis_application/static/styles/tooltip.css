@@ -1,7 +1,7 @@
 .global-tooltip {
     display: none;
     position: fixed;
-    background: #ffffff;
+    background: var(--background-white);
     border: 1px solid #cccccc;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -12,7 +12,7 @@
 
 .tooltip-header {
     font-weight: bold;
-    background: #d9dbdc;
+    background: var(--background-color);
     text-align: center;
     padding: 5px;
 }

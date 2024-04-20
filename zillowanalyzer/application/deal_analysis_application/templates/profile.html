@@ -3,28 +3,36 @@
 {% block content %}
 <div class="container profile-container">
     <h1>Your Profile</h1>
+    <div class="spacer"></div>
     {% if current_user.is_authenticated %}
     <div class="profile-header">
-        <img src="{{ current_user.profile_picture_url }}" alt="Profile Picture" class="profile-picture">
-        <h2>Welcome, {{ current_user.name }}</h2>
-        <p>{{ current_user.email }}</p>
+        <div class="profile-details">
+            <h2>Welcome, {{ current_user.first_name }} {{ current_user.last_name }}</h2>
+            <p>Email: {{ current_user.email }}</p>
+            <p>Account Type: {{ 'Professional' if current_user.is_professional else 'Personal' }}</p>
+        </div>
     </div>
+    <div class="spacer"></div>
     <div class="profile-settings">
-        <h3>Account Settings</h3>
-        <a href="/change-password">Change Password</a>
-        <a href="/privacy-settings">Privacy Settings</a>
-    </div>
-    <div class="recent-activity">
-        <h3>Recent Activity</h3>
+        <h2>Account Settings</h2>
         <ul>
-            <!-- Dynamically populate activity list -->
+            <li><a href="/reset-password">Change Password</a></li>
+            <li><a href="/privacy-settings">Privacy Settings</a></li>
+        </ul>
+    </div>
+    <div class="spacer"></div>
+    <div class="recent-activity">
+        <h2>Recent Activity</h2>
+        <ul>
             {% for activity in current_user.recent_activities %}
-            <li>{{ activity.description }} - {{ activity.date }}</li>
+            <li>{{ activity.description }} - {{ activity.date.strftime('%Y-%m-%d') }}</li>
             {% endfor %}
         </ul>
     </div>
     {% else %}
-    <p>Please log in to view this page.</p>
+    <div class="login-prompt">
+        <p>Please <a href="/login">log in</a> to view this page.</p>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -12,10 +12,8 @@ BACKEND_PROPERTIES_DF = load_data(drop_street_address=False).round(2)
 region_path = os.path.join(ZILLOW_ANALYZER_PATH, "application", "deal_analysis_application", "data", "regions.json")
 REGION_TO_ZIP_CODE = {region: set(zip_codes) for region, zip_codes in load_json(region_path).items()}
 
-TARGET_COLUMNS = ['Image', 'City', 'Rental Income (5% Down)', 'Rent Estimate', 'Price', 'Breakeven Price (5% Down)', 'Competative Price (5% Down)', 'Is Breakeven Price Offending', 'Adjusted CoC (5% Down)', 'Year Built', 'Home Type', 'Bedrooms', 'Bathrooms']
+TARGET_COLUMNS = ['Image', 'Save', 'City', 'Rental Income (5% Down)', 'Rent Estimate', 'Price', 'Breakeven Price (5% Down)', 'Competative Price (5% Down)', 'Is Breakeven Price Offending', 'Adjusted CoC (5% Down)', 'Year Built', 'Home Type', 'Bedrooms', 'Bathrooms']
 BACKEND_COL_NAME_TO_FRONTEND_COL_NAME = {
-    "zpid": {
-        "name": "Property ID"},
     "city": {
         "name": "City"},
     "street_address": {
@@ -65,7 +63,7 @@ BACKEND_COL_NAME_TO_FRONTEND_COL_NAME = {
         "description": "The historical monthly HOA fee which is collected by the neighborhood."},
     "home_features_score": {
         "name": "Home Features Score",
-        "description": "A generated score in the interval [0,1], which represents how many 'important' features a home has, and is exponentially correlated with its price."},
+        "description": "A generated score in the interval [-1,1], which represents how many 'important' features a home has, and is exponentially correlated with its price."},
     "is_waterfront": {
         "name": "Waterfront",
         "description": "Whether a home is a waterfront property or not."},
@@ -160,9 +158,11 @@ def properties_df_from_search_request_data(request_data):
         properties_df = properties_df[properties_df['adj_CoC_5%_down'] >= 0.0]
     if city:
         properties_df = properties_df[properties_df['city'] == city.title()]
+
+    properties_df['is_waterfront'] = properties_df['is_waterfront'].apply(lambda x: 'True' if x > 0.0 else 'False')
     return properties_df
 
-def properties_response_from_properties_df(properties_df, num_properties_per_page=1, page=1):
+def properties_response_from_properties_df(properties_df, num_properties_per_page=1, page=1, saved_zpids={}):
     num_properties_found = properties_df.shape[0]
     properties_df = properties_df.sort_values(by='adj_CoC_5%_down', ascending=False)
     # Calculate the total number of pages of listings in the backend to send to the frontend for the back/next buttons.
@@ -186,6 +186,8 @@ def properties_response_from_properties_df(properties_df, num_properties_per_pag
         else:
             properties_df.loc[zpid, 'Image'] = None
             properties_df.loc[zpid, 'property_url'] = None
+        properties_df.loc[zpid, 'Save'] = zpid in saved_zpids
+        properties_df.loc[zpid, 'zpid'] = zpid
 
     # Add the zpid as a column.
     properties_df.rename(columns=create_rename_dict(), inplace=True)

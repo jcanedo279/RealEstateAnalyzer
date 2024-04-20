@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var loginForm = document.getElementById('loginForm');
+    const loginForm = document.getElementById('loginForm');
     
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -9,14 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             user_password: document.getElementById('password').value,
         };
 
-        // Disable the button to prevent multiple submissions.
-        document.getElementById("loginBtn").disabled = true;
-
-        // Simple client-side validation example
-        if(email === "" || password === "") {
-            alert("Please enter both email and password.");
-            return;
-        }
+        document.getElementById("loginBtn").disabled = true; // Disable button during request
 
         fetch('/login', {
             method: 'POST',
@@ -26,22 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify(formData),
         })
         .then(response => {
-            // Re-enable form submission.
             document.getElementById("loginBtn").disabled = false;
-            if (response.redirected) {
-                window.location.href = response.url;
-                return; // Important to stop processing further as we are redirecting
+            if (!response.ok) {
+                throw new Error('Login failed');
             }
             return response.json();
         })
         .then(data => {
-            console.log('Success:', data);
-            // Reset the form.
-            document.getElementById("loginForm").reset();
+            if (data.redirect) {
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 2000);
+            }
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert("There was a problem submitting your report. Please try again.");
+            document.getElementById("loginBtn").disabled = false;
         });
     });
 });

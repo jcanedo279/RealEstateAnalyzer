@@ -1,4 +1,5 @@
 document.getElementById("issueReportForm").addEventListener('submit', function(event) {
+    document.getElementById('issueReportForm').reset();
     event.preventDefault();
     reportIssue();
 });

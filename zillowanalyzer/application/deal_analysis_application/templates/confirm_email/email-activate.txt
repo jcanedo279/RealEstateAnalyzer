@@ -1,8 +1,8 @@
-Subject: Activate Your Account - LMA
+Subject: Activate Your Account - Profit Prophet
 
 Dear {{ user_name }},
 
-Thank you for signing up with LMA!
+Thank you for signing up with us!
 
 We're excited to have you on board. To get started, please activate your account by clicking the link below:
 
@@ -15,7 +15,7 @@ If you have any questions or need assistance, feel free to contact our support t
 
 If you did not request this registration, please ignore this email.
 
-Thank you for choosing LMA!
+Thank you for choosing our service!
 
 Best regards,
-The Listings Market Analyzer Team
+The Profit Prophet Team

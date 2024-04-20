@@ -1,23 +1,29 @@
-.message-container {
-    margin-top: 20px;
-    color: #d32f2f; /* Default error color */
-    font-size: 1.2em;
+.form-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 
-.message-container.success {
-    color: #388e3c; /* Success color */
+.button-group {
+    margin-right: auto; /* Ensures buttons stay left */
 }
 
-.message-container.error {
-    color: #d32f2f; /* Error color */
+.step-indicators {
+    position: absolute; /* Positioned relative to the nearest positioned ancestor */
+    left: 50%; /* Centering technique */
+    transform: translateX(-50%); /* Precise center alignment */
+    display: flex;
+    gap: 10px;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+.step-dot {
+    height: 10px;
+    width: 10px;
+    background-color: #bbb; /* Default color */
+    border-radius: 50%;
+    display: inline-block;
 }
 
-.message-container.error {
-    animation: shake 1s cubic-bezier(.36,.07,.19,.97) both;
+.step-dot.active {
+    background-color: var(--main-color); /* Active step color */
 }
