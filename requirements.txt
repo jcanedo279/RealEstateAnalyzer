@@ -148,5 +148,4 @@ Werkzeug==3.0.1
 wsproto==1.2.0
 xgboost==2.0.3
 yfinance==0.2.36
--e git+https://github.com/jcanedo279/ZillowAnalyzer.git@589b1f1b83e859c20bc15a4efa7dd3fe72905fe0#egg=zillowanalyzer
 zstandard==0.22.0

@@ -9,12 +9,12 @@ with open('requirements.txt') as f:
 version = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S")
 
 setup(
-    name='zillowanalyzer',
+    name='re_analyzer',
     version=version,
     packages=find_packages(),
     install_requires=requirements,
     author='Jorge Canedo',
     author_email='jcanedo@g.hmc.edu',
-    description='A package forscraping, processing and anlyzing Zillow real estate data.',
-    keywords='zillow',
+    description='A package forscraping, processing and anlyzing real estate data.',
+    keywords='real estate',
 )

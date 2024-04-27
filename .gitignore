@@ -152,17 +152,19 @@ cython_debug/
 #.idea/
 
 # Custom ignores for project
-zillowanalyzer/Data/HomeData/
-zillowanalyzer/Data/Images/
-zillowanalyzer/Data/SearchResults/
-zillowanalyzer/Data/SearchResultsMetadata/
-zillowanalyzer/Data/PropertyDetails/
-zillowanalyzer/ChromeAssets/Google Chrome for Testing.app
+re_analyzer/Data/HomeData/
+re_analyzer/Data/Images/
+re_analyzer/Data/SearchResults/
+re_analyzer/Data/SearchResultsMetadata/
+re_analyzer/Data/PropertyDetails/
+re_analyzer/ChromeAssets/Google Chrome for Testing.app
 *.DS_Store
 
-Zillow-ViT/
-zillowanalyzer/Data/cleaned/
-zillowanalyzer/Data/PropertyDetailsCache.zip
+re_analyzer/Data/cleaned/
+re_analyzer/Data/PropertyDetailsCache.zip
 
-zillowanalyzer/ChromeAssets/*
-!zillowanalyzer/ChromeAssets/.gitkeep
+re_analyzer/ChromeAssets/*
+!re_analyzer/ChromeAssets/.gitkeep
+
+re_analyzer/application/backend/backend_venv/*
+re_analyzer/application/database/postgres_data/*
