@@ -231,11 +231,12 @@ def real_estate_metrics_property_processing_pipeline():
             down_payment_literal = f"_{int(down_payment_percentage * 100)}%_down" if down_payment_percentage != 1 else ""
             total_monthly_costs, total_cash_invested, total_prepaid_costs = calculate_monthly_costs(purchase_price, down_payment_percentage, mortgage_rate, monthly_hoa, property_info)
             monthly_rental_income = restimate * (1 - VACANCY_RATE) - total_monthly_costs - (MONTHLY_MAINTENANCE_RATE * purchase_price)
-            breakeven_purchase_price = min(purchase_price, purchase_price_with_cash_flow_percentage(property_info, purchase_price, restimate, monthly_hoa, down_payment_percentage, mortgage_rate))
-            target_purchase_price = min(purchase_price, purchase_price_with_cash_flow_percentage(property_info, purchase_price, restimate, monthly_hoa, down_payment_percentage, mortgage_rate, cash_flow_rate=0.05))
+            breakeven_purchase_price = purchase_price_with_cash_flow_percentage(property_info, purchase_price, restimate, monthly_hoa, down_payment_percentage, mortgage_rate)
+            target_purchase_price = purchase_price_with_cash_flow_percentage(property_info, purchase_price, restimate, monthly_hoa, down_payment_percentage, mortgage_rate, cash_flow_rate=0.05)
+            is_breakeven_price_offending = abs(purchase_price - breakeven_purchase_price) > 0.2 * purchase_price
             metrics.update({
                 f'breakeven_price{down_payment_literal}' : breakeven_purchase_price,
-                f'is_breaven_price_offending{down_payment_literal}' : abs(purchase_price - breakeven_purchase_price) > 0.2 * purchase_price,
+                f'is_breakeven_price_offending{down_payment_literal}' : "True" if is_breakeven_price_offending else "False",
                 f'snp_equivalent_price{down_payment_literal}' : target_purchase_price,
                 f'CoC_no_prepaids{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / total_cash_invested,
                 f'CoC{down_payment_literal}' : MONTHS_IN_YEAR * (monthly_rental_income) / (total_cash_invested - total_prepaid_costs),
