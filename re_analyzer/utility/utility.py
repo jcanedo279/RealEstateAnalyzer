@@ -198,15 +198,16 @@ load_dotenv(override=True)
 #######################
 
 PROJECT_CONFIG = ProjectConfigManager()
-
+ 
 DATA_PATH = get_abs_path('Data')
 
 VISUAL_DATA_PATH = os.path.join(DATA_PATH, 'VisualData')
 SEARCH_LISTINGS_DATA_PATH = os.path.join(DATA_PATH, 'SearchResults')
 SEARCH_LISTINGS_METADATA_PATH = os.path.join(DATA_PATH, 'SearchResultsMetadata')
+PROPERTY_DATA_PATH = os.path.join(DATA_PATH, 'PropertyData')
 PROPERTY_DETAILS_PATH = os.path.join(DATA_PATH, 'PropertyDetails')
 SEARCH_RESULTS_PROCESSED_PATH = os.path.join(DATA_PATH, 'search_listings.csv')
 
-ALPHA_BETA_DATA_PATH = os.path.join(PROPERTY_DETAILS_PATH, 'alpha_beta_data.csv')
-REAL_ESTATE_METRICS_DATA_PATH = os.path.join(PROPERTY_DETAILS_PATH, 'real_estate_metrics_data.csv')
-HOME_FEATURES_DATAFRAME_PATH = os.path.join(PROPERTY_DETAILS_PATH, 'home_features_df.parquet')
+ALPHA_BETA_DATA_PATH = os.path.join(PROPERTY_DATA_PATH, 'alpha_beta_data.csv')
+REAL_ESTATE_METRICS_DATA_PATH = os.path.join(PROPERTY_DATA_PATH, 'real_estate_metrics_data.csv')
+HOME_FEATURES_DATAFRAME_PATH = os.path.join(PROPERTY_DATA_PATH, 'home_features_df.parquet')

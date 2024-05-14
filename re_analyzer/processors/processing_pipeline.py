@@ -4,10 +4,10 @@ import pandas as pd
 from re_analyzer.processors.real_estate_metrics_property_processor import real_estate_metrics_property_processing_pipeline
 from re_analyzer.processors.home_features_processor import home_features_processing_pipeline
 from re_analyzer.processors.alpha_beta_property_processor import alpha_beta_property_processing_pipeline
-from re_analyzer.utility.utility import DATA_PATH
+from re_analyzer.utility.utility import PROPERTY_DATA_PATH
 
 
-PROPERTY_DF_PATH = os.path.join(DATA_PATH, 'PropertyData', 'property_df.parquet')
+PROPERTY_DF_PATH = os.path.join(PROPERTY_DATA_PATH, 'property_df.parquet')
 
 def save_property_df(metrics_df, features_df, timeseries_df):
     property_df = pd.merge(timeseries_df, metrics_df, on='zpid', how='inner').set_index('zpid')

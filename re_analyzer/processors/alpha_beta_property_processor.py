@@ -70,7 +70,7 @@ def calculate_alpha_beta_for_property(zestimate_history, index_data, rf_data):
         monthly_mortgage_payment = calculate_monthly_mortgage_payment(loan_amount, MIN_APR, LOAN_TERM_YEARS)
 
         # Calculate leveraged returns
-        lev_column_percentage = f' {down_payment_percentage*100}% Down' if down_payment_percentage != 1 else ''
+        lev_column_percentage = f'_{int(down_payment_percentage*100)}%_down' if down_payment_percentage != 1 else ''
         lev_column_name = f'Returns{lev_column_percentage}'
         aligned_df['Cumulative Mortgage Payments'] = monthly_mortgage_payment
         aligned_df['Cumulative Mortgage Payments'] = aligned_df['Cumulative Mortgage Payments'].cumsum()

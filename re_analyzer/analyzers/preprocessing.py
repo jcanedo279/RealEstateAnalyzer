@@ -11,10 +11,10 @@ from sklearn.ensemble import IsolationForest
 from scipy import stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-from re_analyzer.utility.utility import DATA_PATH
+from re_analyzer.utility.utility import PROPERTY_DATA_PATH
 
 
-PROPERTY_DF_PATH = os.path.join(DATA_PATH, 'PropertyData', 'property_df.parquet')
+PROPERTY_DF_PATH = os.path.join(PROPERTY_DATA_PATH, 'property_df.parquet')
 
 def load_data(drop_strings = True):
     property_df = pd.read_parquet(PROPERTY_DF_PATH)
