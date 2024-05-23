@@ -210,4 +210,4 @@ SEARCH_RESULTS_PROCESSED_PATH = os.path.join(DATA_PATH, 'search_listings.csv')
 
 ALPHA_BETA_DATA_PATH = os.path.join(PROPERTY_DATA_PATH, 'alpha_beta_data.csv')
 REAL_ESTATE_METRICS_DATA_PATH = os.path.join(PROPERTY_DATA_PATH, 'real_estate_metrics_data.csv')
-HOME_FEATURES_DATAFRAME_PATH = os.path.join(PROPERTY_DATA_PATH, 'home_features_df.parquet')
+HOME_FEATURES_DATAFRAME_PATH = os.path.join(PROPERTY_DATA_PATH, 'property_features_df.parquet')

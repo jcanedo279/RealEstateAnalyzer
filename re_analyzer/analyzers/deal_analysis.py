@@ -15,7 +15,7 @@ combined_df = load_data()
 # combined_df = combined_df[combined_df['year_built'] >= 2000]
 # combined_df = combined_df[combined_df['purchase_price'] <= 200000]
 
-sorted_df = combined_df.sort_values(by='adj_CoC_5%_down', ascending=False)
+sorted_df = combined_df.sort_values(by='restimate', ascending=False)
 
 for zpid, property_instance in sorted_df.iterrows():
     zip_code = property_instance['zip_code']

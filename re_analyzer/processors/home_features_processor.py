@@ -12,6 +12,7 @@ from re_analyzer.utility.utility import VISUAL_DATA_PATH, HOME_FEATURES_DATAFRAM
 from re_analyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
 from re_analyzer.analyzers.correlatory_data_analysis import visualize_pairwise_correlation, visualize_pairwise_distribution
 
+
 # Define feature categories
 FEATURE_CATEGORIES = {
     'bool_features': {'canRaiseHorses', 'furnished', 'hasAssociation', 'hasAttachedGarage', 'hasAttachedProperty', 'hasCooling', 'hasCarport', 'hasElectricOnProperty', 'hasFireplace', 'hasGarage', 'hasHeating', 'hasOpenParking', 'hasPrivatePool', 'hasView', 'hasWaterfrontView', 'isSeniorCommunity', 'hasAdditionalParcels', 'hasPetsAllowed', 'isNewConstruction'},
@@ -20,6 +21,7 @@ FEATURE_CATEGORIES = {
     'categorical_features': {'basement', 'commonWalls', 'architecturalStyle'}
 }
 MIN_THRESHOLD = 500
+
 
 # Create a directory for plots if it doesn't exist
 bool_home_features = os.path.join(VISUAL_DATA_PATH, "home_features", "bool_features")
@@ -38,6 +40,7 @@ def aggregate_features_from_json(property_info, all_features):
     for feature, value in reso_facts.items():
         process_feature_value(feature, value, features_dict)
 
+
 def process_feature_value(feature, value, features_dict):
     if feature in FEATURE_CATEGORIES['bool_features']:
         features_dict[feature] = True if value else False
@@ -51,6 +54,7 @@ def process_feature_value(feature, value, features_dict):
         else:
             features_dict[f'{feature}_{value}'] = 1
 
+
 def load_and_aggregate_features():
     all_features = {}
     for property_details in property_details_iterator():
@@ -59,6 +63,7 @@ def load_and_aggregate_features():
             continue
         aggregate_features_from_json(property_info, all_features)
     return pd.DataFrame.from_dict(all_features, orient='index').fillna(0)
+
 
 def filter_features_by_threshold(features_df, min_threshold=MIN_THRESHOLD):
     # Convert boolean columns to numerical (0s and 1s) if not already done
@@ -93,6 +98,7 @@ def filter_features_by_threshold(features_df, min_threshold=MIN_THRESHOLD):
     # Return the filtered DataFrame
     return features_df[columns_to_keep]
 
+
 def apply_XGB_on_home_features(features_df, predictor):
     # Prepare the data
     X = features_df.drop(columns=[predictor], errors='ignore')
@@ -112,6 +118,7 @@ def apply_XGB_on_home_features(features_df, predictor):
     mse = mean_squared_error(y_test, y_pred)
     print(f"Mean Squared Error: {mse}")
     return model
+
 
 def add_shap_for_home_features(model, features_df, predictor):
     X = features_df.drop(predictor, axis=1)
@@ -186,17 +193,17 @@ def home_features_processing_pipeline():
     shap_correlation_df = add_shap_for_home_features(model, features_df, predictor)
     print(shap_correlation_df)
 
-    home_features_df = features_df[['home_features_score', 'purchase_price', 'waterView_None']]
+    property_features_df = features_df[['home_features_score', 'purchase_price', 'waterView_None']]
     # Save to Parquet (efficient and preserves data types well)
-    home_features_df.to_parquet(HOME_FEATURES_DATAFRAME_PATH)
+    property_features_df.to_parquet(HOME_FEATURES_DATAFRAME_PATH)
 
     pairwise_correlation_path = os.path.join(VISUAL_DATA_PATH, "correlatory", "home_features_pairwise_correlation.png")
     pairwise_distribution_path = os.path.join(VISUAL_DATA_PATH, "correlatory", "home_features_pairwise_distribution.png")
-    visualize_pairwise_correlation(home_features_df, path=pairwise_correlation_path, title="Home Features vs. Price Correlation (SHAP)")
-    visualize_pairwise_distribution(home_features_df, path=pairwise_distribution_path, title="Home Features vs. Price Distribution (SHAP)")
+    visualize_pairwise_correlation(property_features_df, path=pairwise_correlation_path, title="Home Features vs. Price Correlation (SHAP)")
+    visualize_pairwise_distribution(property_features_df, path=pairwise_distribution_path, title="Home Features vs. Price Distribution (SHAP)")
 
-    return home_features_df
+    return property_features_df
 
 
 if __name__ == "__main__":
-    home_features_df = home_features_processing_pipeline()
+    property_features_df = home_features_processing_pipeline()
