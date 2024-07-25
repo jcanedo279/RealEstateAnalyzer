@@ -1,27 +1,30 @@
-from sklearn.model_selection import train_test_split
-from xgboost import XGBRegressor
-from sklearn.metrics import r2_score
-import matplotlib.pyplot as plt
+import os
 import json
 import requests
 import pandas as pd
-import sys
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from xgboost import XGBRegressor
+from sklearn.metrics import r2_score
 
 from re_analyzer.analyzers.preprocessing import load_data, preprocess_dataframe, FilterMethod
 from re_analyzer.analyzers.iterator import get_property_info_from_property_details
-from re_analyzer.utility.utility import VISUAL_DATA_PATH, DATA_PATH, PROPERTY_DETAILS_PATH
+from re_analyzer.utility.utility import VISUAL_DATA_PATH, DATA_PATH, PROPERTY_DETAILS_PATH, ensure_directory_exists
 
-combined_df = load_data()
-# target_zip_codes = {33859,33863,33831,33813,33846,33884,33812,33880,33839,33811,33877,33807,33885,33566,33838,33840,33803,33563,33564,33882,33883,33888,33804,33802,33815,33801,33806,33851,33881,33844,33823,33850,33805,33565,33845,33810,33809,33868}
-# combined_df = combined_df[combined_df['zip_code'].isin(target_zip_codes)]
-print(combined_df.shape[0])
 
-cols_to_ignore = ['annual_homeowners_insurance']
-combined_df.drop(cols_to_ignore, axis=1, inplace=True)
-df_preprocessed, preprocessor = preprocess_dataframe(combined_df, filter_method=FilterMethod.FILTER_P_SCORE)
+INVESTMENT_SELECTIONS_PATH = os.path.join(DATA_PATH, 'InvestmentSelections')
+ensure_directory_exists(INVESTMENT_SELECTIONS_PATH)
 
 
 predictor = 'purchase_price'
+combined_df = load_data()
+# target_zip_codes = {33859,33863,33831,33813,33846,33884,33812,33880,33839,33811,33877,33807,33885,33566,33838,33840,33803,33563,33564,33882,33883,33888,33804,33802,33815,33801,33806,33851,33881,33844,33823,33850,33805,33565,33845,33810,33809,33868}
+# combined_df = combined_df[combined_df['zip_code'].isin(target_zip_codes)]
+
+cols_to_ignore = [col for col in ['annual_homeowners_insurance'] if col in combined_df.columns]
+combined_df.drop(cols_to_ignore, axis=1, inplace=True)
+df_preprocessed, preprocessor = preprocess_dataframe(combined_df, filter_method=FilterMethod.FILTER_P_SCORE, cols_to_keep=set([predictor, 'zip_code']))
+
 X = df_preprocessed.drop(columns=[predictor], errors='ignore')
 y = df_preprocessed[predictor]
 
@@ -109,11 +112,8 @@ for index, home in underpriced_homes_iter:
 
         # Check if the request was successful
         if response.status_code == 200:
-            # Specify the local path where you want to save the image
-            image_path = f"{DATA_PATH}/InvestmentSelections/im_{home_num}.jpg"
-            
             # Open the specified path in binary write mode and save the image
-            with open(image_path, "wb") as file:
+            with open(os.path.join(INVESTMENT_SELECTIONS_PATH, f'im_{home_num}.jpg'), "wb") as file:
                 file.write(response.content)
         else:
             print(f"Failed to download image. Status code: {response.status_code}")

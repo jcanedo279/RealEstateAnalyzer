@@ -14,7 +14,7 @@ from itertools import product
 
 from re_analyzer.utility.utility import DATA_PATH, ensure_directory_exists, save_json
 from re_analyzer.analyzers.preprocessing import load_data, preprocess_dataframe, FilterMethod
-from re_analyzer.analyzers.iterator import property_details_iterator, get_property_info_from_property_details
+
 
 NUM_EPOCHS = 7
 NUM_BINS = 3

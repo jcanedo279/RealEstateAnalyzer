@@ -14,13 +14,14 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from re_analyzer.utility.utility import PROPERTY_DATA_PATH
 
 
-PROPERTY_DF_PATH = os.path.join(PROPERTY_DATA_PATH, 'property_df.parquet')
+PROPERTY_DF_PATH = os.path.join(PROPERTY_DATA_PATH, 'property_static_df.parquet')
 
 def load_data(drop_strings = True):
     property_df = pd.read_parquet(PROPERTY_DF_PATH)
     if drop_strings:
-        property_df.drop(['street_address', 'image_url', 'property_url'], axis=1, inplace=True)
-    print(property_df.head())
+        property_df.drop(['street_address', 'image_url', 'property_url', 'city', 'is_waterfront'], axis=1, inplace=True)
+        # property_df.drop(columns=property_df.select_dtypes(include=['object']).columns, inplace=True)
+    return property_df
 
 def calculate_vif(dataframe):
     """
@@ -67,13 +68,37 @@ class InvertibleColumnTransformer(ColumnTransformer):
         self.df_inverted = None
         self.cat_to_ohe_cols = defaultdict(set)
         self.ohe_to_cat_value = {}
-        
+
         for name, transformer, columns in self.transformers:
             if name == 'num':
                 self.num_cols = columns
                 self.num_cols_set = set(columns)
             elif name == 'cat':
                 self.cat_cols = columns
+
+    def set_numeric_columns(self, numeric_columns):
+        self.num_cols = numeric_columns
+        self.num_cols_set = set(numeric_columns)
+
+    def drop_columns(self, X, columns_to_drop):
+        X = X.drop(columns=columns_to_drop)
+        self.num_cols = [col for col in self.num_cols if col not in columns_to_drop]
+        self.num_cols_set = set(self.num_cols)
+
+        num_preprocessor = Pipeline(steps=[
+            ('inputer', SimpleImputer(strategy='mean')),
+            ('scaler', StandardScaler())
+        ])
+        transformers = [('num', num_preprocessor, self.num_cols)]
+        if self.cat_cols:
+            cat_preprocessor = Pipeline(steps=[
+                ('inputer', SimpleImputer(strategy='constant')),
+                ('ohe', OneHotEncoder())
+            ])
+            transformers.append(('cat', cat_preprocessor, self.cat_cols))
+        self.transformers = transformers
+
+        return X
 
     def filter_dataframe(self, X, filter_method):
         if filter_method == FilterMethod.FILTER_NONE:
@@ -102,67 +127,57 @@ class InvertibleColumnTransformer(ColumnTransformer):
         return df_filtered
 
     def fit(self, X, y=None):
-        # Call the fit method of the base class
         super().fit(X, y)
         self._post_fit_processing()
         return self
-        
+
     def _post_fit_processing(self):
-        # Assuming cat_preprocessor is the name of the pipeline step for categorical preprocessing
-        # and it's the second transformer in your setup
-        ohe_transformer = self.named_transformers_['cat'].named_steps['ohe']
-        ohe_columns = ohe_transformer.get_feature_names_out(self.cat_cols)
-        for ohe_col in ohe_columns:
-            # Splitting the one-hot encoded column name to extract the category and its value
-            original_cat, cat_value = ohe_col.split('_', 1)
-            self.cat_to_ohe_cols[original_cat].add(ohe_col)
-            self.ohe_to_cat_value[ohe_col] = cat_value
+        if hasattr(self, 'cat_cols') and self.cat_cols:
+            ohe_transformer = self.named_transformers_['cat'].named_steps['ohe']
+            ohe_columns = ohe_transformer.get_feature_names_out(self.cat_cols)
+            for ohe_col in ohe_columns:
+                original_cat, cat_value = ohe_col.split('_', 1)
+                self.cat_to_ohe_cols[original_cat].add(ohe_col)
+                self.ohe_to_cat_value[ohe_col] = cat_value
 
     def df_transform(self, X):
         fitted_data = super().transform(X)
 
-        ohe_cols = list( self.named_transformers_['cat'].get_feature_names_out() )
+        ohe_cols = list(self.named_transformers_['cat'].get_feature_names_out()) if hasattr(self, 'cat_cols') and self.cat_cols else []
 
         cat_to_ohe_cols = defaultdict(set)
         for ohe_col in ohe_cols:
             cat_to_ohe_cols[ohe_col.split('_')[0]].add(ohe_col)
 
-        df_preprocess = pd.DataFrame(fitted_data, columns=self.num_cols+ohe_cols, index=X.index)
+        df_preprocess = pd.DataFrame(fitted_data, columns=self.num_cols + ohe_cols, index=X.index)
         self.df_inverted = df_preprocess
 
         return df_preprocess
 
     def inverse_transform(self, df):
-        # Initialize an empty dataframe to hold the inverted data
         inverted_df = pd.DataFrame(index=df.index)
 
-        # Access the fitted numerical preprocessor pipeline
         fitted_num_preprocessor = self.named_transformers_['num']
         scaler = fitted_num_preprocessor.named_steps['scaler']
 
-        # Fill in missing columns.
         missing_cols = set(self.df_inverted.columns) - set(df.columns)
         df[list(missing_cols)] = self.df_inverted[list(missing_cols)]
 
-        # Inverse transform for numerical data
         num_data = scaler.inverse_transform(df[self.num_cols])
         for i, col in enumerate(self.num_cols):
             inverted_df[col] = num_data[:, i]
 
-        # Inverse transform for categorical data
-        for cat, ohe_set in self.cat_to_ohe_cols.items():
-            cat_ohe_df = df[list(ohe_set)]
-            # Use the stored mapping to convert back to original categories
-            inverted_df[cat] = cat_ohe_df.idxmax(axis=1).apply(lambda x: self.ohe_to_cat_value[x])
-        
-        # Drop missing columns which are also numeric.
+        if hasattr(self, 'cat_cols') and self.cat_cols:
+            for cat, ohe_set in self.cat_to_ohe_cols.items():
+                cat_ohe_df = df[list(ohe_set)]
+                inverted_df[cat] = cat_ohe_df.idxmax(axis=1).apply(lambda x: self.ohe_to_cat_value[x])
+
         inverted_df = inverted_df.drop(missing_cols & self.num_cols_set, axis=1)
 
         return inverted_df
 
-
-def preprocess_dataframe(df, filter_method = FilterMethod.FILTER_NONE):
-    num_cols = set( df.select_dtypes(include=['int64', 'float32', 'float64']).columns )
+def preprocess_dataframe(df, filter_method=FilterMethod.FILTER_NONE, cols_to_keep=set()):
+    num_cols = set(df.select_dtypes(include=['int64', 'float32', 'float64']).columns)
     cat_cols = [column for column in df.columns if column not in num_cols]
     num_cols = list(num_cols)
 
@@ -179,20 +194,21 @@ def preprocess_dataframe(df, filter_method = FilterMethod.FILTER_NONE):
         ('inputer', SimpleImputer(strategy='constant')),
         ('ohe', OneHotEncoder())
     ])
-    preprocessor = InvertibleColumnTransformer(
-        transformers=[
-            ('num', num_preprocessor, num_cols),
-            ('cat', cat_preprocessor, cat_cols)
-        ]
-    )
-    # Remove columns (features) with high multicollinearity (VIF) with other features.
-    features_to_remove = features_to_remove_by_vif(df_preprocess[num_cols])
-    df_preprocess.drop(columns=features_to_remove)
-    # Remove rows (instances) which are deemd "outliers".
+
+    transformers = [('num', num_preprocessor, num_cols)]
+    if cat_cols:
+        transformers.append(('cat', cat_preprocessor, cat_cols))
+
+    preprocessor = InvertibleColumnTransformer(transformers=transformers)
+    
+    features_to_remove = [col for col in features_to_remove_by_vif(df_preprocess[num_cols]) if col not in cols_to_keep]
+    print(features_to_remove, cols_to_keep)
+    df_preprocess = preprocessor.drop_columns(df_preprocess, features_to_remove)
+    
     df_preprocess = preprocessor.filter_dataframe(df_preprocess, filter_method=filter_method)
     preprocessor.fit(df_preprocess)
     df_preprocess = preprocessor.df_transform(df_preprocess)
-    
+
     return df_preprocess, preprocessor
 
 

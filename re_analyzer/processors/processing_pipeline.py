@@ -25,7 +25,6 @@ def save_property_static_df(property_simple_metrics_df, property_features_df):
     property_static_df['property_url'] = property_static_df['property_url'].astype(str)
 
     property_static_df.to_parquet(PROPERTY_STATIC_DF_PATH)
-    property_static_df.to_csv(os.path.join(PROPERTY_DATA_PATH, 'property_static_df.csv'))
 
 
 if __name__ == '__main__':

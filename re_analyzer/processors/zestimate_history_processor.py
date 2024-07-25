@@ -5,10 +5,9 @@ from re_analyzer.analyzers.iterator import property_details_iterator, get_proper
 
 
 ZESTIMATE_HISTORY_PARQUET_PATH = os.path.join(PROPERTY_DATA_PATH, 'zestimate_history_df.parquet')
-ZESTIMATE_HISTORY_CSV_PATH = os.path.join(PROPERTY_DATA_PATH, 'zestimate_history_df.csv')
 
 
-def save_zestimate_history(zestimate_history_data, parquet_path, csv_path):
+def save_zestimate_history(zestimate_history_data, parquet_path):
     # Convert the zestimate history data to a DataFrame
     records = []
     for zpid, history in zestimate_history_data.items():
@@ -28,11 +27,7 @@ def save_zestimate_history(zestimate_history_data, parquet_path, csv_path):
     
     # Save the DataFrame to a Parquet file
     zestimate_history_df.to_parquet(parquet_path, compression='gzip')
-    
-    # Save the DataFrame to a CSV file
-    zestimate_history_df.to_csv(csv_path)
-    
-    print(f"Zestimate history saved to {parquet_path} and {csv_path}")
+
 
 def save_zestimate_history_pipeline():
     zestimate_history_data = {}
@@ -60,7 +55,7 @@ def save_zestimate_history_pipeline():
     print(f"Properties with valid zestimate history: {processed_properties}")
     print(f"Properties missing zestimate history: {total_properties - processed_properties}")
 
-    save_zestimate_history(zestimate_history_data, ZESTIMATE_HISTORY_PARQUET_PATH, ZESTIMATE_HISTORY_CSV_PATH)
+    save_zestimate_history(zestimate_history_data, ZESTIMATE_HISTORY_PARQUET_PATH)
 
 if __name__ == "__main__":
     save_zestimate_history_pipeline()

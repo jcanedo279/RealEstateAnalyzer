@@ -28,8 +28,7 @@ def real_estate_metrics_property_processing_pipeline():
         if not monthly_restimate:
             monthly_restimate = 0
         purchase_price = property_info.get('price', 1)
-        if not purchase_price:
-            purchase_price = 1
+        purchase_price = int(purchase_price) if purchase_price else 1
         year_built = property_info.get('yearBuilt', 1960)
         if not year_built:
             year_built = 1960
@@ -39,19 +38,11 @@ def real_estate_metrics_property_processing_pipeline():
         bathrooms = property_info.get('bathrooms', 0)
         if not bathrooms:
             bathrooms = 0
-        time_on_zillow = property_info.get('timeOnZillow', '0 days')
-        if not time_on_zillow:
-            time_on_zillow = '0 days'
-        if time_on_zillow.split()[1] in {"day", "hours"}:
-            days_on_zillow = 1
-        else:
-            days_on_zillow = time_on_zillow.split()[0]
         annual_property_tax_rate = property_info.get('propertyTaxRate', 0)
         if not annual_property_tax_rate:
             annual_property_tax_rate = 0
         living_area = property_info.get('livingArea', 0)
-        if not living_area:
-            living_area = 0
+        living_area = int(living_area) if living_area else 0
         lot_size = property_info.get('lotSize', 0)
         if not lot_size:
             lot_size = living_area
@@ -81,9 +72,9 @@ def real_estate_metrics_property_processing_pipeline():
             'zpid' : int(zpid),
             'street_address': property_info.get('streetAddress', 'No Property Address Located'),
             'zip_code': int(zip_code),
-            'purchase_price': float(purchase_price),
+            'purchase_price': purchase_price,
             'monthly_restimate': float(monthly_restimate),
-            'gross_rent_multiplier' : float(purchase_price / (MONTHS_IN_YEAR * monthly_restimate)) if monthly_restimate != 0 else -1,
+            'gross_rent_multiplier' : purchase_price / (MONTHS_IN_YEAR * monthly_restimate) if monthly_restimate != 0 else -1,
             'year_built': int(year_built),
             'bedrooms': int(bedrooms), 'bathrooms': int(bathrooms),
             'annual_property_tax_rate': float(annual_property_tax_rate),
@@ -94,7 +85,8 @@ def real_estate_metrics_property_processing_pipeline():
             'monthly_hoa': float(monthly_hoa),
             'city': property_info.get('city', ''),
             'image_url': image_url,
-            'property_url': property_url
+            'property_url': property_url,
+            'price_per_sqft': purchase_price / living_area if living_area else purchase_price,
         }
         results.append(metrics)
 
