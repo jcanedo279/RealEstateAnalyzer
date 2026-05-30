@@ -157,6 +157,12 @@ re_analyzer/Data/Images/
 re_analyzer/Data/SearchResults/
 re_analyzer/Data/SearchResultsMetadata/
 re_analyzer/Data/PropertyDetails/
+re_analyzer/Data/ScraperDiagnostics/
+re_analyzer/Data/Fetched/
+re_analyzer/Data/Raw/
+re_analyzer/Data/raw/
+re_analyzer/Data/ScrapeRuns/
+re_analyzer/Data/scrape_runs/
 re_analyzer/ChromeAssets/Google Chrome for Testing.app
 *.DS_Store
 
@@ -168,3 +174,23 @@ re_analyzer/ChromeAssets/*
 
 re_analyzer/application/backend/backend_venv/*
 re_analyzer/application/database/postgres_data/*
+
+# Additional data directories
+re_analyzer/Data/DetectionProbe/
+re_analyzer/Data/ManualAnalysis/
+re_analyzer/Data/Examples/
+re_analyzer/Data/InvestmentSelections/
+re_analyzer/Data/VisualData/
+re_analyzer/Data/PropertyData/
+
+# Loose generated data files in Data/
+re_analyzer/Data/*.json
+re_analyzer/Data/*.csv
+re_analyzer/Data/*.txt
+
+# Nested package copy (created by pip install -e .)
+analyzer_package/
+
+# Local output/scratch files
+proc.csv
+zillow_captcha_example.html
