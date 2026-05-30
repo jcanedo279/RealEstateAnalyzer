@@ -1,5 +1,6 @@
 import os
 import json
+import argparse
 from bs4 import BeautifulSoup
 
 from re_analyzer.utility.utility import (
@@ -32,10 +33,10 @@ def update_query_state_data(zip_code, query_state_data):
     existing_data[zip_code] = query_state_data
     save_json(existing_data, QUERY_STATE_DATA_PATH)
 
-def scrape_zip_codes_data(zip_codes):
+def scrape_zip_codes_data(zip_codes, *, overwrite=False):
     zip_code_query_state_data = get_zip_code_query_state_data()
     for zip_code_ind, zip_code in enumerate(zip_codes):
-        if zip_code not in zip_code_query_state_data:
+        if overwrite or zip_code not in zip_code_query_state_data:
             query_state_data = scrape_zip_code_data(zip_code)
             if query_state_data:
                 update_query_state_data(zip_code, query_state_data)
@@ -54,6 +55,39 @@ def scrape_zip_code_data(zip_code):
         query_state_data['filterState']['sortSelection']['value'] = 'days'
         return query_state_data
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Scrape and persist Zillow queryState for ZIP search pages.")
+    parser.add_argument("--zip-code", action="append", help="ZIP code to fetch queryState for (repeatable).")
+    parser.add_argument(
+        "--overwrite",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Refresh queryState even if the ZIP already exists in query_state_data.json.",
+    )
+    parser.add_argument(
+        "--max-zip-codes",
+        type=int,
+        default=0,
+        help="Optional cap on the number of ZIP codes processed (0 means no cap).",
+    )
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    existing = get_zip_code_query_state_data()
+    zip_codes = []
+    if args.zip_code:
+        zip_codes = [str(value).strip() for value in args.zip_code if str(value).strip()]
+    else:
+        zip_codes = [zip_code for zip_code in load_search_zip_codes() if args.overwrite or str(zip_code) not in existing]
+    if args.max_zip_codes and args.max_zip_codes > 0:
+        zip_codes = zip_codes[: args.max_zip_codes]
+    if not zip_codes:
+        print("No ZIP codes selected for queryState scrape.")
+        return
+    scrape_zip_codes_data(zip_codes, overwrite=bool(args.overwrite))
+
+
 if __name__ == '__main__':
-    zip_codes = [zip_code for zip_code in load_search_zip_codes() if str(zip_code) not in zip_code_query_state_data]
-    scrape_zip_codes_data(zip_codes)
+    main()

@@ -2,6 +2,7 @@ import os
 import math
 import csv
 import json
+import argparse
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium.common.exceptions import NoSuchElementException
@@ -69,16 +70,31 @@ def should_extract_property_details(search_result, search_result_ind, search_res
 
 
 # Roughly 5 seconds per response -> ~ 14 hours for 10,000 requests.
-def extract_property_details_from_search_results(batch_size=5):
+def extract_property_details_from_search_results(batch_size=5, *, zip_codes=None, limit=0, search_results_csv_path=None):
     """
         Main function to initiate the property details extraction process.
     """
     
     # Load and filter data.
+    zip_codes_set = None
+    if zip_codes:
+        zip_codes_set = {str(value).strip() for value in zip_codes if str(value).strip()}
+        if not zip_codes_set:
+            zip_codes_set = None
+
+    csv_path = search_results_csv_path or SEARCH_RESULTS_PROCESSED_PATH
     search_results = []
-    with open(SEARCH_RESULTS_PROCESSED_PATH, newline='', encoding='utf-8') as csvfile:
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
         reader = list(csv.DictReader(csvfile))
-        search_results = [search_result for search_result_ind, search_result in enumerate(reader) if should_extract_property_details(search_result, search_result_ind, len(reader))]
+        if zip_codes_set is not None:
+            reader = [row for row in reader if str(row.get("zip_code") or "").strip() in zip_codes_set]
+        search_results = [
+            search_result
+            for search_result_ind, search_result in enumerate(reader)
+            if should_extract_property_details(search_result, search_result_ind, len(reader))
+        ]
+        if limit and int(limit) > 0:
+            search_results = search_results[: int(limit)]
 
     # Generate and process batches.
     num_batches = math.ceil(len(search_results) / batch_size)
@@ -206,4 +222,19 @@ def extract_zestimate_history_from_driver(driver):
 
 
 if __name__ == '__main__':
-    extract_property_details_from_search_results()
+    parser = argparse.ArgumentParser(description="Extract Zillow property details for processed search listings.")
+    parser.add_argument("--batch-size", type=int, default=5)
+    parser.add_argument("--zip-code", action="append", help="Only process listings for this ZIP code (repeatable).")
+    parser.add_argument("--limit", type=int, default=0, help="Optional cap on number of listings processed (0 means no cap).")
+    parser.add_argument(
+        "--search-results-csv",
+        default="",
+        help="Override path to the processed search listings CSV (defaults to re_analyzer/utility DATA_PATH search_listings.csv).",
+    )
+    args = parser.parse_args()
+    extract_property_details_from_search_results(
+        batch_size=int(args.batch_size or 5),
+        zip_codes=args.zip_code,
+        limit=int(args.limit or 0),
+        search_results_csv_path=str(args.search_results_csv).strip() or None,
+    )
