@@ -20,6 +20,7 @@ from re_analyzer.scrapers.provider_adapters import (
     UnsupportedProviderRegionError,
     ZillowListingProvider,
 )
+from re_analyzer.scrapers.injection_manifest import write_zip_injection_manifest
 from re_analyzer.scrapers.zip_eligibility import filter_zip_codes_for_scrape
 from re_analyzer.utility.utility import (
     DATA_PATH,
@@ -696,12 +697,24 @@ def _save_provider_results(provider, zip_code, raw_listings, canonical_listings)
     with open(canonical_path, "w", encoding="utf-8") as file:
         json.dump([asdict(listing) for listing in canonical_listings], file, indent=4, default=str)
 
+    injection_manifest = write_zip_injection_manifest(
+        provider.source_name,
+        str(zip_code),
+        canonical_path,
+        raw_path=raw_path,
+        metadata_path=_metadata_path_for_provider(provider.source_name, zip_code),
+    )
+    injection_manifest_path = injection_manifest.get("manifest_path")
+    injection_ready_count = int((injection_manifest.get("summary") or {}).get("canonical_listing_count") or 0)
+
     if provider.source_name == "zillow":
         provider.zillow_search.maybe_save_current_search_results(str(zip_code), raw_listings)
         return {
             "saved_payload": True,
             "raw_path": raw_path,
             "canonical_path": canonical_path,
+            "injection_manifest_path": injection_manifest_path,
+            "injection_ready_count": injection_ready_count,
             "legacy_metadata_path": _legacy_zillow_metadata_path(zip_code),
         }
 
@@ -723,6 +736,8 @@ def _save_provider_results(provider, zip_code, raw_listings, canonical_listings)
         "saved_payload": True,
         "raw_path": raw_path,
         "canonical_path": canonical_path,
+        "injection_manifest_path": injection_manifest_path,
+        "injection_ready_count": injection_ready_count,
     }
 
 
@@ -816,6 +831,7 @@ def _record_provider_zip_metadata(
             key: value for key, value in {
                 "raw_path": save_result.get("raw_path"),
                 "canonical_path": save_result.get("canonical_path"),
+                "injection_manifest_path": save_result.get("injection_manifest_path"),
                 "legacy_metadata_path": save_result.get("legacy_metadata_path"),
                 "property_details_dir": (
                     os.path.join(PROPERTY_DETAILS_PATH, str(zip_code))

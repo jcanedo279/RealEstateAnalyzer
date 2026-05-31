@@ -1,17 +1,18 @@
 """
 Normalizes scraped data into a single canonical Parquet store.
 
-Three operations (all idempotent, safe to re-run):
+Four operations (all idempotent, safe to re-run):
 
   1. ARCHIVE  – moves legacy SearchResults/ and SearchResultsMetadata/ into Data/Archive/
   2. PRUNE    – keeps only the latest timestamped JSON per provider/ZIP; deletes older copies
   3. BUILD    – reads all latest canonical_listings_*.json files and writes
                 Data/Canonical/canonical_listings.parquet
+  4. MANIFEST - writes Data/Fetched/injection_manifest.json for backend ingestion
 
 Run directly:
     ./venv/bin/python -m re_analyzer.scrapers.normalize_data [--dry-run] [--skip-archive]
                                                               [--skip-prune] [--skip-build]
-                                                              [--output PATH]
+                                                              [--skip-manifest] [--output PATH]
 """
 from __future__ import annotations
 
@@ -22,6 +23,8 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
+from re_analyzer.scrapers.injection_manifest import write_injection_manifest
 
 DATA_ROOT = Path(__file__).resolve().parents[1] / "Data"
 FETCHED_ROOT = DATA_ROOT / "Fetched"
@@ -313,28 +316,38 @@ def normalize(
     fetched_root: Path = FETCHED_ROOT,
     output_path: Optional[Path] = None,
     extra_output_paths: Optional[list] = None,
+    manifest_output_path: Optional[Path] = None,
     dry_run: bool = False,
     skip_archive: bool = False,
     skip_prune: bool = False,
     skip_build: bool = False,
+    skip_manifest: bool = False,
 ) -> dict:
     results: dict = {}
 
     if not skip_archive:
-        print("\n[1/3] Archiving legacy directories …")
+        print("\n[1/4] Archiving legacy directories ...")
         results["archive"] = archive_legacy(data_root=data_root, dry_run=dry_run)
 
     if not skip_prune:
-        print("\n[2/3] Pruning old timestamped JSON files …")
+        print("\n[2/4] Pruning old timestamped JSON files ...")
         results["prune"] = prune_old_json(fetched_root=fetched_root, dry_run=dry_run)
 
     if not skip_build:
-        print("\n[3/3] Building canonical Parquet …")
+        print("\n[3/4] Building canonical Parquet ...")
         results["build"] = build_canonical_parquet(
             fetched_root=fetched_root,
             output_path=output_path,
             dry_run=dry_run,
             extra_output_paths=extra_output_paths,
+        )
+
+    if not skip_manifest:
+        print("\n[4/4] Writing injection manifest ...")
+        results["manifest"] = write_injection_manifest(
+            fetched_root=fetched_root,
+            output_path=manifest_output_path,
+            dry_run=dry_run,
         )
 
     return results
@@ -346,7 +359,9 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-archive", action="store_true", help="Skip archiving legacy directories")
     parser.add_argument("--skip-prune", action="store_true", help="Skip pruning old JSON timestamps")
     parser.add_argument("--skip-build", action="store_true", help="Skip building the canonical Parquet")
+    parser.add_argument("--skip-manifest", action="store_true", help="Skip writing the backend injection manifest")
     parser.add_argument("--output", type=Path, default=None, help="Override canonical Parquet output path")
+    parser.add_argument("--manifest-output", type=Path, default=None, help="Override injection manifest output path")
     return parser.parse_args()
 
 
@@ -358,6 +373,8 @@ if __name__ == "__main__":
         skip_archive=args.skip_archive,
         skip_prune=args.skip_prune,
         skip_build=args.skip_build,
+        skip_manifest=args.skip_manifest,
         output_path=args.output,
+        manifest_output_path=args.manifest_output,
     )
     print("\nDone:", results)

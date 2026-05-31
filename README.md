@@ -40,6 +40,30 @@ The runner normalizes provider-native records into a source-neutral
 - normalized address, city, state, and ZIP
 - price, rent estimate, home type, and URL when available
 
+## Scraper to backend handoff
+
+When `--save` is set, each provider/ZIP scrape writes three operator-readable
+files under `re_analyzer/Data/Fetched/{provider}/{zip_code}/`:
+
+- `listings_TIMESTAMP.json`: provider-native listing payloads.
+- `canonical_listings_TIMESTAMP.json`: the normalized listing rows the backend can ingest.
+- `injection_manifest_latest.json`: the exact backend handoff for that provider/ZIP.
+
+Run normalization after a scrape to prune old timestamps, rebuild the canonical
+Parquet handoff, and write the global manifest:
+
+```bash
+cd analyzer_package
+./venv/bin/python -m re_analyzer.scrapers.normalize_data
+```
+
+The global manifest is `re_analyzer/Data/Fetched/injection_manifest.json`. The
+backend `POST /api/admin/ingest` job prefers that manifest, then falls back to
+scanning latest `canonical_listings_*.json` files if the manifest is missing.
+The manifest intentionally excludes browser diagnostics, screenshots, HTML
+pages, downloaded image binaries, and Chrome profile/cache files from the
+database injection path.
+
 ### Zillow Florida refresh
 
 The Zillow ZIP runner can discover the available page count from the first
