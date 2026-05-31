@@ -23,7 +23,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from collections import defaultdict
 
-from re_analyzer.utility.utility import PROJECT_CONFIG, DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, random_delay
+from re_analyzer.utility.utility import DEFAULT_DATA_PATH, PROJECT_CONFIG, DATA_PATH, SEARCH_LISTINGS_METADATA_PATH, random_delay
 
 
 # Chromium versions found at: https://vikyd.github.io/download-chromium-history-version/#/
@@ -215,8 +215,13 @@ if platform.system() == "Darwin":
 def _has_user_data_dir(path: Optional[str]) -> bool:
     return bool(path) and os.path.exists(path)
 
-MUNICIPALITIES_DATA_PATH = os.path.join(DATA_PATH, 'florida_municipalities_data.txt')
-ZIP_CODES_DATA_PATH = os.path.join(DATA_PATH, 'florida_zip_codes.txt')
+def _local_or_bundled_data_file(name: str) -> str:
+    local_path = os.path.join(DATA_PATH, name)
+    return local_path if os.path.exists(local_path) else os.path.join(DEFAULT_DATA_PATH, name)
+
+
+MUNICIPALITIES_DATA_PATH = _local_or_bundled_data_file('florida_municipalities_data.txt')
+ZIP_CODES_DATA_PATH = _local_or_bundled_data_file('florida_zip_codes.txt')
 
 def _parse_chrome_major_version(output: str) -> Optional[int]:
     text = str(output or "").strip()

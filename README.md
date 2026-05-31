@@ -42,8 +42,11 @@ The runner normalizes provider-native records into a source-neutral
 
 ## Scraper to backend handoff
 
-Generated scraper data is intentionally not part of git. Keep local copies under
-`re_analyzer/Data/` while developing, but treat canonical JSON, raw listing JSON,
+Generated scraper data is intentionally not part of git. By default it is written
+under `re_analyzer/Data/`. On a private scraper/VPS host, set
+`RE_ANALYZER_DATA_PATH` to a local persistent directory such as
+`/opt/parcel/scraper_data` so the backend container can ingest the same files
+through its `/app/scraper_data` mount. Treat canonical JSON, raw listing JSON,
 property-detail payloads, screenshots, HTML, downloaded images, generated
 visualizations, ad hoc analysis CSVs, and old Parquet exports as runtime/operator
 artifacts.
@@ -60,12 +63,15 @@ Parquet handoff, and write the global manifest:
 
 ```bash
 cd analyzer_package
+export RE_ANALYZER_DATA_PATH=/opt/parcel/scraper_data
 ./venv/bin/python -m re_analyzer.scrapers.normalize_data
 ```
 
-The global manifest is `re_analyzer/Data/Fetched/injection_manifest.json`. The
-backend `POST /api/admin/ingest` job prefers that manifest, then falls back to
-scanning latest `canonical_listings_*.json` files if the manifest is missing.
+The global manifest is
+`$RE_ANALYZER_DATA_PATH/Fetched/injection_manifest.json` when the override is
+set, otherwise `re_analyzer/Data/Fetched/injection_manifest.json`. The backend
+`POST /api/admin/ingest` job prefers that manifest, then falls back to scanning
+latest `canonical_listings_*.json` files if the manifest is missing.
 The manifest intentionally excludes browser diagnostics, screenshots, HTML
 pages, downloaded image binaries, and Chrome profile/cache files from the
 database injection path.

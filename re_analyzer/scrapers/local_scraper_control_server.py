@@ -21,6 +21,7 @@ from re_analyzer.scrapers.scraping_utility import (
     _bundled_chromedriver_binary,
     _existing_env_path,
 )
+from re_analyzer.utility.utility import DATA_PATH
 
 
 RUNS = {}
@@ -28,6 +29,9 @@ RUN_LOCK = threading.Lock()
 PROBE_RUNS = {}
 PROBE_RUN_LOCK = threading.Lock()
 LOG_LIMIT = int(os.environ.get("LOCAL_SCRAPER_LOG_LIMIT", "2000"))
+RE_ANALYZER_ROOT = Path(__file__).resolve().parents[1]
+DATA_ROOT = Path(DATA_PATH)
+FETCHED_ROOT = DATA_ROOT / "Fetched"
 
 
 def _detect_binary_version(path: str) -> str:
@@ -234,10 +238,10 @@ ALLOWED_ORIGINS = {
     "http://127.0.0.1:8080",
 }
 PROVIDERS = {"zillow", "redfin", "realtor"}
-PROFILE_ROOT = Path("re_analyzer/Data/ScraperDiagnostics/ParallelProfiles")
-RESUME_PROGRESS_PATH = Path("re_analyzer/Data/ScraperDiagnostics/resume_progress.json")
+PROFILE_ROOT = DATA_ROOT / "ScraperDiagnostics" / "ParallelProfiles"
+RESUME_PROGRESS_PATH = DATA_ROOT / "ScraperDiagnostics" / "resume_progress.json"
 RESUME_PROGRESS_LOCK = threading.Lock()
-PROBE_ROOT = Path("re_analyzer/Data/DetectionProbe/ProbeRuns")
+PROBE_ROOT = DATA_ROOT / "DetectionProbe" / "ProbeRuns"
 CONTROL_TOKEN = os.environ.get("LOCAL_SCRAPER_CONTROL_TOKEN", "").strip()
 REQUIRE_TOKEN_FOR_MUTATIONS = os.environ.get("LOCAL_SCRAPER_REQUIRE_TOKEN_FOR_MUTATIONS", "true").strip().lower() not in {"0", "false", "no", "off"}
 
@@ -365,7 +369,7 @@ def active_total_count():
 
 
 def latest_reconciliation_report():
-    report_dir = Path(__file__).resolve().parents[1] / "Data" / "Fetched" / "Reconciliation"
+    report_dir = FETCHED_ROOT / "Reconciliation"
     paths = sorted(report_dir.glob("source_reconciliation_*.json"), key=lambda item: item.stat().st_mtime)
     if not paths:
         return None, {"error": "No source reconciliation reports found.", "report_dir": str(report_dir)}
@@ -461,7 +465,7 @@ def _resolve_auto_resume_zip(payload: dict, *, refresh_provider: str) -> str:
         return zip_code
 
     def latest_zip_from_metadata(provider: str) -> str:
-        meta_dir = Path(__file__).resolve().parents[1] / "Data" / "Fetched" / provider / "Metadata"
+        meta_dir = FETCHED_ROOT / provider / "Metadata"
         if not meta_dir.exists():
             return ""
         candidates = list(meta_dir.glob("*_metadata.json"))
@@ -1204,7 +1208,7 @@ def zip_coverage():
         cooldown_hours = 36.0
     include_detail = request.args.get("detail", "0") not in ("0", "false", "")
     now = datetime.now(timezone.utc)
-    re_root = Path(__file__).resolve().parents[1]
+    re_root = RE_ANALYZER_ROOT
 
     # Load Florida ZIP list
     zip_path = re_root / "data" / "florida_zip_codes.txt"
@@ -1215,7 +1219,7 @@ def zip_coverage():
 
     # Load HUD-USPS eligibility
     eligibility: dict = {}
-    elig_path = re_root / "Data" / "Fetched" / "ZipEligibility" / "hud_usps_zip_eligibility.json"
+    elig_path = FETCHED_ROOT / "ZipEligibility" / "hud_usps_zip_eligibility.json"
     if elig_path.exists():
         try:
             eligibility = json.loads(elig_path.read_text(encoding="utf-8")).get("entries", {})
@@ -1229,7 +1233,7 @@ def zip_coverage():
     provider_summary: dict = {}
 
     for provider in providers_list:
-        meta_dir = re_root / "Data" / "Fetched" / provider / "Metadata"
+        meta_dir = FETCHED_ROOT / provider / "Metadata"
         fresh = stale = never = with_data = 0
         status_counts: dict = {}
 
@@ -1637,7 +1641,7 @@ def stale_zip_count():
 
     provider_filter = (request.args.get("provider") or "all").strip().lower()
     now = datetime.now(timezone.utc)
-    re_root = Path(__file__).resolve().parents[1]
+    re_root = RE_ANALYZER_ROOT
 
     zip_path = re_root / "data" / "florida_zip_codes.txt"
     all_zips: list = []
@@ -1652,7 +1656,7 @@ def stale_zip_count():
 
     result: dict = {}
     for provider in providers_to_check:
-        meta_dir = re_root / "Data" / "Fetched" / provider / "Metadata"
+        meta_dir = FETCHED_ROOT / provider / "Metadata"
         stale = fresh = never = 0
         for zip_code in all_zips:
             meta_path = meta_dir / f"{zip_code}_metadata.json"

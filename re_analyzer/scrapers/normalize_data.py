@@ -25,8 +25,9 @@ from pathlib import Path
 from typing import Optional
 
 from re_analyzer.scrapers.injection_manifest import write_injection_manifest
+from re_analyzer.utility.utility import DATA_PATH
 
-DATA_ROOT = Path(__file__).resolve().parents[1] / "Data"
+DATA_ROOT = Path(DATA_PATH)
 FETCHED_ROOT = DATA_ROOT / "Fetched"
 CANONICAL_DIR = DATA_ROOT / "Canonical"
 ARCHIVE_ROOT = DATA_ROOT / "Archive"
@@ -113,9 +114,11 @@ def listing_to_row(listing: dict, scraped_at: str) -> dict:
     price = _safe_float(listing.get("price"))
     rent = _safe_float(listing.get("rent_estimate"))
     grm = round(price / (rent * 12), 4) if rent > 0 and price > 0 else 0.0
+    canonical_property_id = str(listing.get("canonical_property_id") or "")
 
     return {
-        "canonical_property_id": str(listing.get("canonical_property_id") or ""),
+        "property_id": canonical_property_id,
+        "canonical_property_id": canonical_property_id,
         "source_name": str(listing.get("source_name") or ""),
         "source_property_id": str(listing.get("source_property_id") or ""),
         "street_address": str(listing.get("address") or ""),

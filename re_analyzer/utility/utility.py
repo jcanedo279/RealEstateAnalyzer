@@ -198,8 +198,14 @@ load_dotenv(override=True)
 #######################
 
 PROJECT_CONFIG = ProjectConfigManager()
- 
-DATA_PATH = get_abs_path('Data')
+
+DEFAULT_DATA_PATH = get_abs_path('Data')
+_CONFIGURED_DATA_PATH = os.environ.get('RE_ANALYZER_DATA_PATH', '').strip()
+DATA_PATH = (
+    os.path.abspath(os.path.expanduser(_CONFIGURED_DATA_PATH))
+    if _CONFIGURED_DATA_PATH
+    else DEFAULT_DATA_PATH
+)
 
 VISUAL_DATA_PATH = os.path.join(DATA_PATH, 'VisualData')
 SEARCH_LISTINGS_DATA_PATH = os.path.join(DATA_PATH, 'SearchResults')
