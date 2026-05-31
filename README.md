@@ -42,6 +42,12 @@ The runner normalizes provider-native records into a source-neutral
 
 ## Scraper to backend handoff
 
+Generated scraper data is intentionally not part of git. Keep local copies under
+`re_analyzer/Data/` while developing, but treat canonical JSON, raw listing JSON,
+property-detail payloads, screenshots, HTML, downloaded images, generated
+visualizations, ad hoc analysis CSVs, and old Parquet exports as runtime/operator
+artifacts.
+
 When `--save` is set, each provider/ZIP scrape writes three operator-readable
 files under `re_analyzer/Data/Fetched/{provider}/{zip_code}/`:
 

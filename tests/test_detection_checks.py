@@ -32,12 +32,12 @@ class StubDriver:
 
 
 def _load_fixture_text(rel_path: str) -> str:
-    path = pathlib.Path(__file__).resolve().parent.parent / rel_path
+    path = pathlib.Path(__file__).resolve().parent / "fixtures" / rel_path
     return path.read_text(encoding="utf-8")
 
 
 def test_detect_challenge_flags_zillow_press_and_hold_fixture():
-    html = _load_fixture_text("zillow_captcha_example.html")
+    html = _load_fixture_text("zillow_press_and_hold.html")
     body_text = "Before we continue... Press & Hold to confirm you are a human (and not a bot)."
     driver = StubDriver(
         title="Before we continue…",
