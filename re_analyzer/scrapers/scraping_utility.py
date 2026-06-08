@@ -1046,26 +1046,16 @@ def get_selenium_driver(
   } catch (e) {}
 
   // ── 8: Hardware fingerprint normalisation ────────────────────────────────
-  // navigator.hardwareConcurrency and navigator.deviceMemory are read by
-  // fingerprinters (Pixelscan, FingerprintJS) to build a hardware profile.
-  // headless Chrome reports deviceMemory=0.25 (a dead giveaway); real desktops
-  // typically report 4 or 8.  We lock both to plausible mid-range values.
+  // navigator.hardwareConcurrency and navigator.deviceMemory must NOT be
+  // spoofed here. This script runs only in the main-window context; Web Workers
+  // and Service Workers use a separate WorkerNavigator realm that
+  // Page.addScriptToEvaluateOnNewDocument never reaches. Overriding the main
+  // window to an arbitrary value (e.g. 8) while Workers leak the real hardware
+  // creates a cross-context inconsistency that PerimeterX/HUMAN treat as a
+  // "lie" and use to classify the session as automated before issuing any
+  // trust token. Running non-headless Chrome on real hardware never exposes
+  // the deviceMemory=0.25 headless giveaway, so no override is needed.
   // window.screen dimensions must match --window-size or the mismatch flags us.
-  try {
-    var _navProto = Object.getPrototypeOf(navigator);
-    var _hcDesc = _origGOPD(_navProto, 'hardwareConcurrency');
-    if (_hcDesc) {
-      _origDefProp(_navProto, 'hardwareConcurrency', {
-        get: function () { return 8; }, configurable: true, enumerable: true,
-      });
-    }
-    var _dmDesc = _origGOPD(_navProto, 'deviceMemory');
-    if (_dmDesc) {
-      _origDefProp(_navProto, 'deviceMemory', {
-        get: function () { return 8; }, configurable: true, enumerable: true,
-      });
-    }
-  } catch (e) {}
   try {
     // Align screen dimensions with the --window-size argument so the
     // ratio window.outerWidth/screen.width looks like a normal desktop.
@@ -1107,9 +1097,14 @@ def get_selenium_driver(
   } catch (e) {}
 
   // ── 9: Blob patch for blob-sourced workers ─────────────────────────────────
-  // Prepend a self-contained webdriver fix to every application/javascript Blob
-  // so DedicatedWorkers created from Blob URLs also have navigator.webdriver === undefined
-  // (matching real, non-automated Chrome) rather than false.
+  // Prepend a self-contained fix to every application/javascript Blob so
+  // DedicatedWorkers created from Blob URLs also have navigator.webdriver ===
+  // undefined (matching real, non-automated Chrome) rather than false.
+  //
+  // hardwareConcurrency and deviceMemory are intentionally NOT overridden here.
+  // Workers naturally expose the real hardware values; the main window must
+  // match them (see section 8 above). Any mismatch is a PerimeterX lie-detect
+  // trigger. The Blob preamble must not introduce new cross-context divergence.
   //
   // Strategy: redefine the prototype getter to return undefined, then wrap
   // globalThis.navigator in a Proxy whose `has` trap hides the property from
