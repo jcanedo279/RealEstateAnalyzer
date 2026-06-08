@@ -1,7 +1,9 @@
 import json
 import hashlib
+import os
 import random
 import re
+import shutil
 import time
 from datetime import datetime
 from pathlib import Path
@@ -464,6 +466,105 @@ def safe_url(driver):
         return ""
 
 
+def _diagnostic_example_limit():
+    try:
+        return max(0, int(os.environ.get("SCRAPER_DIAGNOSTIC_EXAMPLE_LIMIT", "3")))
+    except ValueError:
+        return 3
+
+
+def _parse_diagnostic_prefix(prefix):
+    parts = str(prefix or "").split("_")
+    provider = parts[0] if parts else "unknown"
+    zip_code = parts[1] if len(parts) > 1 and parts[1].isdigit() else ""
+    reason_start = 2 if zip_code else 1
+    reason = "_".join(parts[reason_start:]) or "unknown"
+    provider = re.sub(r"[^a-zA-Z0-9_.-]+", "_", provider).strip("_").lower() or "unknown"
+    reason = re.sub(r"[^a-zA-Z0-9_.-]+", "_", reason).strip("_").lower() or "unknown"
+    return provider, zip_code, reason
+
+
+def _copy_diagnostic_example(diagnostics_path, safe_prefix, timestamp, metadata_path, html_path, screenshot_path):
+    limit = _diagnostic_example_limit()
+    if limit <= 0:
+        return None
+
+    provider, zip_code, reason = _parse_diagnostic_prefix(safe_prefix)
+    examples_root = diagnostics_path / "RecentExamples"
+    bucket_dir = examples_root / provider / reason
+    bucket_dir.mkdir(parents=True, exist_ok=True)
+
+    copied_files = {}
+    for label, source_path in (
+        ("metadata", metadata_path),
+        ("html", html_path),
+        ("screenshot", screenshot_path),
+    ):
+        if not source_path.exists():
+            continue
+        target_path = bucket_dir / f"{timestamp}_{safe_prefix}{source_path.suffix}"
+        shutil.copy2(source_path, target_path)
+        copied_files[label] = str(target_path.relative_to(diagnostics_path))
+
+    example = {
+        "timestamp": timestamp,
+        "captured_at_epoch": time.time(),
+        "provider": provider,
+        "zip_code": zip_code,
+        "reason": reason,
+        "prefix": safe_prefix,
+        "files": copied_files,
+        "source_files": {
+            "metadata": metadata_path.name,
+            "html": html_path.name,
+            "screenshot": screenshot_path.name,
+        },
+    }
+
+    manifest_path = examples_root / "manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
+    except (OSError, json.JSONDecodeError):
+        manifest = {}
+    buckets = manifest.setdefault("buckets", {})
+    bucket_key = f"{provider}/{reason}"
+    bucket = buckets.setdefault(bucket_key, {
+        "provider": provider,
+        "reason": reason,
+        "examples": [],
+    })
+    bucket["examples"] = [
+        item for item in bucket.get("examples", [])
+        if item.get("prefix") != safe_prefix or item.get("timestamp") != timestamp
+    ]
+    bucket["examples"].append(example)
+    bucket["examples"].sort(
+        key=lambda item: (float(item.get("captured_at_epoch") or 0), item.get("timestamp", ""), item.get("prefix", "")),
+        reverse=True,
+    )
+
+    retained = bucket["examples"][:limit]
+    pruned = bucket["examples"][limit:]
+    bucket["examples"] = retained
+    bucket["updated_at"] = retained[0]["timestamp"] if retained else timestamp
+    bucket["limit"] = limit
+
+    for old in pruned:
+        for relative_path in (old.get("files") or {}).values():
+            try:
+                (diagnostics_path / relative_path).unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    manifest["updated_at"] = datetime.now().isoformat()
+    manifest["limit_per_provider_reason"] = limit
+    manifest["total_examples"] = sum(len(item.get("examples", [])) for item in buckets.values())
+    tmp_path = manifest_path.with_suffix(".tmp")
+    tmp_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    tmp_path.replace(manifest_path)
+    return example
+
+
 def save_page_diagnostics(driver, diagnostics_dir, prefix, extra=None):
     diagnostics_path = Path(diagnostics_dir).expanduser().resolve()
     diagnostics_path.mkdir(parents=True, exist_ok=True)
@@ -507,11 +608,20 @@ def save_page_diagnostics(driver, diagnostics_dir, prefix, extra=None):
         screenshot_error = str(exc)
         metadata["screenshot_error"] = screenshot_error
         metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8")
+    recent_example = _copy_diagnostic_example(
+        diagnostics_path,
+        safe_prefix,
+        timestamp,
+        metadata_path,
+        html_path,
+        screenshot_path,
+    )
 
     return {
         "metadata_path": str(metadata_path),
         "html_path": str(html_path),
         "screenshot_path": str(screenshot_path),
+        "recent_example": recent_example,
         "html_size": html_size,
         "html_sha256": html_sha256,
         "html_excerpt": html_excerpt,

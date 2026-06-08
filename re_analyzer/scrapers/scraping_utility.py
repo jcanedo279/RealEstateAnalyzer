@@ -1045,7 +1045,51 @@ def get_selenium_driver(
     document.addEventListener('DOMContentLoaded', _rmWdAttr, { once: true, capture: true });
   } catch (e) {}
 
-  // ── 8: PointerEvent pressure ─────────────────────────────────────────────
+  // ── 8: Hardware fingerprint normalisation ────────────────────────────────
+  // navigator.hardwareConcurrency and navigator.deviceMemory are read by
+  // fingerprinters (Pixelscan, FingerprintJS) to build a hardware profile.
+  // headless Chrome reports deviceMemory=0.25 (a dead giveaway); real desktops
+  // typically report 4 or 8.  We lock both to plausible mid-range values.
+  // window.screen dimensions must match --window-size or the mismatch flags us.
+  try {
+    var _navProto = Object.getPrototypeOf(navigator);
+    var _hcDesc = _origGOPD(_navProto, 'hardwareConcurrency');
+    if (_hcDesc) {
+      _origDefProp(_navProto, 'hardwareConcurrency', {
+        get: function () { return 8; }, configurable: true, enumerable: true,
+      });
+    }
+    var _dmDesc = _origGOPD(_navProto, 'deviceMemory');
+    if (_dmDesc) {
+      _origDefProp(_navProto, 'deviceMemory', {
+        get: function () { return 8; }, configurable: true, enumerable: true,
+      });
+    }
+  } catch (e) {}
+  try {
+    // Align screen dimensions with the --window-size argument so the
+    // ratio window.outerWidth/screen.width looks like a normal desktop.
+    var _sw = window.outerWidth || 1280;
+    var _sh = window.outerHeight || 800;
+    var _scrProto = Object.getPrototypeOf(window.screen);
+    var _scrTarget = _scrProto || window.screen;
+    ['width','availWidth'].forEach(function(k) {
+      try {
+        _origDefProp(_scrTarget, k, { get: function(){ return _sw; }, configurable:true, enumerable:true });
+      } catch(e) {}
+    });
+    ['height','availHeight'].forEach(function(k) {
+      try {
+        _origDefProp(_scrTarget, k, { get: function(){ return _sh; }, configurable:true, enumerable:true });
+      } catch(e) {}
+    });
+    try {
+      _origDefProp(_scrTarget, 'colorDepth',  { get: function(){ return 24; }, configurable:true, enumerable:true });
+      _origDefProp(_scrTarget, 'pixelDepth',  { get: function(){ return 24; }, configurable:true, enumerable:true });
+    } catch(e) {}
+  } catch (e) {}
+
+  // ── 9: PointerEvent pressure ─────────────────────────────────────────────
   // CDP Input.dispatchMouseEvent sends pressure=0.5 on press, but Chrome does not
   // forward that value into the synthesised PointerEvent.pressure property — the
   // getter always returns 0 regardless of the CDP field. Real desktop mice return

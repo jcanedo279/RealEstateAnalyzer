@@ -382,7 +382,7 @@ def _fetch_zillow_property_details_for_zip(driver, zip_code: str, canonical_list
     }
 
 
-def _load_provider(provider_name):
+def _load_provider(provider_name, args=None):
     if provider_name == "zillow":
         import re_analyzer.scrapers.zillow_search_scraper as zillow_search
         zillow_search.get_selenium_driver = scraping_utility.get_selenium_driver
@@ -390,7 +390,8 @@ def _load_provider(provider_name):
     if provider_name == "redfin":
         return RedfinListingProvider()
     if provider_name == "realtor":
-        return RealtorListingProvider()
+        donor_dirs = getattr(args, "realtor_cookie_donor_profiles", None) or []
+        return RealtorListingProvider(donor_profile_dirs=donor_dirs or None)
     raise ValueError(f"Unsupported provider: {provider_name}")
 
 
@@ -805,6 +806,9 @@ def _record_provider_zip_metadata(
             "redfin_rental_estimates": bool(getattr(args, "redfin_rental_estimates", False)),
             "redfin_rental_estimate_limit_per_zip": int(getattr(args, "redfin_rental_estimate_limit_per_zip", 0) or 0),
             "redfin_rental_estimate_delay_seconds": float(getattr(args, "redfin_rental_estimate_delay_seconds", 0.25) or 0),
+            "realtor_property_estimates": bool(getattr(args, "realtor_property_estimates", False)),
+            "realtor_property_estimates_limit_per_zip": int(getattr(args, "realtor_property_estimates_limit_per_zip", 0) or 0),
+            "realtor_property_estimates_delay_seconds": float(getattr(args, "realtor_property_estimates_delay_seconds", 0.5) or 0),
             "zillow_property_details": ({
                 "enabled": bool(getattr(args, "zillow_property_details", False)),
                 "attempted": int((save_result.get("zillow_property_details") or {}).get("attempted") or 0),
@@ -883,6 +887,7 @@ def _summarize_requests(requests):
             "raw_count": request.get("raw_count"),
             "total_pages": request.get("total_pages"),
             "redfin_rental_estimates": request.get("redfin_rental_estimates"),
+            "realtor_property_estimates": request.get("realtor_property_estimates"),
         })
     return summarized
 
@@ -905,7 +910,7 @@ def run_scrape(args):
         _clear_chrome_profile_cache(scraping_utility.CHROME_USER_DATA_DIR)
     _set_chromedriver_startup_lock_mode(args.driver_startup_lock)
     _set_chromedriver_user_multi_procs(args.driver_user_multi_procs)
-    provider = _load_provider(args.provider)
+    provider = _load_provider(args.provider, args)
     zip_codes = _bounded_zip_codes(args, provider)
     page_limit = max(1, args.max_pages)
     discovered_page_cap = max(1, args.max_discovered_pages_per_zip)
@@ -948,6 +953,7 @@ def run_scrape(args):
             raw_for_zip = []
             canonical_for_zip = []
             zip_redfin_rental_estimate_attempts = 0
+            zip_realtor_property_estimate_attempts = 0
             zip_aborted = False
             try:
                 if hasattr(provider, "prepare_session"):
@@ -1004,7 +1010,18 @@ def run_scrape(args):
                 }))
                 zip_aborted = True
                 _apply_block_backoff(args, provider_backoff, provider.source_name, reason=getattr(exc, "reason", "blocked_prepare_session"))
-                if args.stop_on_challenge or _check_max_consecutive_blocks(args, provider_backoff, provider.source_name):
+                # Realtor PerimeterX blocks are session-level: the Chrome profile/IP is
+                # flagged before any ZIP is fetched.  Continuing to more ZIPs with the
+                # same blocked profile only deepens the ban without producing data.
+                if provider.source_name == "realtor":
+                    print(
+                        "[runner] realtor session-blocked — aborting run immediately. "
+                        "Profile/IP is flagged at session level; further ZIPs will not succeed. "
+                        "Use Profile Manager → Copy Donor Cookies to restore real cookies, then retry.",
+                        flush=True,
+                    )
+                    abort_run = True
+                elif args.stop_on_challenge or _check_max_consecutive_blocks(args, provider_backoff, provider.source_name):
                     abort_run = True
                 _record_provider_zip_metadata(
                     provider=provider,
@@ -1231,6 +1248,46 @@ def run_scrape(args):
                                         warning = f"{warning}: {first_error}"
                                     warnings.append(warning)
                                     print(warning)
+                        realtor_property_estimate_result = {}
+                        if (
+                            raw_listings
+                            and provider.source_name == "realtor"
+                            and getattr(args, "realtor_property_estimates", False)
+                            and hasattr(provider, "enrich_property_estimates")
+                        ):
+                            est_limit = max(0, int(getattr(args, "realtor_property_estimates_limit_per_zip", 0) or 0))
+                            page_limit_remaining = 0
+                            if est_limit:
+                                page_limit_remaining = max(0, est_limit - zip_realtor_property_estimate_attempts)
+                            if not est_limit or page_limit_remaining:
+                                realtor_property_estimate_result = provider.enrich_property_estimates(
+                                    driver,
+                                    raw_listings,
+                                    limit=page_limit_remaining,
+                                    delay_seconds=getattr(args, "realtor_property_estimates_delay_seconds", 0.5),
+                                )
+                                zip_realtor_property_estimate_attempts += realtor_property_estimate_result.get("attempted", 0)
+                                if realtor_property_estimate_result.get("attempted"):
+                                    print(
+                                        f"{provider.source_name} ZIP {zip_code} page {page}: "
+                                        "property estimates "
+                                        f"{realtor_property_estimate_result.get('succeeded', 0)}/"
+                                        f"{realtor_property_estimate_result.get('attempted', 0)} found"
+                                    )
+                                if (
+                                    realtor_property_estimate_result.get("error_count")
+                                    and not realtor_property_estimate_result.get("succeeded")
+                                ):
+                                    first_error = (realtor_property_estimate_result.get("errors") or [{}])[0].get("error", "")
+                                    warning = (
+                                        f"{provider.source_name} ZIP {zip_code} page {page}: "
+                                        f"property estimate enrichment failed for "
+                                        f"{realtor_property_estimate_result.get('error_count')} listings"
+                                    )
+                                    if first_error:
+                                        warning = f"{warning}: {first_error}"
+                                    warnings.append(warning)
+                                    print(warning)
                         canonical_listings = [provider.canonicalize_listing(raw) for raw in raw_listings]
                         if not raw_listings:
                             empty_pages += 1
@@ -1267,6 +1324,8 @@ def run_scrape(args):
                         })
                         if redfin_rental_estimate_result:
                             request_snapshot["redfin_rental_estimates"] = redfin_rental_estimate_result
+                        if realtor_property_estimate_result:
+                            request_snapshot["realtor_property_estimates"] = realtor_property_estimate_result
                         zip_requests.append(request_snapshot)
                         raw_for_zip.extend(raw_listings)
                         canonical_for_zip.extend(canonical_listings)
@@ -1531,11 +1590,15 @@ def parse_args():
     parser.add_argument("--zip-delay-seconds", type=float, default=15.0)
     parser.add_argument("--realtor-zip-delay-seconds", type=float, default=0.0, help="Override --zip-delay-seconds for realtor only. 0 = use --zip-delay-seconds.")
     parser.add_argument("--realtor-zip-budget", type=int, default=0, help="Stop the realtor session after this many fetched ZIPs to reset the browser fingerprint. 0 = no limit.")
+    parser.add_argument("--realtor-cookie-donor-profile", dest="realtor_cookie_donor_profiles", metavar="DIR", action="append", default=[], help="Chrome user-data-dir to donate safe analytics cookies from. Can be specified multiple times. Cookies are filtered to exclude PerimeterX/KPSDK/auth tokens before injection.")
     parser.add_argument("--session-warmup-seconds", type=float, default=0, help="Extra first-ZIP pause after the browser page loads and before API requests.")
     parser.add_argument("--zip-navigation-warmup-seconds", type=float, default=0, help="Pause after each ZIP page loads and before provider API requests.")
     parser.add_argument("--redfin-rental-estimates", action=argparse.BooleanOptionalAction, default=False, help="From the active Redfin browser page, fetch Redfin's per-property rental estimate endpoint for each Redfin row.")
     parser.add_argument("--redfin-rental-estimate-limit-per-zip", type=int, default=0, help="Safety cap for Redfin rental estimate enrichment per ZIP. Use 0 for all Redfin rows.")
     parser.add_argument("--redfin-rental-estimate-delay-seconds", type=float, default=0.25, help="Small pacing delay between Redfin per-property rental estimate requests.")
+    parser.add_argument("--realtor-property-estimates", action=argparse.BooleanOptionalAction, default=False, help="Fetch Realtor DPPropertyEstimates GraphQL for each listing to get Quantarium/Cotality/Collateral Analytics current+historical+forecast AVM values.")
+    parser.add_argument("--realtor-property-estimates-limit-per-zip", type=int, default=0, help="Safety cap for Realtor property estimate enrichment per ZIP. Use 0 for all listings.")
+    parser.add_argument("--realtor-property-estimates-delay-seconds", type=float, default=0.5, help="Pacing delay between Realtor DPPropertyEstimates requests.")
     parser.add_argument("--sample-size", type=int, default=3)
     parser.add_argument("--empty-page-retries", type=int, default=1)
     parser.add_argument("--diagnostics-dir", default="re_analyzer/Data/ScraperDiagnostics")
@@ -1589,7 +1652,7 @@ def parse_args():
     parser.add_argument("--driver-startup-lock", choices=["auto", "always", "never"], default="auto")
     parser.add_argument("--driver-user-multi-procs", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--save", action="store_true", help="Persist provider-native results. Default is dry-run.")
-    parser.add_argument("--shuffle", action="store_true")
+    parser.add_argument("--shuffle", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--stop-on-error", action="store_true")
     parser.add_argument("--random-profile", action="store_true")
     parser.add_argument("--clean-profile", action="store_true")

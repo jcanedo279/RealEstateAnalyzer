@@ -179,9 +179,23 @@ def _build_command(args, provider, index, provider_count, selected_zip_codes=Non
         profile_suffix = "florida_refresh" if args.florida_refresh else (str(args.zip_code) if args.zip_code else "session")
         use_fresh = (provider == "realtor" and getattr(args, "realtor_fresh_profile", False) and args.florida_refresh)
         profile_dir_fn = _fresh_provider_profile_dir if use_fresh else _provider_profile_dir
+        profile_dir = profile_dir_fn(args.profile_root, provider, profile_suffix)
+        # Seed a brand-new persistent Realtor profile with synthetic browsing history
+        # so it doesn't present as a zero-history bot session on first launch.
+        if provider == "realtor" and not use_fresh:
+            try:
+                from re_analyzer.scrapers.realtor_profile_seeder import seed_chrome_profile
+                n = seed_chrome_profile(
+                    str(profile_dir),
+                    profile_subdir=str(args.chrome_profile_directory),
+                )
+                if n > 0:
+                    print(f"[realtor-seeder] seeded {n} history entries into {profile_dir}", flush=True)
+            except Exception as exc:
+                print(f"[realtor-seeder] warning: could not seed profile ({exc})", flush=True)
         command.extend([
             "--chrome-user-data-dir",
-            str(profile_dir_fn(args.profile_root, provider, profile_suffix)),
+            str(profile_dir),
             "--chrome-profile-directory",
             str(args.chrome_profile_directory),
         ])
@@ -224,6 +238,19 @@ def _build_command(args, provider, index, provider_count, selected_zip_codes=Non
             command.extend(["--realtor-zip-delay-seconds", str(args.realtor_zip_delay_seconds)])
         if getattr(args, "realtor_zip_budget", 0) > 0:
             command.extend(["--realtor-zip-budget", str(args.realtor_zip_budget)])
+        donor_dirs = getattr(args, "realtor_cookie_donor_profiles", None) or []
+        for d in donor_dirs:
+            command.extend(["--realtor-cookie-donor-profile", d])
+        if getattr(args, "realtor_property_estimates", False):
+            command.append("--realtor-property-estimates")
+            command.extend([
+                "--realtor-property-estimates-limit-per-zip",
+                str(getattr(args, "realtor_property_estimates_limit_per_zip", 0)),
+                "--realtor-property-estimates-delay-seconds",
+                str(getattr(args, "realtor_property_estimates_delay_seconds", 0.5)),
+            ])
+        else:
+            command.append("--no-realtor-property-estimates")
     if int(getattr(args, "max_consecutive_blocks", 0) or 0) > 0:
         command.extend(["--max-consecutive-blocks", str(args.max_consecutive_blocks)])
     if args.save:
@@ -467,7 +494,11 @@ def parse_args():
     parser.add_argument("--reconcile-debug-screenshot-warmup-seconds", type=float, default=2.0)
     parser.add_argument("--realtor-zip-delay-seconds", type=float, default=0.0, help="Override --zip-delay-seconds for realtor only. 0 = use --zip-delay-seconds.")
     parser.add_argument("--realtor-zip-budget", type=int, default=0, help="Stop the realtor session after this many fetched ZIPs. 0 = no limit.")
-    parser.add_argument("--realtor-fresh-profile", action=argparse.BooleanOptionalAction, default=True, help="Use a timestamped Chrome user-data-dir per realtor run to avoid session history accumulation.")
+    parser.add_argument("--realtor-fresh-profile", action=argparse.BooleanOptionalAction, default=False, help="Use a timestamped Chrome user-data-dir per realtor run. Disabled by default: a persistent profile accumulates cookies and history that reduce bot-detection scores.")
+    parser.add_argument("--realtor-cookie-donor-profiles", dest="realtor_cookie_donor_profiles", metavar="DIR", action="append", default=[], help="Chrome user-data-dir(s) to donate safe analytics cookies from. Can be specified multiple times. Each DIR should contain a 'Default' (or --chrome-profile-directory) subdirectory with a Cookies DB. Cookies are filtered to remove any PerimeterX/KPSDK/auth tokens before injection.")
+    parser.add_argument("--realtor-property-estimates", action=argparse.BooleanOptionalAction, default=False, help="Fetch Realtor DPPropertyEstimates GraphQL for each listing (Quantarium/Cotality/Collateral Analytics current+historical+forecast AVM values).")
+    parser.add_argument("--realtor-property-estimates-limit-per-zip", type=int, default=0, help="Safety cap for Realtor property estimate enrichment per ZIP. Use 0 for all listings.")
+    parser.add_argument("--realtor-property-estimates-delay-seconds", type=float, default=0.5, help="Pacing delay between Realtor DPPropertyEstimates requests.")
     parser.add_argument("--max-consecutive-blocks", type=int, default=0, help="Abort a provider's run after this many consecutive block responses. 0 = no limit. Default 3 for Realtor when launched from the control server.")
     return parser.parse_args()
 

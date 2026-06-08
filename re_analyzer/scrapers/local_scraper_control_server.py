@@ -240,10 +240,20 @@ ALLOWED_ORIGINS = {
 PROVIDERS = {"zillow", "redfin", "realtor"}
 PROFILE_ROOT = DATA_ROOT / "ScraperDiagnostics" / "ParallelProfiles"
 RESUME_PROGRESS_PATH = DATA_ROOT / "ScraperDiagnostics" / "resume_progress.json"
+DIAGNOSTICS_ROOT = DATA_ROOT / "ScraperDiagnostics"
 RESUME_PROGRESS_LOCK = threading.Lock()
 PROBE_ROOT = DATA_ROOT / "DetectionProbe" / "ProbeRuns"
 CONTROL_TOKEN = os.environ.get("LOCAL_SCRAPER_CONTROL_TOKEN", "").strip()
-REQUIRE_TOKEN_FOR_MUTATIONS = os.environ.get("LOCAL_SCRAPER_REQUIRE_TOKEN_FOR_MUTATIONS", "true").strip().lower() not in {"0", "false", "no", "off"}
+REQUIRE_TOKEN_FOR_ALL = os.environ.get("LOCAL_SCRAPER_REQUIRE_TOKEN_FOR_ALL", "false").strip().lower() not in {"0", "false", "no", "off"}
+REQUIRE_TOKEN_FOR_MUTATIONS = os.environ.get("LOCAL_SCRAPER_REQUIRE_TOKEN_FOR_MUTATIONS", "false").strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _token_requirements_payload():
+    return {
+        "token_configured": bool(CONTROL_TOKEN),
+        "require_token_for_all": bool(REQUIRE_TOKEN_FOR_ALL),
+        "require_token_for_mutations": bool(REQUIRE_TOKEN_FOR_MUTATIONS),
+    }
 
 app = Flask(__name__)
 
@@ -263,7 +273,8 @@ def add_cors_headers(response):
 def require_control_token():
     if request.method == "OPTIONS":
         return None
-    token_required = bool(CONTROL_TOKEN) or (REQUIRE_TOKEN_FOR_MUTATIONS and request.method in {"POST", "DELETE", "PUT", "PATCH"})
+    mutating_method = request.method in {"POST", "DELETE", "PUT", "PATCH"}
+    token_required = bool(REQUIRE_TOKEN_FOR_ALL) or (bool(REQUIRE_TOKEN_FOR_MUTATIONS) and mutating_method)
     if not token_required:
         return None
     if not CONTROL_TOKEN:
@@ -777,9 +788,13 @@ def build_provider_florida_command(payload):
     zillow_property_details_delay_seconds = bounded_float(payload.get("zillow_property_details_delay_seconds"), 2.0, 0, 20)
     zillow_property_details_cooldown_hours = bounded_float(payload.get("zillow_property_details_cooldown_hours"), 36.0, 0, 168)
     zillow_property_details_force = bool(payload.get("zillow_property_details_force", False))
-    realtor_zip_delay_seconds = bounded_float(payload.get("realtor_zip_delay_seconds"), 0.0, 0, 300) if provider == "realtor" else 0.0
+    realtor_zip_delay_seconds = bounded_float(payload.get("realtor_zip_delay_seconds"), 20.0, 0, 300) if provider == "realtor" else 0.0
     realtor_zip_budget = bounded_int(payload.get("realtor_zip_budget"), 0, 0, 5000) if provider == "realtor" else 0
-    realtor_fresh_profile = bool(payload.get("realtor_fresh_profile", True)) if provider == "realtor" else False
+    realtor_fresh_profile = bool(payload.get("realtor_fresh_profile", False)) if provider == "realtor" else False
+    realtor_cookie_donor_profiles = [str(d) for d in (payload.get("realtor_cookie_donor_profiles") or []) if d] if provider == "realtor" else []
+    realtor_property_estimates = bool(payload.get("realtor_property_estimates", False)) if provider == "realtor" else False
+    realtor_property_estimates_limit_per_zip = bounded_int(payload.get("realtor_property_estimates_limit_per_zip"), 0, 0, 10000) if provider == "realtor" else 0
+    realtor_property_estimates_delay_seconds = bounded_float(payload.get("realtor_property_estimates_delay_seconds"), 0.5, 0, 30) if provider == "realtor" else 0.5
     _default_max_consecutive = 3 if provider == "realtor" else 0
     max_consecutive_blocks = bounded_int(payload.get("max_consecutive_blocks"), _default_max_consecutive, 0, 20)
     chrome_path = str(payload.get("chrome_path") or DEFAULT_CHROME_PATH).strip()
@@ -864,6 +879,16 @@ def build_provider_florida_command(payload):
         command.extend(["--realtor-zip-delay-seconds", str(realtor_zip_delay_seconds)])
     if realtor_zip_budget > 0:
         command.extend(["--realtor-zip-budget", str(realtor_zip_budget)])
+    for donor_dir in realtor_cookie_donor_profiles:
+        command.extend(["--realtor-cookie-donor-profile", donor_dir])
+    if realtor_property_estimates:
+        command.extend([
+            "--realtor-property-estimates",
+            "--realtor-property-estimates-limit-per-zip",
+            str(realtor_property_estimates_limit_per_zip),
+            "--realtor-property-estimates-delay-seconds",
+            str(realtor_property_estimates_delay_seconds),
+        ])
     if max_consecutive_blocks > 0:
         command.extend(["--max-consecutive-blocks", str(max_consecutive_blocks)])
     if not debug_snapshots:
@@ -910,6 +935,10 @@ def build_provider_florida_command(payload):
         "realtor_zip_delay_seconds": realtor_zip_delay_seconds,
         "realtor_zip_budget": realtor_zip_budget,
         "realtor_fresh_profile": realtor_fresh_profile,
+        "realtor_cookie_donor_profiles": realtor_cookie_donor_profiles,
+        "realtor_property_estimates": realtor_property_estimates,
+        "realtor_property_estimates_limit_per_zip": realtor_property_estimates_limit_per_zip,
+        "realtor_property_estimates_delay_seconds": realtor_property_estimates_delay_seconds,
         "max_consecutive_blocks": max_consecutive_blocks,
     }
 
@@ -938,9 +967,13 @@ def build_all_provider_florida_command(payload):
     zillow_property_details_delay_seconds = bounded_float(payload.get("zillow_property_details_delay_seconds"), 2.0, 0, 20)
     zillow_property_details_cooldown_hours = bounded_float(payload.get("zillow_property_details_cooldown_hours"), 36.0, 0, 168)
     zillow_property_details_force = bool(payload.get("zillow_property_details_force", False))
-    realtor_zip_delay_seconds = bounded_float(payload.get("realtor_zip_delay_seconds"), 0.0, 0, 300)
+    realtor_zip_delay_seconds = bounded_float(payload.get("realtor_zip_delay_seconds"), 20.0, 0, 300)
     realtor_zip_budget = bounded_int(payload.get("realtor_zip_budget"), 0, 0, 5000)
-    realtor_fresh_profile = bool(payload.get("realtor_fresh_profile", True))
+    realtor_fresh_profile = bool(payload.get("realtor_fresh_profile", False))
+    realtor_cookie_donor_profiles = [str(d) for d in (payload.get("realtor_cookie_donor_profiles") or []) if d]
+    realtor_property_estimates = bool(payload.get("realtor_property_estimates", False))
+    realtor_property_estimates_limit_per_zip = bounded_int(payload.get("realtor_property_estimates_limit_per_zip"), 0, 0, 10000)
+    realtor_property_estimates_delay_seconds = bounded_float(payload.get("realtor_property_estimates_delay_seconds"), 0.5, 0, 30)
     max_consecutive_blocks = bounded_int(payload.get("max_consecutive_blocks"), 3, 0, 20)
     chrome_path = str(payload.get("chrome_path") or DEFAULT_CHROME_PATH).strip()
     chromedriver_path = _resolve_chromedriver_path(
@@ -1026,6 +1059,16 @@ def build_all_provider_florida_command(payload):
         command.extend(["--realtor-zip-delay-seconds", str(realtor_zip_delay_seconds)])
     if realtor_zip_budget > 0:
         command.extend(["--realtor-zip-budget", str(realtor_zip_budget)])
+    for donor_dir in realtor_cookie_donor_profiles:
+        command.extend(["--realtor-cookie-donor-profiles", donor_dir])
+    if realtor_property_estimates:
+        command.extend([
+            "--realtor-property-estimates",
+            "--realtor-property-estimates-limit-per-zip",
+            str(realtor_property_estimates_limit_per_zip),
+            "--realtor-property-estimates-delay-seconds",
+            str(realtor_property_estimates_delay_seconds),
+        ])
     if realtor_fresh_profile:
         command.append("--realtor-fresh-profile")
     else:
@@ -1081,6 +1124,10 @@ def build_all_provider_florida_command(payload):
         "realtor_zip_delay_seconds": realtor_zip_delay_seconds,
         "realtor_zip_budget": realtor_zip_budget,
         "realtor_fresh_profile": realtor_fresh_profile,
+        "realtor_cookie_donor_profiles": realtor_cookie_donor_profiles,
+        "realtor_property_estimates": realtor_property_estimates,
+        "realtor_property_estimates_limit_per_zip": realtor_property_estimates_limit_per_zip,
+        "realtor_property_estimates_delay_seconds": realtor_property_estimates_delay_seconds,
         "max_consecutive_blocks": max_consecutive_blocks,
     }
 
@@ -1173,6 +1220,7 @@ def health():
     return jsonify({
         "status": "ok",
         "enabled": True,
+        "auth": _token_requirements_payload(),
         "active_runs": active_count(),
         "active_probe_runs": active_probe_count(),
         "tracked_runs": len(RUNS),
@@ -1371,12 +1419,106 @@ def list_probe_runs():
     })
 
 
+_DATA_QUALITY_FIELDS = [
+    "price_estimate", "rent_estimate", "beds", "baths",
+    "living_area", "lot_size", "year_built", "home_type",
+    "status", "latitude", "longitude", "provider_metadata",
+]
+
+
+@app.route("/api/data-quality", methods=["GET"])
+def data_quality():
+    """Return field-level completeness stats per provider from canonical listing files."""
+    try:
+        from re_analyzer.scrapers.source_reconciler import DEFAULT_PROVIDERS
+        from re_analyzer.utility.utility import DATA_PATH
+
+        fetched_root = Path(DATA_PATH) / "Fetched"
+        stats = {}
+        for provider in DEFAULT_PROVIDERS:
+            provider_dir = fetched_root / provider
+            total = 0
+            field_counts = {f: 0 for f in _DATA_QUALITY_FIELDS}
+            zip_count = 0
+            if provider_dir.is_dir():
+                for zip_dir in provider_dir.iterdir():
+                    if not (zip_dir.is_dir() and zip_dir.name.isdigit()):
+                        continue
+                    files = sorted(zip_dir.glob("canonical_listings_*.json"), key=lambda p: p.stat().st_mtime)
+                    if not files:
+                        continue
+                    zip_count += 1
+                    try:
+                        with open(files[-1], "r", encoding="utf-8") as fh:
+                            listings = json.load(fh)
+                        if not isinstance(listings, list):
+                            continue
+                        for listing in listings:
+                            total += 1
+                            for field in _DATA_QUALITY_FIELDS:
+                                val = listing.get(field)
+                                if val is not None and val != "" and val != 0 and val != {} and val != []:
+                                    field_counts[field] += 1
+                    except (OSError, json.JSONDecodeError):
+                        continue
+            stats[provider] = {
+                "total_listings": total,
+                "total_zips": zip_count,
+                "field_completeness": {
+                    f: round(field_counts[f] / total, 4) if total else 0
+                    for f in _DATA_QUALITY_FIELDS
+                },
+                "field_counts": field_counts,
+            }
+        return jsonify({"status": "ok", "providers": stats, "fields": _DATA_QUALITY_FIELDS})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 @app.route("/api/source-reconciliation/latest", methods=["GET"])
 def source_reconciliation_latest():
     data, error = latest_reconciliation_report()
     if error:
         return jsonify(error), 404
     return jsonify(data)
+
+
+@app.route("/api/source-reconciliation/run", methods=["POST"])
+def source_reconciliation_run():
+    """Discover all scraped ZIPs, run reconciliation, save the report, and return it."""
+    try:
+        from re_analyzer.scrapers.source_reconciler import (
+            DEFAULT_PROVIDERS,
+            reconcile_sources,
+            save_reconciliation_report,
+        )
+        from re_analyzer.utility.utility import DATA_PATH
+
+        fetched_root = Path(DATA_PATH) / "Fetched"
+        zip_set = set()
+        for provider in DEFAULT_PROVIDERS:
+            provider_dir = fetched_root / provider
+            if provider_dir.is_dir():
+                for entry in provider_dir.iterdir():
+                    if entry.is_dir() and entry.name.isdigit():
+                        if any(entry.glob("canonical_listings_*.json")):
+                            zip_set.add(entry.name)
+
+        if not zip_set:
+            return jsonify({"error": "No scraped canonical listing data found. Run the scraper first."}), 404
+
+        zip_codes = sorted(zip_set)
+        report = reconcile_sources(zip_codes)
+        saved = save_reconciliation_report(report)
+
+        return jsonify({
+            "status": "ok",
+            "zip_codes_processed": len(zip_codes),
+            "path": saved.get("json_path"),
+            "report": report,
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.route("/api/scraper-runs", methods=["DELETE"])
@@ -1695,6 +1837,436 @@ def stale_zip_count():
         agg["fresh"] += v["fresh"]
         agg["never"] += v["never"]
     return jsonify({"providers": result, "aggregate": agg})
+
+
+@app.route("/api/data-cleanup", methods=["GET"])
+def data_cleanup_scan():
+    """Scan local storage targets and return sizes — dry run, nothing deleted."""
+    try:
+        targets_raw = (request.args.get("targets") or "").strip()
+        targets = [t.strip() for t in targets_raw.split(",") if t.strip()] or None
+        older_than_days_raw = request.args.get("older_than_days")
+        older_than_days = float(older_than_days_raw) if older_than_days_raw else None
+    except (TypeError, ValueError):
+        return jsonify({"error": "invalid parameters"}), 400
+    try:
+        from re_analyzer.scrapers.data_cleanup import scan as cleanup_scan
+        results = cleanup_scan(targets, older_than_days=older_than_days)
+        return jsonify({
+            "dry_run": True,
+            "total_bytes": sum(t.size_bytes for t in results.values()),
+            "total_items": sum(t.item_count for t in results.values()),
+            "targets": {
+                name: {
+                    "label": t.label,
+                    "description": t.description,
+                    "size_bytes": t.size_bytes,
+                    "item_count": t.item_count,
+                    "item_label": t.item_label,
+                    "freshness_detail": [
+                        {"provider": p, "zip_code": z, "age_days": round(a, 1)}
+                        for p, z, a in t.freshness_detail
+                    ],
+                }
+                for name, t in results.items()
+            },
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/data-cleanup", methods=["POST"])
+def data_cleanup_execute():
+    """Execute cleanup for the specified targets. Requires control token when configured."""
+    require = require_control_token()
+    if require:
+        return require
+    payload = request.get_json(silent=True) or {}
+    try:
+        targets_raw = payload.get("targets") or []
+        targets = [str(t) for t in targets_raw] if targets_raw else None
+        older_than_days_raw = payload.get("older_than_days")
+        older_than_days = float(older_than_days_raw) if older_than_days_raw is not None else None
+    except (TypeError, ValueError):
+        return jsonify({"error": "invalid parameters"}), 400
+    try:
+        from re_analyzer.scrapers.data_cleanup import (
+            scan as cleanup_scan, execute_cleanup, ALL_TARGETS,
+        )
+        if targets:
+            invalid = [t for t in targets if t not in ALL_TARGETS]
+            if invalid:
+                return jsonify({"error": f"unknown targets: {invalid}"}), 400
+        results = cleanup_scan(targets, older_than_days=older_than_days)
+        delete_summary = execute_cleanup(results)
+        freed_bytes = sum(
+            ds.get("bytes_freed") or 0
+            for ds in delete_summary.values()
+            if ds.get("bytes_freed") is not None
+        )
+        return jsonify({
+            "freed_bytes": freed_bytes,
+            "targets": {
+                name: {
+                    "deleted": ds["deleted"],
+                    "errors": ds.get("errors", []),
+                    "bytes_freed": ds.get("bytes_freed"),
+                }
+                for name, ds in delete_summary.items()
+            },
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/profile-manager", methods=["GET"])
+def profile_manager_scan():
+    """Scan Chrome scraper profiles and return their health status."""
+    try:
+        from re_analyzer.scrapers.realtor_profile_manager import scan_profiles
+        extra = [str(d) for d in (request.args.getlist("extra_dir") or []) if d]
+        profiles = scan_profiles(extra_dirs=extra or None)
+        return jsonify({"profiles": profiles, "count": len(profiles)})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/profile-manager", methods=["POST"])
+def profile_manager_apply():
+    """Apply cleanup/seed operations to one or more Chrome scraper profiles."""
+    try:
+        require = require_control_token()
+        if require:
+            return require
+        payload = request.get_json(force=True) or {}
+        profile_subdir = str(payload.get("profile_subdir") or "Default")
+        profile_targets = []
+        for target in payload.get("profiles") or []:
+            if isinstance(target, dict):
+                profile_dir = str(target.get("profile_dir") or target.get("dir") or "")
+                target_subdir = str(target.get("profile_subdir") or profile_subdir)
+            else:
+                profile_dir = str(target or "")
+                target_subdir = profile_subdir
+            if profile_dir:
+                profile_targets.append((profile_dir, target_subdir))
+        operations = [str(op) for op in (payload.get("operations") or []) if op]
+        if not profile_targets:
+            return jsonify({"error": "profiles list is required"}), 400
+        if not operations:
+            return jsonify({"error": "operations list is required"}), 400
+        from re_analyzer.scrapers.realtor_profile_manager import apply_operations
+        results = {}
+        for profile_dir, target_subdir in profile_targets:
+            key = f"{profile_dir}::{target_subdir}"
+            results[key] = apply_operations(profile_dir, target_subdir, operations)
+        return jsonify({
+            "profiles_processed": len(results),
+            "operations": operations,
+            "results": results,
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/profile-manager/donors", methods=["GET"])
+def profile_manager_donors():
+    """Scan the user's real Chrome installations for profiles with realtor.com cookies."""
+    try:
+        from re_analyzer.scrapers.realtor_profile_manager import find_donor_profiles
+        include_empty = str(request.args.get("include_empty") or "").lower() in {"1", "true", "yes"}
+        donors = find_donor_profiles(include_empty=include_empty)
+        return jsonify({"donors": donors, "count": len(donors)})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/profile-manager/copy-donor-cookies", methods=["POST"])
+def profile_manager_copy_donor_cookies():
+    """Copy realtor.com cookies from a donor browser profile to one or more scraper profiles."""
+    try:
+        require = require_control_token()
+        if require:
+            return require
+        payload = request.get_json(force=True) or {}
+        donor_profile_dir = str(payload.get("donor_profile_dir") or "")
+        donor_profile_subdir = str(payload.get("donor_profile_subdir") or "Default")
+        dest_profile_subdir = str(payload.get("dest_profile_subdir") or "Default")
+        clear_dest_detection = bool(payload.get("clear_dest_detection", False))
+        dest_targets = []
+        for target in payload.get("dest_profiles") or []:
+            if isinstance(target, dict):
+                dest_dir = str(target.get("profile_dir") or target.get("dir") or "")
+                target_subdir = str(target.get("profile_subdir") or dest_profile_subdir)
+            else:
+                dest_dir = str(target or "")
+                target_subdir = dest_profile_subdir
+            if dest_dir:
+                dest_targets.append((dest_dir, target_subdir))
+        skip_detection = bool(payload.get("skip_detection", True))
+        if not donor_profile_dir:
+            return jsonify({"error": "donor_profile_dir is required"}), 400
+        if not dest_targets:
+            return jsonify({"error": "dest_profiles list is required"}), 400
+        from re_analyzer.scrapers.realtor_profile_manager import clear_detection_cookies, copy_donor_cookies
+        results = {}
+        for dest_dir, target_subdir in dest_targets:
+            key = f"{dest_dir}::{target_subdir}"
+            cleanup_result = None
+            if clear_dest_detection:
+                cleanup_result = clear_detection_cookies(dest_dir, target_subdir)
+            copy_result = copy_donor_cookies(
+                donor_profile_dir, donor_profile_subdir,
+                str(dest_dir), target_subdir,
+                skip_detection=skip_detection,
+            )
+            if cleanup_result is not None:
+                copy_result["dest_detection_cleanup"] = cleanup_result
+            results[key] = copy_result
+        total_copied = sum(r.get("copied", 0) for r in results.values())
+        total_dest_detection_removed = sum(
+            (r.get("dest_detection_cleanup") or {}).get("removed", 0)
+            for r in results.values()
+        )
+        return jsonify({
+            "profiles_processed": len(results),
+            "total_copied": total_copied,
+            "total_dest_detection_removed": total_dest_detection_removed,
+            "results": results,
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+def _parse_diagnostic_stem(stem: str):
+    """Parse '20260607_024516_realtor_32063_prepare_session_blocked' → dict or None."""
+    parts = stem.split("_")
+    if len(parts) < 4:
+        return None
+    try:
+        d, t = parts[0], parts[1]
+        timestamp = f"{d[:4]}-{d[4:6]}-{d[6:8]}T{t[:2]}:{t[2:4]}:{t[4:6]}"
+        return {
+            "timestamp": timestamp,
+            "provider": parts[2],
+            "zip_code": parts[3],
+            "reason": "_".join(parts[4:]) if len(parts) > 4 else "unknown",
+        }
+    except (IndexError, ValueError):
+        return None
+
+
+def _recent_diagnostic_examples():
+    manifest_path = DIAGNOSTICS_ROOT / "RecentExamples" / "manifest.json"
+    manifest = {}
+    if manifest_path.is_file():
+        try:
+            with open(manifest_path, encoding="utf-8") as fh:
+                manifest = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            manifest = {}
+
+    buckets = manifest.get("buckets") or {}
+    if DIAGNOSTICS_ROOT.is_dir():
+        raw_examples = {}
+        for path in DIAGNOSTICS_ROOT.iterdir():
+            if not path.is_file() or path.suffix.lower() not in {".json", ".html", ".png"}:
+                continue
+            parsed = _parse_diagnostic_stem(path.stem)
+            if not parsed:
+                continue
+            prefix = "_".join(path.stem.split("_")[2:])
+            item = raw_examples.setdefault(path.stem, {
+                **parsed,
+                "prefix": prefix,
+                "captured_at_epoch": path.stat().st_mtime,
+                "files": {},
+                "source_files": {},
+            })
+            if path.suffix.lower() == ".json":
+                label = "metadata"
+            elif path.suffix.lower() == ".html":
+                label = "html"
+            else:
+                label = "screenshot"
+            item["files"][label] = path.name
+            item["source_files"][label] = path.name
+        for item in raw_examples.values():
+            key = f"{item.get('provider')}/{item.get('reason')}"
+            bucket = buckets.setdefault(key, {
+                "provider": item.get("provider"),
+                "reason": item.get("reason"),
+                "examples": [],
+            })
+            seen = {(example.get("timestamp"), example.get("prefix")) for example in bucket.get("examples") or []}
+            identity = (item.get("timestamp"), item.get("prefix"))
+            if identity not in seen:
+                bucket.setdefault("examples", []).append(item)
+
+    limit = manifest.get("limit_per_provider_reason") or 3
+    examples = []
+    by_provider = {}
+    by_reason = {}
+    for key, bucket in buckets.items():
+        bucket_examples = sorted(
+            bucket.get("examples") or [],
+            key=lambda item: (float(item.get("captured_at_epoch") or 0), item.get("timestamp", ""), item.get("prefix", "")),
+            reverse=True,
+        )
+        retained_examples = bucket_examples[:limit]
+        bucket["examples"] = retained_examples
+        bucket["count"] = len(retained_examples)
+        examples.extend(retained_examples)
+        provider = bucket.get("provider") or key.split("/")[0]
+        reason = bucket.get("reason") or key.split("/")[-1]
+        by_provider[provider] = by_provider.get(provider, 0) + len(retained_examples)
+        by_reason[reason] = by_reason.get(reason, 0) + len(retained_examples)
+    examples.sort(
+        key=lambda item: (float(item.get("captured_at_epoch") or 0), item.get("timestamp", ""), item.get("prefix", "")),
+        reverse=True,
+    )
+    return {
+        "updated_at": manifest.get("updated_at"),
+        "limit_per_provider_reason": limit,
+        "total": len(examples),
+        "examples": examples,
+        "buckets": buckets,
+        "by_provider": by_provider,
+        "by_reason": by_reason,
+    }
+
+
+@app.route("/api/block-events", methods=["GET"])
+def block_events():
+    """Return block/detection events parsed from ScraperDiagnostics JSON files."""
+    try:
+        limit = min(int(request.args.get("limit", "500")), 2000)
+        provider_filter = (request.args.get("provider") or "").strip().lower()
+        events = []
+        if DIAGNOSTICS_ROOT.is_dir():
+            paths = sorted(
+                (p for p in DIAGNOSTICS_ROOT.iterdir() if p.suffix == ".json" and p.is_file()),
+                key=lambda p: p.name,
+                reverse=True,
+            )
+            for path in paths:
+                parsed = _parse_diagnostic_stem(path.stem)
+                if not parsed:
+                    continue
+                if provider_filter and parsed["provider"] != provider_filter:
+                    continue
+                event = dict(parsed, filename=path.name)
+                try:
+                    with open(path, encoding="utf-8") as fh:
+                        data = json.load(fh)
+                    blocked = (data.get("extra") or {}).get("blocked") or {}
+                    if blocked:
+                        event["reference_id"] = str(blocked.get("reference_id") or "")
+                        event["block_reason"] = str(blocked.get("reason") or "")
+                        event["http_status"] = blocked.get("status")
+                        event["snippet"] = str(blocked.get("snippet") or "")[:300]
+                    challenge = (data.get("extra") or {}).get("challenge") or {}
+                    event["is_challenge"] = bool(challenge.get("is_challenge"))
+                    cookies = ((data.get("extra") or {}).get("page_state") or {}).get("cookies") or {}
+                    event["cookie_count"] = cookies.get("count")
+                except Exception:
+                    pass
+                events.append(event)
+                if len(events) >= limit:
+                    break
+
+        by_provider: dict = {}
+        by_reason: dict = {}
+        for evt in events:
+            p = evt["provider"]
+            r = evt.get("block_reason") or evt.get("reason") or "unknown"
+            by_provider[p] = by_provider.get(p, 0) + 1
+            by_reason[r] = by_reason.get(r, 0) + 1
+
+        return jsonify({"events": events, "total": len(events), "by_provider": by_provider, "by_reason": by_reason})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/diagnostics", methods=["GET"])
+def list_diagnostics():
+    """List all files under ScraperDiagnostics/ with parsed metadata."""
+    try:
+        provider_filter = (request.args.get("provider") or "").strip().lower()
+        type_filter = (request.args.get("type") or "").strip().lower()
+        files = []
+        if DIAGNOSTICS_ROOT.is_dir():
+            for path in sorted(DIAGNOSTICS_ROOT.iterdir(), key=lambda p: p.name, reverse=True):
+                if not path.is_file():
+                    continue
+                parsed = _parse_diagnostic_stem(path.stem)
+                if not parsed:
+                    continue
+                ftype = path.suffix.lstrip(".").lower()
+                if provider_filter and parsed["provider"] != provider_filter:
+                    continue
+                if type_filter and ftype != type_filter:
+                    continue
+                files.append({"name": path.name, "type": ftype, "size": path.stat().st_size, **parsed})
+        by_provider: dict = {}
+        by_reason: dict = {}
+        for f in files:
+            by_provider[f["provider"]] = by_provider.get(f["provider"], 0) + 1
+            by_reason[f["reason"]] = by_reason.get(f["reason"], 0) + 1
+        return jsonify({
+            "files": files,
+            "total": len(files),
+            "by_provider": by_provider,
+            "by_reason": by_reason,
+            "recent_examples": _recent_diagnostic_examples(),
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/diagnostics/<path:filename>", methods=["GET"])
+def get_diagnostic_file(filename):
+    """Return the content of a diagnostic file (JSON/HTML/PNG)."""
+    try:
+        import base64 as _b64
+        normalized_filename = str(filename or "").replace("\\", "/").lstrip("/")
+        if ".." in normalized_filename.split("/"):
+            return jsonify({"error": "Invalid filename"}), 400
+        path = DIAGNOSTICS_ROOT / normalized_filename
+        if not path.is_file():
+            return jsonify({"error": "File not found"}), 404
+        try:
+            path.resolve().relative_to(DIAGNOSTICS_ROOT.resolve())
+        except ValueError:
+            return jsonify({"error": "Access denied"}), 403
+        suffix = path.suffix.lower()
+        if suffix == ".json":
+            with open(path, encoding="utf-8") as fh:
+                return jsonify({"type": "json", "content": json.load(fh), "size": path.stat().st_size})
+        elif suffix == ".html":
+            with open(path, encoding="utf-8", errors="replace") as fh:
+                content = fh.read(60_000)
+            return jsonify({"type": "html", "content": content, "size": path.stat().st_size})
+        elif suffix == ".png":
+            with open(path, "rb") as fh:
+                raw = fh.read()
+            return jsonify({"type": "png", "data": _b64.b64encode(raw).decode(), "size": path.stat().st_size})
+        return jsonify({"error": "Unsupported file type"}), 400
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/resume-progress", methods=["GET"])
+def get_resume_progress():
+    """Return the current scraper resume-progress state."""
+    try:
+        if not RESUME_PROGRESS_PATH.is_file():
+            return jsonify({"progress": {}, "exists": False})
+        with open(RESUME_PROGRESS_PATH, encoding="utf-8") as fh:
+            data = json.load(fh)
+        return jsonify({"progress": data, "exists": True})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
 
 
 def parse_args(argv=None):

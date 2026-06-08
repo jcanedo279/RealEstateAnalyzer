@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from datetime import date, timedelta
 import json
 import math
 import os
@@ -416,6 +417,35 @@ def _dict_or_value(value):
 
 REDFIN_RENTAL_ESTIMATE_RESPONSE_KEY = "_redfin_rental_estimate_response"
 REDFIN_RENTAL_ESTIMATE_ERROR_KEY = "_redfin_rental_estimate_error"
+
+REALTOR_PROPERTY_ESTIMATES_RESPONSE_KEY = "_realtor_property_estimates"
+REALTOR_PROPERTY_ESTIMATES_ERROR_KEY = "_realtor_property_estimates_error"
+
+_REALTOR_AVM_SOURCE_MAP = {
+    "quantarium": "quantarium",
+    "cotality": "cotality",
+    "corelogic": "cotality",
+    "collateral": "collateral_analytics",
+    "collateral analytics": "collateral_analytics",
+    "collateral_analytics": "collateral_analytics",
+}
+
+
+def _realtor_property_estimates_fields(raw_listing):
+    """Extract current AVM values from the DPPropertyEstimates GraphQL response."""
+    response = (raw_listing or {}).get(REALTOR_PROPERTY_ESTIMATES_RESPONSE_KEY)
+    if not isinstance(response, dict):
+        return {}
+    out = {}
+    for src in ("quantarium", "cotality", "collateral_analytics"):
+        src_data = response.get(src)
+        if not isinstance(src_data, dict):
+            continue
+        current = src_data.get("current") or {}
+        val = _coerce_number(current.get("value"))
+        if val is not None:
+            out[src] = val
+    return out
 
 
 def _redfin_rental_estimate_fields(raw_listing):
@@ -1201,9 +1231,10 @@ class RealtorListingProvider(ListingProvider):
     source_name = "realtor"
     page_size = 42
 
-    def __init__(self):
+    def __init__(self, *, donor_profile_dirs=None):
         self.current_zip_code = None
         self._homepage_warmed = False
+        self._donor_profile_dirs = donor_profile_dirs  # List[str] | None
 
     @staticmethod
     def _extract_reference_id(text: str) -> str:
@@ -1296,45 +1327,123 @@ class RealtorListingProvider(ListingProvider):
                 snippet=snippet,
             )
 
-    # Vary the entry page each session so navigation patterns don't repeat identically.
+    # Wider warmup pool — pages are sampled randomly each session so navigation
+    # patterns don't repeat identically across runs.
     _WARMUP_URLS = [
         "https://www.realtor.com/",
         "https://www.realtor.com/realestateandhomes-search/Florida",
         "https://www.realtor.com/real-estate/Florida/",
         "https://www.realtor.com/local/",
-        "https://www.realtor.com/research/florida-housing-market/",
+        "https://www.realtor.com/mortgage/",
+        "https://www.realtor.com/news/trends/",
+        "https://www.realtor.com/advice/buy/",
+        "https://www.realtor.com/realestateandhomes-search/Jacksonville_FL",
+        "https://www.realtor.com/realestateandhomes-search/Orlando_FL",
+        "https://www.realtor.com/realestateandhomes-search/Tampa_FL",
+        "https://www.realtor.com/real-estate/Jacksonville_FL/",
+        "https://www.realtor.com/real-estate/Orlando_FL/",
+        "https://www.realtor.com/real-estate/Tampa_FL/",
+        "https://www.realtor.com/realestateandhomes-search/Gainesville_FL",
+        "https://www.realtor.com/realestateandhomes-search/Tallahassee_FL",
     ]
 
-    def _warm_homepage(self, driver):
+    # City/state-level pages used as a referrer hop before individual ZIP searches.
+    # A pool of plausible entry points so each session comes from a different page.
+    _STATE_ENTRY_URLS = [
+        "https://www.realtor.com/realestateandhomes-search/Florida",
+        "https://www.realtor.com/real-estate/Florida/",
+        "https://www.realtor.com/realestateandhomes-search/FL",
+        "https://www.realtor.com/realestateandhomes-search/Jacksonville_FL",
+        "https://www.realtor.com/realestateandhomes-search/Orlando_FL",
+        "https://www.realtor.com/realestateandhomes-search/Tampa_FL",
+        "https://www.realtor.com/realestateandhomes-search/Gainesville_FL",
+        "https://www.realtor.com/real-estate/Jacksonville_FL/",
+        "https://www.realtor.com/real-estate/Tampa_FL/",
+    ]
+
+    def _warm_homepage(self, driver, *, donor_profile_dirs=None):
         if self._homepage_warmed:
             return
-        url = random.choice(self._WARMUP_URLS)
-        try:
-            driver.get(url)
-        except Exception:
-            return
+        # Mark warmed early so a mid-warmup block doesn't trigger infinite re-warm.
         self._homepage_warmed = True
+
         try:
-            time.sleep(random.uniform(0.8, 2.0))
+            from re_analyzer.scrapers.human_input import HumanMouse
+            _has_mouse = True
+        except Exception:
+            _has_mouse = False
+
+        # Visit 2–3 organic pages before any search to build up session cookies and
+        # give PerimeterX's behavioral sensor something to score positively on.
+        pages = random.sample(self._WARMUP_URLS, k=random.randint(2, 3))
+        for i, url in enumerate(pages):
+            try:
+                driver.get(url)
+            except Exception:
+                break
+
+            # Inject donor cookies after the first organic page load so the domain
+            # is already in scope for the cookie store.
+            if i == 0 and donor_profile_dirs is not None:
+                try:
+                    from re_analyzer.scrapers.realtor_cookie_donor import inject_donor_cookies
+                    inject_donor_cookies(driver, profile_dirs=donor_profile_dirs)
+                except Exception as exc:
+                    print(f"[realtor] cookie donor warning: {exc}", flush=True)
+
+            try:
+                if _has_mouse:
+                    HumanMouse(driver).wander(
+                        duration=random.uniform(4.0, 8.0),
+                        scroll_probability=0.4,
+                    )
+                else:
+                    time.sleep(random.uniform(4.0, 7.0))
+            except Exception:
+                time.sleep(random.uniform(2.0, 4.0))
+            # Abort warmup early if already blocked (no point reading more pages).
+            try:
+                self._raise_if_blocked_page(driver, url_hint=url, context="warmup")
+            except Exception:
+                break
+            if i < len(pages) - 1:
+                time.sleep(random.uniform(1.5, 3.5))
+
+    def prepare_session(self, driver, zip_code: str, *, donor_profile_dirs=None):
+        zip_code = normalize_zip_code(zip_code)
+        effective_donors = donor_profile_dirs if donor_profile_dirs is not None else self._donor_profile_dirs
+        self._warm_homepage(driver, donor_profile_dirs=effective_donors)
+        # Navigate via a state-level page first so the ZIP search has a referrer
+        # in the session history rather than appearing as a cold direct load.
+        try:
+            driver.get(random.choice(self._STATE_ENTRY_URLS))
+            time.sleep(random.uniform(1.0, 2.5))
         except Exception:
             pass
-
-    def prepare_session(self, driver, zip_code: str):
-        zip_code = normalize_zip_code(zip_code)
-        self._warm_homepage(driver)
-        driver.get(f"https://www.realtor.com/realestateandhomes-search/{zip_code}")
-        self._raise_if_blocked_page(driver, url_hint=f"https://www.realtor.com/realestateandhomes-search/{zip_code}", context="prepare_session")
+        zip_url = f"https://www.realtor.com/realestateandhomes-search/{zip_code}"
+        driver.get(zip_url)
+        # Dwell on the search page before any API call so the session looks
+        # like a human reading results rather than an immediate programmatic fetch.
+        time.sleep(random.uniform(2.5, 5.5))
+        try:
+            self._raise_if_blocked_page(driver, url_hint=zip_url, context="prepare_session")
+        except Exception:
+            # Reset warmed flag so the next prepare_session attempt does a fresh
+            # warmup sequence rather than jumping straight to a search page again.
+            self._homepage_warmed = False
+            raise
         self.current_zip_code = zip_code
 
     def fetch_search_page(self, driver, zip_code: str, page: int):
         zip_code = normalize_zip_code(zip_code)
         if self.current_zip_code != zip_code:
-            self.prepare_session(driver, zip_code)
+            self.prepare_session(driver, zip_code, donor_profile_dirs=self._donor_profile_dirs)
         if page <= 1:
             path = f"/realestateandhomes-search/{zip_code}.data?_routes=srp"
         else:
             path = f"/realestateandhomes-search/{zip_code}/pg-{page}.data?_routes=srp"
         url = f"https://www.realtor.com{path}"
+        time.sleep(random.uniform(0.4, 1.2))
         result = driver.execute_async_script(
             """
             const url = arguments[0];
@@ -1448,7 +1557,9 @@ class RealtorListingProvider(ListingProvider):
         elif url.startswith("/"):
             url = f"https://www.realtor.com{url}"
         realtor_real_estimates = _collect_realtor_real_estimates(raw_listing)
-        realtor_price_estimate = next(iter(realtor_real_estimates.values()), None)
+        graphql_estimates = _realtor_property_estimates_fields(raw_listing)
+        merged_price_estimates = {**realtor_real_estimates, **graphql_estimates}
+        realtor_price_estimate = next(iter(merged_price_estimates.values()), None)
         realtor_rent_estimate = _deep_find_first_number(raw_listing, (
             "rentestimate",
             "rent_estimate",
@@ -1481,7 +1592,7 @@ class RealtorListingProvider(ListingProvider):
             price=price,
             price_estimate=realtor_price_estimate,
             rent_estimate=rent_estimate,
-            price_estimates=realtor_real_estimates,
+            price_estimates=merged_price_estimates,
             rent_estimates=_compact_dict({
                 "realtor_rent_estimate": realtor_rent_estimate,
                 "realtor_rent_listing_price": direct_rent_listing,
@@ -1581,3 +1692,211 @@ class RealtorListingProvider(ListingProvider):
                         yield from self._iter_encoded_refs(item)
         elif isinstance(value, int) and value >= 0:
             yield value
+
+    # ------------------------------------------------------------------
+    # DPPropertyEstimates GraphQL enrichment
+    # ------------------------------------------------------------------
+
+    _DP_ESTIMATES_HASH = "d5639ca5e81dfcd15435cf6d1043fa7d10e7b93b078d485a3f3c6d939996cd86"
+    _DP_ESTIMATES_CLIENT_NAME = "RDC_WEB_DETAILS_PAGE"
+    _DP_ESTIMATES_CLIENT_VERSION = "2.883.0"
+
+    def _get_property_id_for_estimates(self, raw_listing) -> str:
+        pid = str(raw_listing.get("property_id") or "")
+        if pid:
+            return pid
+        url = raw_listing.get("href") or raw_listing.get("url") or ""
+        match = re.search(r"/M(\d+)-(\d+)", url)
+        if match:
+            return match.group(1) + match.group(2)
+        return ""
+
+    def fetch_property_estimates(self, driver, property_id: str) -> dict:
+        """Fetch DPPropertyEstimates GraphQL for one property; returns parsed dict."""
+        today = date.today()
+        variables = {
+            "propertyId": str(property_id),
+            "historicalYearsMin": (today - timedelta(days=365 * 5)).isoformat(),
+            "historicalYearsMax": today.isoformat(),
+            "forecastedMonthsMax": (today + timedelta(days=90)).isoformat(),
+        }
+        extensions = {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": self._DP_ESTIMATES_HASH,
+            }
+        }
+        params = urlencode({
+            "operationName": "DPPropertyEstimates",
+            "variables": json.dumps(variables, separators=(",", ":")),
+            "extensions": json.dumps(extensions, separators=(",", ":")),
+        })
+        url = f"https://www.realtor.com/frontdoor/graphql?{params}"
+        result = driver.execute_async_script(
+            """
+            const url = arguments[0];
+            const clientName = arguments[1];
+            const clientVersion = arguments[2];
+            const done = arguments[arguments.length - 1];
+            fetch(url, {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                "rdc-client-name": clientName,
+                "rdc-client-version": clientVersion,
+                "accept": "application/json",
+              }
+            }).then(async (r) => {
+              done({ok: r.ok, status: r.status, url: r.url, text: await r.text()});
+            }).catch((e) => done({ok: false, status: 0, error: String(e), url: url}));
+            """,
+            url,
+            self._DP_ESTIMATES_CLIENT_NAME,
+            self._DP_ESTIMATES_CLIENT_VERSION,
+        )
+        if not result.get("ok"):
+            raise RuntimeError(
+                f"DPPropertyEstimates fetch failed for {property_id}: "
+                f"status={result.get('status')} "
+                f"{(result.get('error') or result.get('text') or '')[:300]}"
+            )
+        try:
+            raw_data = json.loads(result.get("text") or "")
+        except Exception as exc:
+            raise RuntimeError(
+                f"DPPropertyEstimates parse failed for {property_id}: {exc}"
+            ) from exc
+        return self._parse_property_estimates(
+            raw_data, property_id=str(property_id), request_url=result.get("url") or url
+        )
+
+    @staticmethod
+    def _parse_property_estimates(data: dict, *, property_id: str = "", request_url: str = "") -> dict:
+        estimates_data = (data.get("data") or {}).get("DPPropertyEstimates") or {}
+        out: dict = {}
+
+        def _norm_source(raw: str) -> str:
+            return _REALTOR_AVM_SOURCE_MAP.get(raw.lower().strip(), "")
+
+        current_values = estimates_data.get("current_values") or []
+        if isinstance(current_values, list):
+            for entry in current_values:
+                if not isinstance(entry, dict):
+                    continue
+                src = _norm_source(str(entry.get("source") or entry.get("provider") or ""))
+                if not src:
+                    continue
+                out.setdefault(src, {})
+                out[src]["current"] = _compact_dict({
+                    "value": _coerce_number(
+                        entry.get("estimate") or entry.get("value") or entry.get("amount")
+                    ),
+                    "value_low": _coerce_number(
+                        entry.get("estimate_low") or entry.get("value_low") or entry.get("low")
+                    ),
+                    "value_high": _coerce_number(
+                        entry.get("estimate_high") or entry.get("value_high") or entry.get("high")
+                    ),
+                    "date": entry.get("date") or entry.get("estimate_date"),
+                })
+
+        for series_key, series_out_key in (
+            ("historical_values", "historical"),
+            ("forecast_values", "forecast"),
+        ):
+            series = estimates_data.get(series_key) or []
+            if not isinstance(series, list):
+                continue
+            for source_series in series:
+                if not isinstance(source_series, dict):
+                    continue
+                src = _norm_source(
+                    str(source_series.get("source") or source_series.get("provider") or "")
+                )
+                if not src:
+                    continue
+                out.setdefault(src, {})
+                values = source_series.get("values") or source_series.get("data") or []
+                if isinstance(values, list):
+                    out[src][series_out_key] = [
+                        _compact_dict({
+                            "date": v.get("date") or v.get("estimate_date"),
+                            "value": _coerce_number(
+                                v.get("estimate") or v.get("value") or v.get("amount")
+                            ),
+                        })
+                        for v in values
+                        if isinstance(v, dict)
+                    ]
+
+        out["_request"] = {
+            "url": request_url,
+            "property_id": property_id,
+            "kind": "property_estimates",
+        }
+        return out
+
+    def enrich_property_estimates(self, driver, raw_listings, *, limit=0, delay_seconds=0.5) -> dict:
+        """
+        Fetch DPPropertyEstimates GraphQL for raw_listings and store responses in-place.
+
+        Skips listings that already have a response or lack a usable property ID.
+        Returns a summary dict with attempted/succeeded/skipped/error_count/errors.
+        """
+        attempted = 0
+        succeeded = 0
+        skipped = 0
+        error_count = 0
+        errors: list = []
+
+        candidates = []
+        for raw_listing in (raw_listings or []):
+            if REALTOR_PROPERTY_ESTIMATES_RESPONSE_KEY in raw_listing:
+                skipped += 1
+                continue
+            pid = self._get_property_id_for_estimates(raw_listing)
+            if not pid:
+                skipped += 1
+                continue
+            candidates.append((pid, raw_listing))
+
+        # Prioritise the most analytically valuable listings before applying the
+        # per-ZIP limit: active for-sale > higher list price > anything else.
+        # This ensures the budget is spent on properties that matter most.
+        def _estimate_priority(item):
+            _, rl = item
+            status = str(
+                rl.get("status") or rl.get("list_price_last_change_type") or ""
+            ).lower()
+            is_active = 0 if any(s in status for s in ("sold", "pending", "off", "under", "closed")) else 1
+            price = _coerce_number(rl.get("list_price") or rl.get("price")) or 0.0
+            return (is_active, price)
+
+        candidates.sort(key=_estimate_priority, reverse=True)
+        work = candidates[:limit] if limit else candidates
+
+        for i, (pid, raw_listing) in enumerate(work):
+            if i > 0 and delay_seconds > 0:
+                time.sleep(delay_seconds)
+            attempted += 1
+            try:
+                data = self.fetch_property_estimates(driver, pid)
+                raw_listing[REALTOR_PROPERTY_ESTIMATES_RESPONSE_KEY] = data
+                if any(
+                    isinstance(data.get(src), dict)
+                    for src in ("quantarium", "cotality", "collateral_analytics")
+                ):
+                    succeeded += 1
+            except Exception as exc:
+                error_count += 1
+                raw_listing[REALTOR_PROPERTY_ESTIMATES_ERROR_KEY] = str(exc)
+                if len(errors) < 5:
+                    errors.append({"property_id": pid, "error": str(exc)})
+
+        return {
+            "attempted": attempted,
+            "succeeded": succeeded,
+            "skipped": skipped,
+            "error_count": error_count,
+            "errors": errors,
+        }
