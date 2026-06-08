@@ -158,6 +158,7 @@ re_analyzer/Data/SearchResults/
 re_analyzer/Data/SearchResultsMetadata/
 re_analyzer/Data/PropertyDetails/
 re_analyzer/Data/ScraperDiagnostics/
+re_analyzer/Data/Fetched
 re_analyzer/Data/Fetched/
 re_analyzer/Data/Raw/
 re_analyzer/Data/raw/
@@ -182,6 +183,7 @@ re_analyzer/Data/Examples/
 re_analyzer/Data/InvestmentSelections/
 re_analyzer/Data/VisualData/
 re_analyzer/Data/PropertyData/
+re_analyzer/Data/_property_reset_archive/
 
 # Loose generated data files in Data/
 re_analyzer/Data/*.json
